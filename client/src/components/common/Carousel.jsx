@@ -4,6 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { getMediaUrl } from '../../services/api';
 
 export default function Carrossel({ itens = [], autoPlay = true, intervalo = 5000 }) {
   const [indiceAtual, setIndiceAtual] = useState(0);
@@ -58,7 +59,7 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
         style={{ transform: `translateX(-${indiceAtual * 100}%)` }}
       >
         {itens.map((item, i) => {
-          const fotoUrl = item.fotos?.[0]?.url;
+          const fotoUrl = getMediaUrl(item.fotos?.[0]?.url);
           const tag = tagStatus(item.status);
 
           return (

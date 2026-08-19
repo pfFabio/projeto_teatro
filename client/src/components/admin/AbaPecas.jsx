@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-import { pecasAPI } from '../../services/api';
+import { pecasAPI, getMediaUrl } from '../../services/api';
 import { getTag } from '../../constants/statusPeca';
 
 export default function AbaPecas({ pecas, onRecarregar, modalPeca, setModalPeca }) {
@@ -289,7 +289,7 @@ export default function AbaPecas({ pecas, onRecarregar, modalPeca, setModalPeca 
           <tbody>
             {pecas.map((peca) => {
               const tag = getTag(peca.status);
-              const fotoCapa = peca.fotos?.[0]?.url;
+              const fotoCapa = getMediaUrl(peca.fotos?.[0]?.url);
               const totalLocais = peca.locais?.length || 0;
               const cidadesTexto = totalLocais > 0
                 ? peca.locais.map(l => l.cidade?.split(',')[0]?.trim()).filter(Boolean).join(', ')
@@ -465,7 +465,7 @@ export default function AbaPecas({ pecas, onRecarregar, modalPeca, setModalPeca 
             {modalMidias.fotos.map((foto, index) => (
               <div key={foto.id} style={{ display: 'flex', flexDirection: 'column', borderRadius: 'var(--raio-lg)', overflow: 'hidden', border: index === 0 ? '2px solid var(--cor-dourado)' : '1px solid var(--cor-borda)', background: 'var(--cor-fundo-card)', boxShadow: index === 0 ? '0 0 12px rgba(212, 168, 67, 0.2)' : 'none', transition: 'all var(--transicao-rapida)' }}>
                 <div style={{ position: 'relative', width: '100%', height: '120px', background: '#000' }}>
-                  {foto.tipo === 'VIDEO' ? <video src={foto.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <img src={foto.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                  {foto.tipo === 'VIDEO' ? <video src={getMediaUrl(foto.url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <img src={getMediaUrl(foto.url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                   <div style={{ position: 'absolute', top: '6px', left: '6px', background: index === 0 ? 'var(--cor-dourado)' : 'rgba(0, 0, 0, 0.75)', color: index === 0 ? 'var(--cor-texto-inverso)' : 'white', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--raio-sm)', display: 'flex', alignItems: 'center', gap: '4px' }}>{index === 0 ? '⭐ CAPA (1º)' : `${index + 1}º`}</div>
                   <button type="button" onClick={() => handleDeletarFoto(foto.id)} style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(0, 0, 0, 0.75)', color: 'var(--cor-erro)', border: 'none', borderRadius: '50%', width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '12px' }} title="Excluir mídia">🗑️</button>
                 </div>

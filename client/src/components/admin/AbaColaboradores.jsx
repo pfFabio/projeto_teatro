@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import Modal from '../common/Modal';
-import { colaboradoresAPI } from '../../services/api';
+import { colaboradoresAPI, getMediaUrl } from '../../services/api';
 
 export default function AbaColaboradores({ colaboradores, busca, setBusca, filtroFuncao, setFiltroFuncao, onRecarregar, modalColab, setModalColab }) {
   const [formColab, setFormColab] = useState({ nome: '', funcao: '', idade: '', celular: '', email: '', endereco: '', genero: '' });
@@ -105,7 +105,7 @@ export default function AbaColaboradores({ colaboradores, busca, setBusca, filtr
                 <td>
                   <div className="flex items-center gap-2">
                     {colab.fotoUrl ? (
-                      <img src={colab.fotoUrl} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+                      <img src={getMediaUrl(colab.fotoUrl)} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--cor-primaria)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '12px', fontWeight: 600 }}>
                         {colab.nome.split(' ').map(n => n[0]).join('').slice(0, 2)}

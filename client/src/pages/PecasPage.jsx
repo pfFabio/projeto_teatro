@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { pecasAPI } from '../services/api';
+import { pecasAPI, getMediaUrl } from '../services/api';
 import { getTag, statusFiltros } from '../constants/statusPeca';
 
 export default function PecasPage() {
@@ -112,7 +112,7 @@ export default function PecasPage() {
                 >
                   <div className="peca-card-imagem">
                     {peca.fotos?.[0]?.url ? (
-                      <img src={peca.fotos[0].url} alt={peca.titulo} />
+                      <img src={getMediaUrl(peca.fotos[0].url)} alt={peca.titulo} />
                     ) : (
                       <div className="peca-card-placeholder">🎭</div>
                     )}

@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Carrossel from '../components/common/Carousel';
-import { pecasAPI, configAPI } from '../services/api';
+import { pecasAPI, configAPI, getMediaUrl } from '../services/api';
 import { getTag } from '../constants/statusPeca';
 
 export default function HomePage() {
@@ -80,7 +80,7 @@ export default function HomePage() {
             <div>
               {config.propaganda_imagem?.valor ? (
                 <img
-                  src={config.propaganda_imagem.valor}
+                  src={getMediaUrl(config.propaganda_imagem.valor)}
                   alt="Aulas de Teatro"
                   className="home-propaganda-img"
                 />
@@ -117,7 +117,7 @@ export default function HomePage() {
                   >
                     <div className="peca-card-imagem">
                       {peca.fotos?.[0]?.url ? (
-                        <img src={peca.fotos[0].url} alt={peca.titulo} className="card-imagem" />
+                        <img src={getMediaUrl(peca.fotos[0].url)} alt={peca.titulo} className="card-imagem" />
                       ) : (
                         <div className="peca-card-placeholder">🎭</div>
                       )}

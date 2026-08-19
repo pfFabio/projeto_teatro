@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import MapView from '../components/common/MapView';
-import { pecasAPI } from '../services/api';
+import { pecasAPI, getMediaUrl } from '../services/api';
 import { getTag } from '../constants/statusPeca';
 
 export default function PecaDetalhesPage() {
@@ -84,7 +84,7 @@ export default function PecaDetalhesPage() {
         {fotos.length > 0 && fotos[0].tipo === 'IMAGEM' ? (
           <img
             className="peca-detalhe-hero-img"
-            src={fotos[0].url}
+            src={getMediaUrl(fotos[0].url)}
             alt={peca.titulo}
           />
         ) : (
@@ -224,13 +224,13 @@ export default function PecaDetalhesPage() {
                 }}>
                   {fotos[fotoSelecionada]?.tipo === 'VIDEO' ? (
                     <video
-                      src={fotos[fotoSelecionada].url}
+                      src={getMediaUrl(fotos[fotoSelecionada].url)}
                       controls
                       style={{ width: '100%', height: '400px', objectFit: 'cover', display: 'block' }}
                     />
                   ) : (
                     <img
-                      src={fotos[fotoSelecionada]?.url}
+                      src={getMediaUrl(fotos[fotoSelecionada]?.url)}
                       alt={fotos[fotoSelecionada]?.descricao || peca.titulo}
                       style={{ width: '100%', height: '400px', objectFit: 'cover', display: 'block' }}
                     />
@@ -270,7 +270,7 @@ export default function PecaDetalhesPage() {
                           </div>
                         ) : (
                           <img
-                            src={foto.url}
+                            src={getMediaUrl(foto.url)}
                             alt={foto.descricao || ''}
                             style={{ width: '80px', height: '60px', objectFit: 'cover', display: 'block' }}
                           />
@@ -350,7 +350,7 @@ export default function PecaDetalhesPage() {
                       {aloc.colaborador.fotoUrl ? (
                         <img
                           className="elenco-item-avatar"
-                          src={aloc.colaborador.fotoUrl}
+                          src={getMediaUrl(aloc.colaborador.fotoUrl)}
                           alt={aloc.colaborador.nome}
                         />
                       ) : (

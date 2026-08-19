@@ -14,6 +14,16 @@ const api = axios.create({
   timeout: 15000,
 });
 
+/**
+ * Converte URLs relativas (/uploads/...) em URLs absolutas quando em produção
+ */
+export function getMediaUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (!backendUrl) return url;
+  return `${backendUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 // Interceptor — adiciona token JWT se existir
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('theatrum_token');

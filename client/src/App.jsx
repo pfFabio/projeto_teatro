@@ -19,7 +19,7 @@ import './styles/pages.css';
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Layout>
           <Routes>
             <Route path="/" element={<HomePage />} />
