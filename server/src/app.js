@@ -21,9 +21,15 @@ const app = express();
 // Middlewares globais
 // =============================================================================
 
-// CORS — permite requisições do frontend
+// CORS — permite requisições do frontend em dev e prod
+const origensPermitidas = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: process.env.CLIENT_URL ? origensPermitidas : true,
   credentials: true,
 }));
 

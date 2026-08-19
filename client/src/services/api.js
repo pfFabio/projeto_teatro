@@ -4,9 +4,13 @@
 
 import axios from 'axios';
 
-// Base URL da API (usa proxy do Vite em dev)
+// Base URL da API (usa variável de ambiente em produção ou proxy /api em dev)
+const backendUrl = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
+  : '';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: backendUrl ? `${backendUrl}/api` : '/api',
   timeout: 15000,
 });
 
