@@ -8,7 +8,13 @@
  * @param {Object} dados - { email, senha }
  * @returns {{ valido: boolean, mensagem?: string }}
  */
-function validarLogin({ email, senha }) {
+function validarLogin(dados) {
+  if (!dados || typeof dados !== 'object') {
+    return { valido: false, mensagem: 'Email e senha são obrigatórios' };
+  }
+
+  const { email, senha } = dados;
+
   if (!email || typeof email !== 'string' || email.trim().length === 0) {
     return { valido: false, mensagem: 'Email é obrigatório' };
   }

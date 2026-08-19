@@ -49,7 +49,10 @@ api.interceptors.response.use(
 // Autenticação
 // =============================================================================
 export const authAPI = {
-  login: (email, senha) => api.post('/auth/login', { email, senha }),
+  login: (dadosOuEmail, senha) =>
+    typeof dadosOuEmail === 'object'
+      ? api.post('/auth/login', dadosOuEmail)
+      : api.post('/auth/login', { email: dadosOuEmail, senha }),
   perfil: () => api.get('/auth/me'),
 };
 
