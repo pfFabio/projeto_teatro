@@ -11,7 +11,7 @@ const backendUrl = import.meta.env.VITE_API_URL
 
 const api = axios.create({
   baseURL: backendUrl ? `${backendUrl}/api` : '/api',
-  timeout: 15000,
+  timeout: 60000,
 });
 
 /**
