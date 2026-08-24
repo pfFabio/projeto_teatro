@@ -201,9 +201,10 @@
 /* --- Peça Detalhes Page --- */
 .peca-detalhe-hero {
   position: relative;
-  height: 400px;
+  min-height: 420px;
   margin-top: calc(-1 * var(--altura-header));
-  padding-top: var(--altura-header);
+  display: flex;
+  align-items: stretch;
   overflow: hidden;
 }
 
@@ -216,24 +217,30 @@
 }
 
 .peca-detalhe-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(249, 247, 240, 0.1) 0%, var(--cor-fundo) 100%);
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  background: linear-gradient(180deg, rgba(249, 247, 240, 0.1) 0%, rgba(249, 247, 240, 0.75) 50%, var(--cor-fundo) 100%);
   display: flex;
-  align-items: flex-end;
-  padding: var(--espaco-8);
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: calc(var(--altura-header) + var(--espaco-8)) var(--espaco-6) var(--espaco-8);
+  z-index: 2;
 }
 
 .peca-detalhe-hero-info {
   max-width: var(--largura-maxima);
   margin: 0 auto;
   width: 100%;
-  padding: 0 var(--espaco-6);
+  padding: 0;
 }
 
 .peca-detalhe-hero-info h1 {
-  font-size: var(--texto-5xl);
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  line-height: 1.15;
+  margin-top: var(--espaco-2);
   margin-bottom: var(--espaco-3);
+  word-break: break-word;
 }
 
 .peca-detalhe-meta {
@@ -332,8 +339,23 @@
 
 @media (max-width: 768px) {
   .peca-detalhe-grid { grid-template-columns: 1fr; }
-  .peca-detalhe-hero { height: 300px; }
-  .peca-detalhe-hero-info h1 { font-size: var(--texto-3xl); }
+  .peca-detalhe-hero {
+    min-height: 360px;
+    height: auto;
+  }
+  .peca-detalhe-hero-overlay {
+    padding: calc(var(--altura-header) + var(--espaco-4)) var(--espaco-4) var(--espaco-6);
+  }
+  .peca-detalhe-hero-info h1 {
+    font-size: var(--texto-2xl);
+    line-height: 1.2;
+  }
+  .peca-detalhe-meta {
+    gap: var(--espaco-2) var(--espaco-3);
+  }
+  .peca-detalhe-meta-item {
+    font-size: var(--texto-xs);
+  }
 }
 
 /* --- Colaborador Page --- */
