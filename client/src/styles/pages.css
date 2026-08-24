@@ -340,15 +340,18 @@
 @media (max-width: 768px) {
   .peca-detalhe-grid { grid-template-columns: 1fr; }
   .peca-detalhe-hero {
-    min-height: 360px;
+    margin-top: 0;
+    min-height: auto;
     height: auto;
   }
   .peca-detalhe-hero-overlay {
-    padding: calc(var(--altura-header) + var(--espaco-4)) var(--espaco-4) var(--espaco-6);
+    padding: var(--espaco-6) var(--espaco-4);
   }
   .peca-detalhe-hero-info h1 {
     font-size: var(--texto-2xl);
-    line-height: 1.2;
+    line-height: 1.25;
+    margin-top: var(--espaco-2);
+    margin-bottom: var(--espaco-3);
   }
   .peca-detalhe-meta {
     gap: var(--espaco-2) var(--espaco-3);
