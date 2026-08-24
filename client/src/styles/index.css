@@ -1,6 +1,6 @@
 /* =============================================================================
    Theatrum — Design System
-   Paleta: Verde teatral com dourado, sobre fundo escuro
+   Paleta: Branco e creme com detalhes teal/verde (theatrummundi.com.br)
    Tipografia: Playfair Display (títulos) + Inter (corpo)
    ============================================================================= */
 
@@ -12,30 +12,30 @@
 }
 
 :root {
-  /* Cores Primárias — Verde Teatral */
-  --cor-primaria: #1a6b3c;
-  --cor-primaria-clara: #2d9a5a;
-  --cor-primaria-escura: #0e4d2a;
-  --cor-primaria-hover: #23854a;
-  --cor-primaria-translucida: rgba(26, 107, 60, 0.15);
+  /* Cores Primárias — Teal Theatrum */
+  --cor-primaria: #0DBDAD;
+  --cor-primaria-clara: #10D4C2;
+  --cor-primaria-escura: #007073;
+  --cor-primaria-hover: #0AA99A;
+  --cor-primaria-translucida: rgba(13, 189, 173, 0.12);
 
-  /* Cores de Destaque */
-  --cor-dourado: #d4a843;
-  --cor-dourado-clara: #e8c56d;
-  --cor-dourado-escura: #b08930;
+  /* Cores de Destaque — Teal Escuro */
+  --cor-dourado: #007073;
+  --cor-dourado-clara: #0DBDAD;
+  --cor-dourado-escura: #005456;
 
-  /* Cores de Fundo */
-  --cor-fundo: #0a0f0d;
-  --cor-fundo-card: #111a15;
-  --cor-fundo-elevado: #152019;
-  --cor-fundo-modal: rgba(5, 8, 6, 0.85);
-  --cor-fundo-input: #1a2520;
+  /* Cores de Fundo — Claro */
+  --cor-fundo: #F9F7F0;
+  --cor-fundo-card: #FFFFFF;
+  --cor-fundo-elevado: #F0EDE5;
+  --cor-fundo-modal: rgba(0, 0, 0, 0.5);
+  --cor-fundo-input: #FFFFFF;
 
-  /* Cores de Texto */
-  --cor-texto: #e8ede9;
-  --cor-texto-secundario: #9aaa9f;
-  --cor-texto-terciario: #667a6d;
-  --cor-texto-inverso: #0a0f0d;
+  /* Cores de Texto — Escuro */
+  --cor-texto: #1a1a1a;
+  --cor-texto-secundario: #555555;
+  --cor-texto-terciario: #888888;
+  --cor-texto-inverso: #FFFFFF;
 
   /* Cores de Estado */
   --cor-sucesso: #2ecc71;
@@ -43,16 +43,16 @@
   --cor-alerta: #f39c12;
   --cor-info: #3498db;
 
-  /* Cores de Borda */
-  --cor-borda: #1e2e24;
-  --cor-borda-hover: #2d4a38;
+  /* Cores de Borda — Suave */
+  --cor-borda: #E0DDD5;
+  --cor-borda-hover: #0DBDAD;
   --cor-borda-foco: var(--cor-primaria);
 
   /* Gradientes */
   --gradiente-primario: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-primaria-escura) 100%);
   --gradiente-dourado: linear-gradient(135deg, var(--cor-dourado) 0%, var(--cor-dourado-escura) 100%);
-  --gradiente-hero: linear-gradient(180deg, rgba(10, 15, 13, 0) 0%, rgba(10, 15, 13, 0.6) 50%, rgba(10, 15, 13, 0.95) 100%);
-  --gradiente-card: linear-gradient(145deg, var(--cor-fundo-card) 0%, #0e1611 100%);
+  --gradiente-hero: linear-gradient(180deg, rgba(249, 247, 240, 0) 0%, rgba(249, 247, 240, 0.6) 50%, rgba(249, 247, 240, 0.95) 100%);
+  --gradiente-card: linear-gradient(145deg, #FFFFFF 0%, #F5F3EC 100%);
 
   /* Tipografia */
   --fonte-titulo: 'Playfair Display', 'Georgia', serif;
@@ -91,13 +91,13 @@
   --raio-2xl: 1.5rem;
   --raio-completo: 9999px;
 
-  /* Sombras */
-  --sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --sombra-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --sombra-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
-  --sombra-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
-  --sombra-glow: 0 0 20px rgba(26, 107, 60, 0.3);
-  --sombra-dourada: 0 0 20px rgba(212, 168, 67, 0.2);
+  /* Sombras — Suaves para tema claro */
+  --sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --sombra-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --sombra-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --sombra-xl: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --sombra-glow: 0 0 20px rgba(13, 189, 173, 0.25);
+  --sombra-dourada: 0 0 20px rgba(0, 112, 115, 0.2);
 
   /* Transições */
   --transicao-rapida: 150ms ease;
@@ -149,7 +149,7 @@ a {
 }
 
 a:hover {
-  color: var(--cor-dourado);
+  color: var(--cor-primaria-escura);
 }
 
 /* --- Container --- */
@@ -293,7 +293,7 @@ a:hover {
 
 .campo-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239aaa9f' d='M6 8.825L.35 3.175 1.175 2.35 6 7.175 10.825 2.35l.825.825z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888888' d='M6 8.825L.35 3.175 1.175 2.35 6 7.175 10.825 2.35l.825.825z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 36px;
@@ -616,7 +616,7 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--cor-fundo);
+  background: var(--cor-fundo-elevado);
 }
 
 ::-webkit-scrollbar-thumb {

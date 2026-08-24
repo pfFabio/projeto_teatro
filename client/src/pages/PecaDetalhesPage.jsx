@@ -170,7 +170,7 @@ export default function PecaDetalhesPage() {
                               color: 'var(--cor-dourado)',
                               fontWeight: 600,
                               fontSize: 'var(--texto-sm)',
-                              background: 'rgba(212, 168, 67, 0.1)',
+                              background: 'rgba(13, 189, 173, 0.12)',
                               padding: '2px 8px',
                               borderRadius: 'var(--raio-completo)',
                             }}>

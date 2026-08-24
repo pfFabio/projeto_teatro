@@ -75,7 +75,7 @@
 }
 
 .home-propaganda-info h2 span {
-  color: var(--cor-dourado);
+  color: var(--cor-primaria-escura);
 }
 
 .home-propaganda-info p {
@@ -191,7 +191,7 @@
 .peca-card-placeholder {
   width: 100%;
   height: 220px;
-  background: linear-gradient(135deg, var(--cor-fundo-elevado), var(--cor-primaria-escura));
+  background: linear-gradient(135deg, var(--cor-fundo-elevado), var(--cor-primaria));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,7 +218,7 @@
 .peca-detalhe-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10,15,13,0.3) 0%, var(--cor-fundo) 100%);
+  background: linear-gradient(180deg, rgba(249, 247, 240, 0.1) 0%, var(--cor-fundo) 100%);
   display: flex;
   align-items: flex-end;
   padding: var(--espaco-8);

@@ -116,11 +116,24 @@ export default function HomePage() {
                     style={{ textDecoration: 'none', color: 'inherit' }}
                   >
                     <div className="peca-card-imagem">
-                      {peca.fotos?.[0]?.url ? (
-                        <img src={getMediaUrl(peca.fotos[0].url)} alt={peca.titulo} className="card-imagem" />
-                      ) : (
-                        <div className="peca-card-placeholder">🎭</div>
+                      {peca.fotos?.[0]?.url && (
+                        <img
+                          src={getMediaUrl(peca.fotos[0].url)}
+                          alt={peca.titulo}
+                          className="card-imagem"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const ph = e.target.parentElement.querySelector('.peca-card-placeholder');
+                            if (ph) ph.style.display = 'flex';
+                          }}
+                        />
                       )}
+                      <div
+                        className="peca-card-placeholder"
+                        style={{ display: peca.fotos?.[0]?.url ? 'none' : 'flex' }}
+                      >
+                        🎭
+                      </div>
                       <div className="peca-card-status">
                         <span className={`tag ${tag.classe}`}>{tag.texto}</span>
                       </div>

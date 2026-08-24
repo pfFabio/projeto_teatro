@@ -98,19 +98,28 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
 
                 {/* Lado Direito / Arte da Peça */}
                 <div className="carrossel-arte-container">
-                  {fotoUrl ? (
+                  {fotoUrl && (
                     <img
                       className="carrossel-arte-img"
                       src={fotoUrl}
                       alt={item.titulo}
                       loading={i === 0 ? 'eager' : 'lazy'}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        const placeholder = e.target.parentElement.querySelector('.carrossel-arte-placeholder');
+                        if (placeholder) placeholder.style.display = 'flex';
+                      }}
                     />
-                  ) : (
-                    <div className="carrossel-arte-placeholder">
-                      <span style={{ fontSize: '4.5rem' }}>🎭</span>
-                      <span style={{ fontSize: 'var(--texto-base)', color: 'var(--cor-texto-secundario)', marginTop: '8px' }}>Theatrum Espetáculos</span>
-                    </div>
                   )}
+                  <div
+                    className="carrossel-arte-placeholder"
+                    style={{ display: fotoUrl ? 'none' : 'flex' }}
+                  >
+                    <span style={{ fontSize: '4.5rem' }}>🎭</span>
+                    <span style={{ fontSize: 'var(--texto-base)', color: 'var(--cor-texto-secundario)', marginTop: '8px' }}>
+                      Theatrum Espetáculos
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
