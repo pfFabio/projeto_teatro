@@ -23,15 +23,15 @@ async function listarPecas(req, res) {
 
     if (busca) {
       where.OR = [
-        { titulo: { contains: busca } },
-        { resumo: { contains: busca } },
-        { endereco: { contains: busca } },
-        { locais: { some: { OR: [{ cidade: { contains: busca } }, { nomeLocal: { contains: busca } }, { endereco: { contains: busca } }] } } },
+        { titulo: { contains: busca, mode: 'insensitive' } },
+        { resumo: { contains: busca, mode: 'insensitive' } },
+        { endereco: { contains: busca, mode: 'insensitive' } },
+        { locais: { some: { OR: [{ cidade: { contains: busca, mode: 'insensitive' } }, { nomeLocal: { contains: busca, mode: 'insensitive' } }, { endereco: { contains: busca, mode: 'insensitive' } }] } } },
       ];
     }
 
     if (cidade) {
-      where.locais = { some: { cidade: { contains: cidade } } };
+      where.locais = { some: { cidade: { contains: cidade, mode: 'insensitive' } } };
     }
 
     const [pecas, total] = await Promise.all([

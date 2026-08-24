@@ -16,7 +16,7 @@ async function listarColaboradores(req, res) {
     const where = {};
 
     if (funcao) {
-      where.funcao = { contains: funcao };
+      where.funcao = { contains: funcao, mode: 'insensitive' };
     }
 
     if (genero) {
@@ -25,9 +25,9 @@ async function listarColaboradores(req, res) {
 
     if (busca) {
       where.OR = [
-        { nome: { contains: busca } },
-        { email: { contains: busca } },
-        { funcao: { contains: busca } },
+        { nome: { contains: busca, mode: 'insensitive' } },
+        { email: { contains: busca, mode: 'insensitive' } },
+        { funcao: { contains: busca, mode: 'insensitive' } },
       ];
     }
 

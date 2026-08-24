@@ -8,9 +8,8 @@ generator client {
 }
 
 datasource db {
-  // SQLite para desenvolvimento — trocar para "mysql" em produção
-  // Para MySQL: provider = "mysql" e DATABASE_URL = "mysql://user:pass@localhost:3306/theatrum"
-  provider = "sqlite"
+  // PostgreSQL em produção (Render) — SQLite é incompatível com filesystem efêmero
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
