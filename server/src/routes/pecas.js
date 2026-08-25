@@ -1,12 +1,13 @@
 // =============================================================================
 // Rotas de Peças de Teatro
-// Atualizado para usar controllers separados (fotos, locais)
+// Inclui validação de IDs de rota e autenticação
 // =============================================================================
 
 const express = require('express');
 const router = express.Router();
 const { autenticar, apenasAdmin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const validateId = require('../middleware/validateId');
 const {
   listarPecas,
   buscarPeca,
@@ -30,26 +31,26 @@ const {
 
 // --- Rotas públicas ---
 router.get('/', listarPecas);
-router.get('/:id', buscarPeca);
+router.get('/:id', validateId('id'), buscarPeca);
 
 // --- Rotas protegidas (admin) ---
 router.post('/', autenticar, apenasAdmin, criarPeca);
-router.put('/:id', autenticar, apenasAdmin, atualizarPeca);
-router.delete('/:id', autenticar, apenasAdmin, deletarPeca);
+router.put('/:id', autenticar, apenasAdmin, validateId('id'), atualizarPeca);
+router.delete('/:id', autenticar, apenasAdmin, validateId('id'), deletarPeca);
 
 // Fotos/vídeos e ordenação/capa
-router.post('/:id/fotos', autenticar, apenasAdmin, upload.array('arquivos', 10), adicionarFotos);
-router.put('/:id/fotos/reordenar', autenticar, apenasAdmin, reordenarFotos);
-router.put('/:id/fotos/:fotoId/capa', autenticar, apenasAdmin, definirFotoCapa);
-router.delete('/:pecaId/fotos/:fotoId', autenticar, apenasAdmin, deletarFoto);
+router.post('/:id/fotos', autenticar, apenasAdmin, validateId('id'), upload.array('arquivos', 10), adicionarFotos);
+router.put('/:id/fotos/reordenar', autenticar, apenasAdmin, validateId('id'), reordenarFotos);
+router.put('/:id/fotos/:fotoId/capa', autenticar, apenasAdmin, validateId('id', 'fotoId'), definirFotoCapa);
+router.delete('/:pecaId/fotos/:fotoId', autenticar, apenasAdmin, validateId('pecaId', 'fotoId'), deletarFoto);
 
 // Alocação de colaboradores
-router.post('/:id/colaboradores', autenticar, apenasAdmin, alocarColaborador);
-router.delete('/:id/colaboradores/:colabId', autenticar, apenasAdmin, removerColaborador);
+router.post('/:id/colaboradores', autenticar, apenasAdmin, validateId('id'), alocarColaborador);
+router.delete('/:id/colaboradores/:colabId', autenticar, apenasAdmin, validateId('id', 'colabId'), removerColaborador);
 
 // Locais e apresentações por cidade
-router.post('/:id/locais', autenticar, apenasAdmin, adicionarLocal);
-router.put('/:id/locais/:localId', autenticar, apenasAdmin, atualizarLocal);
-router.delete('/:id/locais/:localId', autenticar, apenasAdmin, deletarLocal);
+router.post('/:id/locais', autenticar, apenasAdmin, validateId('id'), adicionarLocal);
+router.put('/:id/locais/:localId', autenticar, apenasAdmin, validateId('id', 'localId'), atualizarLocal);
+router.delete('/:id/locais/:localId', autenticar, apenasAdmin, validateId('id', 'localId'), deletarLocal);
 
 module.exports = router;

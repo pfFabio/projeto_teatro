@@ -1,60 +1,29 @@
 // =============================================================================
 // Controller de Configurações do Site
-// Permite ao admin customizar textos, imagens e conteúdo do site
+// Single Responsibility: mapeamento HTTP delegando para ConfigService
 // =============================================================================
 
-const prisma = require('../lib/prisma');
+const ConfigService = require('../services/configService');
 
 // GET /api/config — Retorna todas as configurações (acesso público)
-async function listarConfigs(req, res) {
+async function listarConfigs(req, res, next) {
   try {
-    const configs = await prisma.configSite.findMany();
-
-    // Transformar array em objeto chave-valor para facilitar o uso no frontend
-    const configObj = {};
-    for (const config of configs) {
-      configObj[config.chave] = {
-        valor: config.valor,
-        tipo: config.tipo,
-      };
-    }
-
-    res.json(configObj);
+    const configs = await ConfigService.listar();
+    res.json(configs);
   } catch (erro) {
-    console.error('Erro ao listar configurações:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao listar configurações' });
+    next(erro);
   }
 }
 
 // PUT /api/config/:chave — Atualizar ou criar configuração (admin only)
-async function atualizarConfig(req, res) {
+async function atualizarConfig(req, res, next) {
   try {
     const { chave } = req.params;
-    const { valor, tipo = 'TEXT' } = req.body;
-
-    if (valor === undefined) {
-      return res.status(400).json({
-        erro: true,
-        mensagem: 'O campo "valor" é obrigatório',
-      });
-    }
-
-    // Se foi enviado um arquivo (imagem/vídeo para configuração)
-    let valorFinal = valor;
-    if (req.file) {
-      valorFinal = `/uploads/${req.file.filename}`;
-    }
-
-    const config = await prisma.configSite.upsert({
-      where: { chave },
-      update: { valor: valorFinal, tipo },
-      create: { chave, valor: valorFinal, tipo },
-    });
-
+    const { valor, tipo } = req.body;
+    const config = await ConfigService.atualizar(chave, valor, tipo, req.file);
     res.json(config);
   } catch (erro) {
-    console.error('Erro ao atualizar configuração:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao atualizar configuração' });
+    next(erro);
   }
 }
 

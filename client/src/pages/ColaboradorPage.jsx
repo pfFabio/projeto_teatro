@@ -1,8 +1,9 @@
 // =============================================================================
 // Página do Colaborador — Formulário de cadastro público
+// Gerenciamento seguro de memória para previews de arquivo
 // =============================================================================
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { colaboradoresAPI } from '../services/api';
 
 export default function ColaboradorPage() {
@@ -22,14 +23,26 @@ export default function ColaboradorPage() {
   const [sucesso, setSucesso] = useState(false);
   const [erro, setErro] = useState('');
 
+  // Cleanup de memória do preview de foto
+  useEffect(() => {
+    return () => {
+      if (fotoPreview) {
+        URL.revokeObjectURL(fotoPreview);
+      }
+    };
+  }, [fotoPreview]);
+
   function atualizarCampo(campo, valor) {
     setFormulario({ ...formulario, [campo]: valor });
     setErro('');
   }
 
   function handleFoto(e) {
-    const arquivo = e.target.files[0];
+    const arquivo = e.target.files?.[0];
     if (arquivo) {
+      if (fotoPreview) {
+        URL.revokeObjectURL(fotoPreview);
+      }
       setFoto(arquivo);
       setFotoPreview(URL.createObjectURL(arquivo));
     }
@@ -41,7 +54,7 @@ export default function ColaboradorPage() {
     // Validação
     const camposObrigatorios = ['nome', 'funcao', 'idade', 'celular', 'email', 'endereco', 'genero'];
     for (const campo of camposObrigatorios) {
-      if (!formulario[campo]) {
+      if (!formulario[campo] || String(formulario[campo]).trim() === '') {
         setErro(`O campo "${campo}" é obrigatório`);
         return;
       }
@@ -52,8 +65,9 @@ export default function ColaboradorPage() {
       return;
     }
 
-    if (parseInt(formulario.idade) < 1 || parseInt(formulario.idade) > 120) {
-      setErro('Idade inválida');
+    const idadeNum = parseInt(formulario.idade, 10);
+    if (isNaN(idadeNum) || idadeNum < 1 || idadeNum > 120) {
+      setErro('Idade inválida (deve estar entre 1 e 120)');
       return;
     }
 
@@ -66,7 +80,7 @@ export default function ColaboradorPage() {
         if (chave === 'funcao' && valor === 'Outro') {
           formData.append('funcao', outraFuncao.trim());
         } else {
-          formData.append(chave, valor);
+          formData.append(chave, String(valor).trim());
         }
       });
 
@@ -99,6 +113,7 @@ export default function ColaboradorPage() {
             <button
               className="btn btn-primario btn-lg"
               onClick={() => {
+                if (fotoPreview) URL.revokeObjectURL(fotoPreview);
                 setSucesso(false);
                 setFormulario({ nome: '', funcao: '', idade: '', celular: '', email: '', endereco: '', genero: '' });
                 setOutraFuncao('');

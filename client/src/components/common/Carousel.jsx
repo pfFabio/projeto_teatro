@@ -1,10 +1,12 @@
 // =============================================================================
 // Componente Carrossel — Slideshow de peças com auto-play
+// Refatorado com DRY e OCP (reutiliza getTag de constants/statusPeca)
 // =============================================================================
 
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getMediaUrl } from '../../services/api';
+import { getTag } from '../../constants/statusPeca';
 
 export default function Carrossel({ itens = [], autoPlay = true, intervalo = 5000 }) {
   const [indiceAtual, setIndiceAtual] = useState(0);
@@ -12,12 +14,12 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
 
   // Função para avançar slide
   const proximoSlide = useCallback(() => {
-    setIndiceAtual((atual) => (atual + 1) % itens.length);
+    setIndiceAtual((atual) => (atual + 1) % (itens.length || 1));
   }, [itens.length]);
 
   // Função para voltar slide
   const slideAnterior = useCallback(() => {
-    setIndiceAtual((atual) => (atual - 1 + itens.length) % itens.length);
+    setIndiceAtual((atual) => (atual - 1 + itens.length) % (itens.length || 1));
   }, [itens.length]);
 
   // Auto-play
@@ -38,16 +40,6 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
     );
   }
 
-  // Traduzir status para tag
-  const tagStatus = (status) => {
-    const mapa = {
-      EM_CARTAZ: { classe: 'tag-em-cartaz', texto: 'Em Cartaz' },
-      ENCERRADA: { classe: 'tag-encerrada', texto: 'Encerrada' },
-      PROGRAMADA: { classe: 'tag-programada', texto: 'Programada' },
-    };
-    return mapa[status] || mapa.PROGRAMADA;
-  };
-
   return (
     <div
       className="carrossel"
@@ -60,7 +52,7 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
       >
         {itens.map((item, i) => {
           const fotoUrl = getMediaUrl(item.fotos?.[0]?.url);
-          const tag = tagStatus(item.status);
+          const tag = getTag(item.status);
 
           return (
             <div className="carrossel-slide" key={item.id || i}>
@@ -127,7 +119,7 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
         })}
       </div>
 
-      {/* Controles de Navegação (Barra Inferior Externa da Arte) */}
+      {/* Controles de Navegação */}
       {itens.length > 1 && (
         <div className="carrossel-controles">
           <button

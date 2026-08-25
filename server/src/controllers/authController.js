@@ -1,88 +1,28 @@
 // =============================================================================
 // Controller de Autenticação
-// Gerencia login e verificação de token do admin
+// Gerencia requisições HTTP e delega para AuthService (SOLID - Single Responsibility)
 // =============================================================================
 
-const prisma = require('../lib/prisma');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { validarLogin } = require('../validators/authValidator');
+const AuthService = require('../services/authService');
 
 // POST /api/auth/login — Login do administrador
-async function login(req, res) {
+async function login(req, res, next) {
   try {
     const { email, senha } = req.body;
-
-    // Validação via validator
-    const validacao = validarLogin({ email, senha });
-    if (!validacao.valido) {
-      return res.status(400).json({ erro: true, mensagem: validacao.mensagem });
-    }
-
-    // Buscar usuário pelo email
-    const usuario = await prisma.usuario.findUnique({
-      where: { email },
-    });
-
-    if (!usuario) {
-      return res.status(401).json({
-        erro: true,
-        mensagem: 'Email ou senha incorretos',
-      });
-    }
-
-    // Verificar senha
-    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
-    if (!senhaCorreta) {
-      return res.status(401).json({
-        erro: true,
-        mensagem: 'Email ou senha incorretos',
-      });
-    }
-
-    // Gerar token JWT (expira em 24 horas)
-    const token = jwt.sign(
-      {
-        id: usuario.id,
-        email: usuario.email,
-        nome: usuario.nome,
-        papel: usuario.papel,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.json({
-      token,
-      usuario: {
-        id: usuario.id,
-        email: usuario.email,
-        nome: usuario.nome,
-        papel: usuario.papel,
-      },
-    });
+    const resultado = await AuthService.login({ email, senha });
+    res.json(resultado);
   } catch (erro) {
-    console.error('Erro no login:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro interno do servidor' });
+    next(erro);
   }
 }
 
 // GET /api/auth/me — Retorna dados do usuário autenticado
-async function buscarPerfil(req, res) {
+async function buscarPerfil(req, res, next) {
   try {
-    const usuario = await prisma.usuario.findUnique({
-      where: { id: req.usuario.id },
-      select: { id: true, email: true, nome: true, papel: true, criadoEm: true },
-    });
-
-    if (!usuario) {
-      return res.status(404).json({ erro: true, mensagem: 'Usuário não encontrado' });
-    }
-
+    const usuario = await AuthService.buscarPerfil(req.usuario.id);
     res.json(usuario);
   } catch (erro) {
-    console.error('Erro ao buscar perfil:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro interno do servidor' });
+    next(erro);
   }
 }
 

@@ -1,243 +1,84 @@
 // =============================================================================
 // Controller de Peças de Teatro
-// Single Responsibility: apenas CRUD de peças + alocação de colaboradores
-// Fotos → fotosController.js | Locais → locaisController.js
+// Single Responsibility: mapeamento HTTP/REST delegando para PecaService
 // =============================================================================
 
-const prisma = require('../lib/prisma');
-const fs = require('fs');
-const path = require('path');
-const { validarCriacaoPeca, validarAlocacao } = require('../validators/pecaValidator');
+const PecaService = require('../services/pecaService');
 
 // GET /api/pecas — Listar todas as peças (com filtros)
-async function listarPecas(req, res) {
+async function listarPecas(req, res, next) {
   try {
-    const { status, busca, cidade, pagina = 1, limite = 20 } = req.query;
-
-    // Montar filtros dinâmicos
-    const where = {};
-
-    if (status) {
-      where.status = status;
-    }
-
-    if (busca) {
-      where.OR = [
-        { titulo: { contains: busca, mode: 'insensitive' } },
-        { resumo: { contains: busca, mode: 'insensitive' } },
-        { endereco: { contains: busca, mode: 'insensitive' } },
-        { locais: { some: { OR: [{ cidade: { contains: busca, mode: 'insensitive' } }, { nomeLocal: { contains: busca, mode: 'insensitive' } }, { endereco: { contains: busca, mode: 'insensitive' } }] } } },
-      ];
-    }
-
-    if (cidade) {
-      where.locais = { some: { cidade: { contains: cidade, mode: 'insensitive' } } };
-    }
-
-    const [pecas, total] = await Promise.all([
-      prisma.peca.findMany({
-        where,
-        include: {
-          fotos: { orderBy: { ordem: 'asc' }, take: 1 }, // Só a primeira foto para o card
-          locais: { orderBy: { dataEstreia: 'asc' } },
-          _count: { select: { colaboradores: true } },
-        },
-        orderBy: { criadoEm: 'desc' },
-        skip: (parseInt(pagina) - 1) * parseInt(limite),
-        take: parseInt(limite),
-      }),
-      prisma.peca.count({ where }),
-    ]);
-
-    res.json({
-      pecas,
-      total,
-      pagina: parseInt(pagina),
-      totalPaginas: Math.ceil(total / parseInt(limite)),
-    });
+    const { status, busca, cidade, pagina, limite } = req.query;
+    const resultado = await PecaService.listar({ status, busca, cidade, pagina, limite });
+    res.json(resultado);
   } catch (erro) {
-    console.error('Erro ao listar peças:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao listar peças' });
+    next(erro);
   }
 }
 
-// GET /api/pecas/:id — Detalhes de uma peça (com colaboradores, fotos e locais)
-async function buscarPeca(req, res) {
+// GET /api/pecas/:id — Detalhes de uma peça
+async function buscarPeca(req, res, next) {
   try {
-    const { id } = req.params;
-
-    const peca = await prisma.peca.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        fotos: { orderBy: { ordem: 'asc' } },
-        locais: { orderBy: { dataEstreia: 'asc' } },
-        colaboradores: {
-          include: {
-            colaborador: true,
-          },
-          orderBy: { funcaoNaPeca: 'asc' },
-        },
-      },
-    });
-
-    if (!peca) {
-      return res.status(404).json({ erro: true, mensagem: 'Peça não encontrada' });
-    }
-
+    const id = req.params.idNum || parseInt(req.params.id, 10);
+    const peca = await PecaService.buscarPorId(id);
     res.json(peca);
   } catch (erro) {
-    console.error('Erro ao buscar peça:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao buscar peça' });
+    next(erro);
   }
 }
 
 // POST /api/pecas — Criar nova peça (admin only)
-async function criarPeca(req, res) {
+async function criarPeca(req, res, next) {
   try {
-    const { titulo, resumo, endereco, latitude, longitude, dataEstreia, status } = req.body;
-
-    // Validação via validator
-    const validacao = validarCriacaoPeca({ titulo, resumo, endereco });
-    if (!validacao.valido) {
-      return res.status(400).json({ erro: true, mensagem: validacao.mensagem });
-    }
-
-    const peca = await prisma.peca.create({
-      data: {
-        titulo,
-        resumo,
-        endereco,
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
-        dataEstreia: dataEstreia || null,
-        status: status || 'PROGRAMADA',
-      },
-    });
-
+    const peca = await PecaService.criar(req.body);
     res.status(201).json(peca);
   } catch (erro) {
-    console.error('Erro ao criar peça:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao criar peça' });
+    next(erro);
   }
 }
 
 // PUT /api/pecas/:id — Atualizar peça (admin only)
-async function atualizarPeca(req, res) {
+async function atualizarPeca(req, res, next) {
   try {
-    const { id } = req.params;
-    const { titulo, resumo, endereco, latitude, longitude, dataEstreia, status } = req.body;
-
-    const peca = await prisma.peca.update({
-      where: { id: parseInt(id) },
-      data: {
-        ...(titulo && { titulo }),
-        ...(resumo && { resumo }),
-        ...(endereco && { endereco }),
-        ...(latitude !== undefined && { latitude: latitude ? parseFloat(latitude) : null }),
-        ...(longitude !== undefined && { longitude: longitude ? parseFloat(longitude) : null }),
-        ...(dataEstreia !== undefined && { dataEstreia }),
-        ...(status && { status }),
-      },
-    });
-
+    const id = req.params.idNum || parseInt(req.params.id, 10);
+    const peca = await PecaService.atualizar(id, req.body);
     res.json(peca);
   } catch (erro) {
-    console.error('Erro ao atualizar peça:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao atualizar peça' });
+    next(erro);
   }
 }
 
 // DELETE /api/pecas/:id — Deletar peça (admin only)
-async function deletarPeca(req, res) {
+async function deletarPeca(req, res, next) {
   try {
-    const { id } = req.params;
-
-    // Buscar fotos para deletar os arquivos
-    const fotos = await prisma.fotoPeca.findMany({
-      where: { pecaId: parseInt(id) },
-    });
-
-    // Deletar arquivos de fotos do disco
-    for (const foto of fotos) {
-      const caminhoArquivo = path.join(__dirname, '..', '..', foto.url);
-      if (fs.existsSync(caminhoArquivo)) {
-        fs.unlinkSync(caminhoArquivo);
-      }
-    }
-
-    await prisma.peca.delete({
-      where: { id: parseInt(id) },
-    });
-
-    res.json({ mensagem: 'Peça deletada com sucesso' });
+    const id = req.params.idNum || parseInt(req.params.id, 10);
+    const resultado = await PecaService.deletar(id);
+    res.json(resultado);
   } catch (erro) {
-    console.error('Erro ao deletar peça:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao deletar peça' });
+    next(erro);
   }
 }
 
 // POST /api/pecas/:id/colaboradores — Alocar colaborador à peça (admin only)
-async function alocarColaborador(req, res) {
+async function alocarColaborador(req, res, next) {
   try {
-    const { id } = req.params;
-    const { colaboradorId, funcaoNaPeca } = req.body;
-
-    const validacao = validarAlocacao({ colaboradorId, funcaoNaPeca });
-    if (!validacao.valido) {
-      return res.status(400).json({ erro: true, mensagem: validacao.mensagem });
-    }
-
-    // Verificar se já existe alocação
-    const existente = await prisma.pecaColaborador.findUnique({
-      where: {
-        pecaId_colaboradorId: {
-          pecaId: parseInt(id),
-          colaboradorId: parseInt(colaboradorId),
-        },
-      },
-    });
-
-    if (existente) {
-      return res.status(409).json({
-        erro: true,
-        mensagem: 'Este colaborador já está alocado nesta peça',
-      });
-    }
-
-    const alocacao = await prisma.pecaColaborador.create({
-      data: {
-        pecaId: parseInt(id),
-        colaboradorId: parseInt(colaboradorId),
-        funcaoNaPeca,
-      },
-      include: { colaborador: true },
-    });
-
+    const id = req.params.idNum || parseInt(req.params.id, 10);
+    const alocacao = await PecaService.alocarColaborador(id, req.body);
     res.status(201).json(alocacao);
   } catch (erro) {
-    console.error('Erro ao alocar colaborador:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao alocar colaborador' });
+    next(erro);
   }
 }
 
 // DELETE /api/pecas/:id/colaboradores/:colabId — Remover colaborador da peça
-async function removerColaborador(req, res) {
+async function removerColaborador(req, res, next) {
   try {
-    const { id, colabId } = req.params;
-
-    await prisma.pecaColaborador.delete({
-      where: {
-        pecaId_colaboradorId: {
-          pecaId: parseInt(id),
-          colaboradorId: parseInt(colabId),
-        },
-      },
-    });
-
-    res.json({ mensagem: 'Colaborador removido da peça com sucesso' });
+    const pecaId = req.params.idNum || parseInt(req.params.id, 10);
+    const colabId = req.params.colabIdNum || parseInt(req.params.colabId, 10);
+    const resultado = await PecaService.removerColaborador(pecaId, colabId);
+    res.json(resultado);
   } catch (erro) {
-    console.error('Erro ao remover colaborador:', erro);
-    res.status(500).json({ erro: true, mensagem: 'Erro ao remover colaborador' });
+    next(erro);
   }
 }
 

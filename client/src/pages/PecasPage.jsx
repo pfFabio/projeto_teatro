@@ -1,8 +1,9 @@
 // =============================================================================
 // Página de Peças — Listagem com filtros e busca
+// Otimizado com useCallback e dependências controladas
 // =============================================================================
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { pecasAPI, getMediaUrl } from '../services/api';
 import { getTag, statusFiltros } from '../constants/statusPeca';
@@ -15,25 +16,15 @@ export default function PecasPage() {
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
 
-  useEffect(() => {
-    carregarPecas();
-  }, [filtroStatus, pagina]);
-
-  // Debounce para busca
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPagina(1);
-      carregarPecas();
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [busca]);
-
-  async function carregarPecas() {
+  const carregarPecas = useCallback(async (paramsBusca) => {
     try {
       setCarregando(true);
-      const params = { pagina, limite: 12 };
-      if (filtroStatus) params.status = filtroStatus;
-      if (busca) params.busca = busca;
+      const params = {
+        pagina: paramsBusca.pagina,
+        limite: 12,
+        ...(paramsBusca.status ? { status: paramsBusca.status } : {}),
+        ...(paramsBusca.busca ? { busca: paramsBusca.busca } : {}),
+      };
 
       const res = await pecasAPI.listar(params);
       setPecas(res.data.pecas || []);
@@ -43,9 +34,22 @@ export default function PecasPage() {
     } finally {
       setCarregando(false);
     }
-  }
+  }, []);
 
-  // statusFiltros e getTag importados de constants/statusPeca
+  // Efeito para recarregar quando status ou página mudam
+  useEffect(() => {
+    carregarPecas({ pagina, status: filtroStatus, busca });
+  }, [filtroStatus, pagina, carregarPecas]);
+
+  // Debounce para busca
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPagina(1);
+      carregarPecas({ pagina: 1, status: filtroStatus, busca });
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [busca, filtroStatus, carregarPecas]);
 
   return (
     <div className="pagina-conteudo">
@@ -68,7 +72,10 @@ export default function PecasPage() {
             <button
               key={filtro.valor}
               className={`filtro-chip ${filtroStatus === filtro.valor ? 'ativo' : ''}`}
-              onClick={() => { setFiltroStatus(filtro.valor); setPagina(1); }}
+              onClick={() => {
+                setFiltroStatus(filtro.valor);
+                setPagina(1);
+              }}
             >
               {filtro.texto}
             </button>
@@ -90,7 +97,11 @@ export default function PecasPage() {
             <button
               className="btn btn-fantasma"
               style={{ marginTop: '16px' }}
-              onClick={() => { setBusca(''); setFiltroStatus(''); }}
+              onClick={() => {
+                setBusca('');
+                setFiltroStatus('');
+                setPagina(1);
+              }}
             >
               Limpar filtros
             </button>

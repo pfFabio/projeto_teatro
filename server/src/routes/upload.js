@@ -1,17 +1,17 @@
 // =============================================================================
-// Rotas de Upload genérico
-// Para uploads que não pertencem a uma entidade específica
+// Rotas de Upload Genérico
 // =============================================================================
 
 const express = require('express');
 const router = express.Router();
 const { autenticar, apenasAdmin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const AppError = require('../errors/AppError');
 
 // POST /api/upload — Upload genérico de arquivo (admin only)
-router.post('/', autenticar, apenasAdmin, upload.single('arquivo'), (req, res) => {
+router.post('/', autenticar, apenasAdmin, upload.single('arquivo'), (req, res, next) => {
   if (!req.file) {
-    return res.status(400).json({ erro: true, mensagem: 'Nenhum arquivo enviado' });
+    return next(AppError.badRequest('Nenhum arquivo enviado'));
   }
 
   res.status(201).json({

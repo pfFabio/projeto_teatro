@@ -1,13 +1,17 @@
 // =============================================================================
 // Theatrum — Configuração do Express App
-// Separado do index.js para permitir testes com supertest
+// Segurança (Helmet, Rate Limit), CORS, Middlewares e Global Error Handler
 // =============================================================================
-
-require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
+
+const { ENV } = require('./config/env');
+const logger = require('./lib/logger');
+const AppError = require('./errors/AppError');
 
 const rotasAuth = require('./routes/auth');
 const rotasPecas = require('./routes/pecas');
@@ -18,24 +22,69 @@ const rotasUpload = require('./routes/upload');
 const app = express();
 
 // =============================================================================
-// Middlewares globais
+// Middlewares de Segurança
 // =============================================================================
 
-// CORS — permite requisições do frontend em dev e prod
+// Helmet — Proteção de headers HTTP
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' }, // Permite servir imagens/vídeos de /uploads
+  })
+);
+
+// Rate Limiter Geral — Prevenção contra DoS
+const limiterGeral = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 500, // Limite de 500 requisições por janela por IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    erro: true,
+    mensagem: 'Muitas requisições originadas deste IP. Tente novamente em alguns minutos.',
+  },
+});
+app.use('/api', limiterGeral);
+
+// Rate Limiter Específico para Login — Prevenção contra Brute Force (ISO 25010 - Segurança)
+const limiterLogin = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 20, // Máximo 20 tentativas de login por IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    erro: true,
+    mensagem: 'Muitas tentativas de login consecutivas. Por segurança, tente novamente em 15 minutos.',
+  },
+});
+app.use('/api/auth/login', limiterLogin);
+
+// =============================================================================
+// Middlewares de Parsing e CORS
+// =============================================================================
+
 const origensPermitidas = [
   'http://localhost:5173',
   'http://localhost:3000',
-  process.env.CLIENT_URL,
+  ENV.CLIENT_URL,
 ].filter(Boolean);
 
-app.use(cors({
-  origin: process.env.CLIENT_URL ? origensPermitidas : true,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Permite requisições sem origin (como mobile apps, curl, postman) em desenvolvimento
+      if (!origin || origensPermitidas.length === 0 || origensPermitidas.includes(origin) || ENV.NODE_ENV !== 'production') {
+        callback(null, true);
+      } else {
+        callback(new AppError('Bloqueado pelas políticas de CORS', 403));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // Parse de JSON no body
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Servir arquivos estáticos (imagens e vídeos enviados)
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
@@ -51,17 +100,36 @@ app.use('/api/upload', rotasUpload);
 
 // Rota de health check
 app.get('/api/saude', (req, res) => {
-  res.json({ status: 'ok', mensagem: '🎭 Theatrum API está funcionando!' });
+  res.json({
+    status: 'ok',
+    mensagem: '🎭 Theatrum API está funcionando!',
+    ambiente: ENV.NODE_ENV,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Rota 404 para endpoints da API não encontrados
+app.use('/api/*', (req, res, next) => {
+  next(AppError.notFound(`Endpoint '${req.originalUrl}' não encontrado`));
 });
 
 // =============================================================================
-// Tratamento de erros global
+// Tratamento de Erros Global (ISO 25010 - Confiabilidade e Robustez)
 // =============================================================================
 app.use((erro, req, res, next) => {
-  console.error('❌ Erro:', erro.message);
-  res.status(erro.status || 500).json({
+  const statusCode = erro.statusCode || (erro.status ? erro.status : 500);
+  const mensagem = erro.message || 'Erro interno do servidor';
+
+  if (statusCode >= 500) {
+    logger.error(`❌ [${req.method} ${req.originalUrl}] Erro não tratado:`, erro.stack || erro.message);
+  } else {
+    logger.warn(`⚠️ [${req.method} ${req.originalUrl}] ${statusCode} - ${mensagem}`);
+  }
+
+  res.status(statusCode).json({
     erro: true,
-    mensagem: erro.message || 'Erro interno do servidor',
+    mensagem: statusCode >= 500 && ENV.NODE_ENV === 'production' ? 'Ocorreu um erro interno no servidor.' : mensagem,
+    ...(erro.detalhes ? { detalhes: erro.detalhes } : {}),
   });
 });
 

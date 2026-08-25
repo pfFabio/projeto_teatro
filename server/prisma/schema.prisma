@@ -17,12 +17,13 @@ datasource db {
 // Usuário administrador do sistema
 // =============================================================================
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  senha     String   // Hash bcrypt
-  nome      String
-  papel     String   @default("ADMIN") // Apenas ADMIN por enquanto
-  criadoEm  DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  senha        String   // Hash bcrypt
+  nome         String
+  papel        String   @default("ADMIN") // Apenas ADMIN por enquanto
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 
   @@map("usuarios")
 }
@@ -32,19 +33,20 @@ model Usuario {
 // Cadastrado via formulário público (sem autenticação)
 // =============================================================================
 model Colaborador {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  funcao    String   // Ator, Diretor, Técnico de Som, etc.
-  idade     Int
-  celular   String
-  email     String   @unique
-  endereco  String
-  genero    String   // Masculino, Feminino, Não-binário, Prefiro não dizer
-  fotoUrl   String?  // Caminho da foto enviada
-  criadoEm  DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  nome         String
+  funcao       String   // Ator, Diretor, Técnico de Som, etc.
+  idade        Int
+  celular      String
+  email        String   @unique
+  endereco     String
+  genero       String   // Masculino, Feminino, Não-binário, Prefiro não dizer
+  fotoUrl      String?  // Caminho da foto enviada
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 
   // Relação N:N com Peças (via tabela intermediária)
-  pecas     PecaColaborador[]
+  pecas        PecaColaborador[]
 
   @@map("colaboradores")
 }
@@ -53,15 +55,16 @@ model Colaborador {
 // Peça de teatro
 // =============================================================================
 model Peca {
-  id          Int      @id @default(autoincrement())
-  titulo      String
-  resumo      String
-  endereco    String   @default("") // Endereço principal/legado
-  latitude    Float?   // Para o mapa Leaflet
-  longitude   Float?   // Para o mapa Leaflet
-  dataEstreia String?  // Formato: "YYYY-MM-DD"
-  status      String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA
-  criadoEm    DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  titulo       String
+  resumo       String
+  endereco     String   @default("") // Endereço principal/legado
+  latitude     Float?   // Para o mapa Leaflet
+  longitude    Float?   // Para o mapa Leaflet
+  dataEstreia  String?  // Formato: "YYYY-MM-DD"
+  status       String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 
   // Relacionamentos
   fotos         FotoPeca[]
@@ -76,20 +79,21 @@ model Peca {
 // Permite que a mesma peça estreie em múltiplos teatros/cidades com datas próprias
 // =============================================================================
 model LocalPeca {
-  id          Int      @id @default(autoincrement())
-  pecaId      Int
-  nomeLocal   String   // Ex: "Theatro Municipal de Niterói", "Teatro Riachuelo"
-  cidade      String   // Ex: "Niterói, RJ", "Rio de Janeiro, RJ"
-  endereco    String   // Ex: "Rua Quinze de Novembro, 35 - Centro"
-  latitude    Float?   // Para o mapa Leaflet
-  longitude   Float?   // Para o mapa Leaflet
-  dataEstreia String?  // "YYYY-MM-DD"
-  dataFim     String?  // "YYYY-MM-DD" opcional
-  horario     String?  // Ex: "Sexta e Sábado às 20h, Domingo às 18h"
-  status      String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA
-  criadoEm    DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  pecaId       Int
+  nomeLocal    String   // Ex: "Theatro Municipal de Niterói", "Teatro Riachuelo"
+  cidade       String   // Ex: "Niterói, RJ", "Rio de Janeiro, RJ"
+  endereco     String   // Ex: "Rua Quinze de Novembro, 35 - Centro"
+  latitude     Float?   // Para o mapa Leaflet
+  longitude    Float?   // Para o mapa Leaflet
+  dataEstreia  String?  // "YYYY-MM-DD"
+  dataFim      String?  // "YYYY-MM-DD" opcional
+  horario      String?  // Ex: "Sexta e Sábado às 20h, Domingo às 18h"
+  status       String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 
-  peca        Peca     @relation(fields: [pecaId], references: [id], onDelete: Cascade)
+  peca         Peca     @relation(fields: [pecaId], references: [id], onDelete: Cascade)
 
   @@map("locais_pecas")
 }
@@ -103,6 +107,8 @@ model PecaColaborador {
   pecaId         Int
   colaboradorId  Int
   funcaoNaPeca   String      // Ex: "Ator Principal", "Figurinista", "Iluminação"
+  criadoEm       DateTime    @default(now())
+  atualizadoEm   DateTime    @updatedAt
 
   peca           Peca        @relation(fields: [pecaId], references: [id], onDelete: Cascade)
   colaborador    Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
@@ -115,14 +121,16 @@ model PecaColaborador {
 // Fotos e vídeos das peças
 // =============================================================================
 model FotoPeca {
-  id        Int    @id @default(autoincrement())
-  pecaId    Int
-  url       String // Caminho do arquivo
-  descricao String @default("")
-  tipo      String @default("IMAGEM") // IMAGEM | VIDEO
-  ordem     Int    @default(0)
+  id           Int      @id @default(autoincrement())
+  pecaId       Int
+  url          String   // Caminho do arquivo
+  descricao    String   @default("")
+  tipo         String   @default("IMAGEM") // IMAGEM | VIDEO
+  ordem        Int      @default(0)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 
-  peca      Peca   @relation(fields: [pecaId], references: [id], onDelete: Cascade)
+  peca         Peca     @relation(fields: [pecaId], references: [id], onDelete: Cascade)
 
   @@map("fotos_pecas")
 }
@@ -131,10 +139,12 @@ model FotoPeca {
 // Configurações customizáveis do site (editáveis pelo admin)
 // =============================================================================
 model ConfigSite {
-  id    Int    @id @default(autoincrement())
-  chave String @unique // Ex: "titulo_site", "propaganda_texto", "propaganda_imagem"
-  valor String
-  tipo  String @default("TEXT") // TEXT | IMAGE | HTML | VIDEO
+  id           Int      @id @default(autoincrement())
+  chave        String   @unique // Ex: "titulo_site", "propaganda_texto", "propaganda_imagem"
+  valor        String
+  tipo         String   @default("TEXT") // TEXT | IMAGE | HTML | VIDEO
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 
   @@map("config_site")
 }

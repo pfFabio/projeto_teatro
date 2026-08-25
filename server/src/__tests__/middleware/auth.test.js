@@ -3,10 +3,8 @@
 // =============================================================================
 
 const jwt = require('jsonwebtoken');
-const { autenticar, apenasAdmin } = require('../../middleware/auth');
-
-// Mock do process.env
-process.env.JWT_SECRET = 'segredo-teste';
+const { autenticar, apenasAdmin, autenticarOpcional } = require('../../middleware/auth');
+const { ENV } = require('../../config/env');
 
 // Helper para criar mocks de req/res/next
 function criarMocks(headers = {}) {
@@ -23,16 +21,15 @@ function criarMocks(headers = {}) {
 }
 
 describe('autenticar', () => {
-  test('deve rejeitar sem header Authorization', () => {
+  test('deve rejeitar sem header Authorization chamando next(AppError 401)', () => {
     const { req, res, next } = criarMocks({});
 
     autenticar(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ erro: true, mensagem: expect.stringContaining('Token') })
-    );
-    expect(next).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    const erro = next.mock.calls[0][0];
+    expect(erro.statusCode).toBe(401);
+    expect(erro.message).toContain('Token');
   });
 
   test('deve rejeitar sem prefixo Bearer', () => {
@@ -40,8 +37,9 @@ describe('autenticar', () => {
 
     autenticar(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(next).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    const erro = next.mock.calls[0][0];
+    expect(erro.statusCode).toBe(401);
   });
 
   test('deve rejeitar com token inválido', () => {
@@ -49,43 +47,47 @@ describe('autenticar', () => {
 
     autenticar(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ mensagem: expect.stringContaining('inválido') })
-    );
-    expect(next).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    const erro = next.mock.calls[0][0];
+    expect(erro.statusCode).toBe(401);
+    expect(erro.message).toContain('inválido');
   });
 
   test('deve aceitar token válido e popular req.usuario', () => {
     const payload = { id: 1, email: 'admin@theatrum.com', nome: 'Admin', papel: 'ADMIN' };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, ENV.JWT_SECRET, { expiresIn: '1h' });
     const { req, res, next } = criarMocks({ authorization: `Bearer ${token}` });
 
     autenticar(req, res, next);
 
-    expect(next).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith();
     expect(req.usuario).toBeDefined();
     expect(req.usuario.id).toBe(1);
     expect(req.usuario.email).toBe('admin@theatrum.com');
     expect(req.usuario.papel).toBe('ADMIN');
   });
+});
 
-  test('deve rejeitar token expirado', () => {
-    const payload = { id: 1, email: 'admin@theatrum.com', nome: 'Admin', papel: 'ADMIN' };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '0s' });
-
-    // Aguardar 1 segundo para o token expirar
+describe('autenticarOpcional', () => {
+  test('deve popular req.usuario se token válido fornecido', () => {
+    const payload = { id: 2, email: 'admin@theatrum.com', papel: 'ADMIN' };
+    const token = jwt.sign(payload, ENV.JWT_SECRET, { expiresIn: '1h' });
     const { req, res, next } = criarMocks({ authorization: `Bearer ${token}` });
 
-    // Forçar expiração
-    jest.useFakeTimers();
-    jest.advanceTimersByTime(2000);
-    jest.useRealTimers();
+    autenticarOpcional(req, res, next);
 
-    autenticar(req, res, next);
+    expect(next).toHaveBeenCalledWith();
+    expect(req.usuario).toBeDefined();
+    expect(req.usuario.id).toBe(2);
+  });
 
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(next).not.toHaveBeenCalled();
+  test('deve continuar sem erro se nenhum token for fornecido', () => {
+    const { req, res, next } = criarMocks({});
+
+    autenticarOpcional(req, res, next);
+
+    expect(next).toHaveBeenCalledWith();
+    expect(req.usuario).toBeNull();
   });
 });
 
@@ -96,39 +98,39 @@ describe('apenasAdmin', () => {
 
     apenasAdmin(req, res, next);
 
-    expect(next).toHaveBeenCalled();
-    expect(res.status).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith();
   });
 
-  test('deve rejeitar acesso para não-ADMIN', () => {
+  test('deve rejeitar acesso para não-ADMIN com AppError 403', () => {
     const { req, res, next } = criarMocks();
     req.usuario = { id: 1, papel: 'USUARIO' };
 
     apenasAdmin(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ mensagem: expect.stringContaining('administradores') })
-    );
-    expect(next).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    const erro = next.mock.calls[0][0];
+    expect(erro.statusCode).toBe(403);
+    expect(erro.message).toContain('administradores');
   });
 
-  test('deve rejeitar quando req.usuario é null', () => {
+  test('deve rejeitar quando req.usuario é null com AppError 403', () => {
     const { req, res, next } = criarMocks();
     req.usuario = null;
 
     apenasAdmin(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(next).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    const erro = next.mock.calls[0][0];
+    expect(erro.statusCode).toBe(403);
   });
 
-  test('deve rejeitar quando req.usuario é undefined', () => {
+  test('deve rejeitar quando req.usuario é undefined com AppError 403', () => {
     const { req, res, next } = criarMocks();
 
     apenasAdmin(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(next).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    const erro = next.mock.calls[0][0];
+    expect(erro.statusCode).toBe(403);
   });
 });
