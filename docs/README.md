@@ -1,257 +1,478 @@
-# 🎭 Theatrum — Sistema de Gestão de Teatro
+# 🎭 Theatrum — Sistema de Gestão de Peças de Teatro
 
-Sistema web full-stack para gestão de peças de teatro, com múltiplos níveis de acesso, CRUD completo, integração com mapas e documentação minuciosa.
-
-> **Projeto Acadêmico** — Desenvolvido com custo zero utilizando tecnologias open-source.
+> Projeto acadêmico full-stack para cadastro, gestão e divulgação de peças de teatro, seus colaboradores e locais de apresentação.
 
 ---
 
-## 📋 Índice
+## Sumário
 
 - [Visão Geral](#visão-geral)
-- [Stack Tecnológica](#stack-tecnológica)
-- [Funcionalidades](#funcionalidades)
-- [Instalação](#instalação)
-- [Uso](#uso)
+- [Tecnologias](#tecnologias)
+- [Pré-requisitos](#pré-requisitos)
+- [Como Rodar Localmente](#como-rodar-localmente)
 - [Estrutura do Projeto](#estrutura-do-projeto)
-- [API REST](#api-rest)
+- [Arquitetura](#arquitetura)
 - [Banco de Dados](#banco-de-dados)
-- [Deploy](#deploy)
-- [Documentação Adicional](#documentação-adicional)
+- [API REST — Endpoints](#api-rest--endpoints)
+- [Autenticação](#autenticação)
+- [Sistema de Uploads](#sistema-de-uploads)
+- [Deploy em Produção](#deploy-em-produção)
+- [Testes](#testes)
+- [Credenciais Padrão](#credenciais-padrão)
 
 ---
 
-## 🎯 Visão Geral
+## Visão Geral
 
-O **Theatrum** é uma plataforma web que conecta artistas, técnicos e público no mundo do teatro. O sistema permite:
+O **Theatrum** permite que um administrador gerencie peças teatrais (com fotos, vídeos, locais de apresentação e elenco), enquanto o público pode navegar por essas informações em uma interface moderna com mapa interativo. Colaboradores (atores, técnicos, diretores) podem se cadastrar pelo próprio site.
 
-- **Público**: Visualizar peças em cartaz, detalhes com mapa, elenco e galeria
-- **Colaboradores**: Cadastrar-se como parte da equipe técnica/artística
-- **Administradores**: Gerenciar peças, colaboradores, alocações e conteúdo do site
+### Funcionalidades Principais
 
-### Arquitetura
-
-```
-┌─────────────────┐     HTTP/REST      ┌─────────────────┐     Prisma ORM     ┌──────────────┐
-│   Frontend      │ ←───────────────→  │   Backend       │ ←───────────────→  │  Banco de    │
-│   React + Vite  │                    │   Express.js    │                    │  Dados       │
-│   Port: 5173    │                    │   Port: 3001    │                    │  SQLite/MySQL│
-└─────────────────┘                    └─────────────────┘                    └──────────────┘
-```
-
----
-
-## 🛠 Stack Tecnológica
-
-| Camada | Tecnologia | Versão | Justificativa |
-|:---|:---|:---|:---|
-| Frontend | React | 19.x | Biblioteca UI mais popular do mercado |
-| Bundler | Vite | 8.x | Build rápido, HMR instantâneo |
-| Roteamento | React Router | 7.x | SPA com múltiplas páginas |
-| HTTP Client | Axios | 1.x | Interceptors, transformações automáticas |
-| Backend | Express.js | 4.x | Framework web minimalista e robusto |
-| ORM | Prisma | 6.x | Type-safe, migrations, troca de DB fácil |
-| Banco de Dados | SQLite / MySQL | - | SQLite para dev, MySQL para produção |
-| Autenticação | JWT + bcrypt | - | Stateless, seguro, sem custo |
-| Upload | Multer | 1.x | Upload de arquivos para disco local |
-| Mapas | Leaflet | 1.9.x | 100% gratuito, OpenStreetMap |
-| Estilização | CSS Vanilla | - | Controle total, sem dependências |
-| Tipografia | Google Fonts | - | Playfair Display + Inter |
+| Funcionalidade | Acesso |
+|---|---|
+| Listagem e detalhes de peças | Público |
+| Mapa interativo com locais de apresentação (Leaflet) | Público |
+| Cadastro de colaborador (ator, técnico, etc.) | Público |
+| Galeria de fotos e vídeos das peças | Público |
+| Painel administrativo completo (CRUD de peças, colaboradores, alocações) | Admin |
+| Upload de fotos/vídeos para peças e colaboradores | Admin |
+| Configurações editáveis do site (título, propaganda, contato) | Admin |
+| Gerenciamento de locais e datas de apresentação | Admin |
 
 ---
 
-## ✨ Funcionalidades
+## Tecnologias
 
-### 👤 Acesso Público
-- ✅ Carrossel de peças na página inicial
-- ✅ Seção de propaganda de aulas de teatro
-- ✅ Listagem de peças com filtros e busca
-- ✅ Detalhes da peça com sinopse, galeria (fotos + vídeos), mapa e elenco
-- ✅ Mapa interativo com Leaflet/OpenStreetMap
+### Frontend (SPA)
+- **React 19** + **Vite 7** (com lazy loading por rota)
+- **React Router 7** (SPA com `BrowserRouter`)
+- **Axios** (chamadas HTTP)
+- **Leaflet + React-Leaflet** (mapas interativos)
+- **CSS puro** (sem frameworks CSS — design com glassmorphism e gradientes)
+- **GitHub Pages** (hospedagem via branch `gh-pages`)
 
-### 🎭 Acesso Colaborador
-- ✅ Formulário de cadastro completo (nome, função, idade, celular, email, endereço, gênero)
-- ✅ Upload de foto pessoal com preview
-- ✅ Confirmação visual de cadastro
-
-### 🔐 Acesso Admin
-- ✅ Login seguro com email/senha (JWT)
-- ✅ Dashboard com estatísticas
-- ✅ CRUD completo de peças (criar, editar, deletar)
-- ✅ CRUD completo de colaboradores (visualizar, editar, deletar)
-- ✅ Sistema de alocação de colaboradores por peça
-- ✅ Filtros avançados (por função, gênero, status, busca textual)
-- ✅ Editor de configurações do site (textos, propaganda)
+### Backend (API REST)
+- **Node.js** + **Express 4**
+- **Prisma ORM** (com PostgreSQL)
+- **JWT** (autenticação)
+- **Bcrypt** (hash de senhas)
+- **Multer** (upload de arquivos em memória)
+- **Helmet** (segurança de headers)
+- **express-rate-limit** (proteção contra DoS/brute force)
+- **Render.com** (hospedagem — Web Service + PostgreSQL)
 
 ---
 
-## 🚀 Instalação
+## Pré-requisitos
 
-### Pré-requisitos
+- **Node.js** ≥ 18
+- **npm** ≥ 9
+- **PostgreSQL** rodando localmente (ou string de conexão remota)
 
-- **Node.js** v18+ ([download](https://nodejs.org))
-- **npm** v9+ (incluído com Node.js)
+---
 
-### Passo a passo
+## Como Rodar Localmente
+
+### 1. Clonar e instalar dependências
 
 ```bash
-# 1. Clonar o repositório
-git clone <url-do-repositorio>
-cd theatrum
-
-# 2. Instalar todas as dependências (raiz, server e client)
+git clone https://github.com/pfFabio/projeto_teatro.git
+cd projeto_teatro
 npm run install:all
+```
 
-# 3. Configurar o banco de dados (migration + seed)
+### 2. Configurar variáveis de ambiente
+
+Crie o arquivo `server/.env`:
+
+```env
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/theatrum"
+JWT_SECRET="uma-chave-secreta-qualquer-com-pelo-menos-32-caracteres"
+CLIENT_URL="http://localhost:5173"
+NODE_ENV="development"
+```
+
+### 3. Criar o banco e popular com dados iniciais
+
+```bash
 cd server
-npx prisma migrate dev --name init
-npx prisma db seed
-cd ..
+npx prisma db push    # Cria as tabelas no PostgreSQL
+node prisma/seed.js   # Popula com dados de exemplo
+```
 
-# 4. Iniciar o projeto (frontend + backend)
+### 4. Iniciar o projeto (frontend + backend juntos)
+
+```bash
+# Na raiz do projeto
 npm run dev
 ```
 
-### Credenciais padrão
+Isso vai iniciar:
+- **Backend** em `http://localhost:3001`
+- **Frontend** em `http://localhost:5173`
 
-| Campo | Valor |
-|:---|:---|
-| Email | `admin@theatrum.com` |
-| Senha | `admin123` |
-
----
-
-## 📖 Uso
-
-### URLs em Desenvolvimento
-
-| Serviço | URL |
-|:---|:---|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:3001/api |
-| Prisma Studio | `npx prisma studio` (na pasta server) |
-
-### Navegação
-
-- **`/`** — Página inicial (carrossel + propaganda)
-- **`/pecas`** — Listagem de todas as peças
-- **`/pecas/:id`** — Detalhes de uma peça específica
-- **`/colaborador`** — Formulário de cadastro de colaborador
-- **`/admin`** — Painel administrativo (requer login)
+O Vite já está configurado com proxy para `/api` e `/uploads`, então tudo funciona transparente no navegador.
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 theatrum/
-├── docs/                      # Documentação
-│   ├── README.md              # Este arquivo
-│   ├── API.md                 # Documentação da API
-│   ├── DATABASE.md            # Documentação do banco
-│   └── SETUP.md               # Guia de setup
-├── server/                    # Backend (Express + Prisma)
+├── client/                     # Frontend React + Vite
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── admin/          # Componentes do painel admin
+│   │   │   │   ├── AdminDashboard.jsx   # Dashboard com abas (peças, colaboradores, alocações, config)
+│   │   │   │   ├── AdminLogin.jsx       # Tela de login
+│   │   │   │   ├── AbaPecas.jsx         # CRUD de peças
+│   │   │   │   ├── AbaColaboradores.jsx # CRUD de colaboradores
+│   │   │   │   ├── AbaAlocacoes.jsx     # Alocação de colaboradores em peças
+│   │   │   │   ├── AbaConfig.jsx        # Configurações do site
+│   │   │   │   ├── ModalPecaForm.jsx    # Modal de criação/edição de peça
+│   │   │   │   ├── ModalFotosManager.jsx# Galeria de fotos (upload, reordenar, capa)
+│   │   │   │   └── ModalLocaisManager.jsx# Gerenciar locais de apresentação
+│   │   │   ├── common/         # Componentes reutilizáveis
+│   │   │   │   ├── Carousel.jsx         # Carrossel de imagens/vídeos
+│   │   │   │   ├── ConfirmModal.jsx     # Modal de confirmação
+│   │   │   │   ├── MapView.jsx          # Mapa Leaflet
+│   │   │   │   └── Modal.jsx            # Modal genérico
+│   │   │   └── layout/         # Estrutura visual
+│   │   │       ├── Header.jsx           # Cabeçalho com navegação
+│   │   │       ├── Footer.jsx           # Rodapé
+│   │   │       └── Layout.jsx           # Wrapper (Header + conteúdo + Footer)
+│   │   ├── pages/              # Páginas (lazy loaded)
+│   │   │   ├── HomePage.jsx             # Página inicial (hero, peças em cartaz, propaganda)
+│   │   │   ├── PecasPage.jsx            # Listagem de peças com filtros
+│   │   │   ├── PecaDetalhesPage.jsx     # Detalhes de uma peça + mapa + elenco
+│   │   │   ├── ColaboradorPage.jsx      # Formulário público de cadastro
+│   │   │   └── AdminPage.jsx            # Wrapper do painel admin
+│   │   ├── services/
+│   │   │   ├── api.js                   # Cliente HTTP centralizado (Axios)
+│   │   │   └── geocodingService.js      # Geocodificação de endereços
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx          # Contexto de autenticação (React Context)
+│   │   ├── constants/
+│   │   │   └── statusPeca.js            # Constantes de status (EM_CARTAZ, etc.)
+│   │   ├── styles/
+│   │   │   ├── index.css                # Design system (variáveis, reset, tipografia)
+│   │   │   ├── components.css           # Estilos de componentes reutilizáveis
+│   │   │   └── pages.css                # Estilos específicos de cada página
+│   │   ├── App.jsx                      # Roteamento principal + Suspense
+│   │   └── main.jsx                     # Ponto de entrada (ReactDOM.createRoot)
+│   ├── vite.config.js                   # Config do Vite (proxy, chunks, testes)
+│   └── package.json
+│
+├── server/                     # Backend Express + Prisma
 │   ├── prisma/
-│   │   ├── schema.prisma      # Schema do banco de dados
-│   │   └── seed.js            # Dados iniciais
+│   │   ├── schema.prisma                # Schema do banco (modelos, relações)
+│   │   └── seed.js                      # Dados iniciais (admin, peças, colaboradores)
 │   ├── src/
-│   │   ├── controllers/       # Lógica de negócio
-│   │   ├── middleware/        # Auth JWT + Upload Multer
-│   │   ├── routes/            # Definição de rotas
-│   │   └── index.js           # Entry point
-│   └── uploads/               # Arquivos enviados
-├── client/                    # Frontend (React + Vite)
-│   ├── src/
-│   │   ├── components/        # Componentes reutilizáveis
-│   │   ├── pages/             # Páginas da aplicação
-│   │   ├── context/           # Contexto de autenticação
-│   │   ├── services/          # Chamadas à API
-│   │   └── styles/            # CSS (design system)
-│   └── index.html
-├── package.json               # Scripts raiz
+│   │   ├── config/
+│   │   │   └── env.js                   # Validação de variáveis de ambiente
+│   │   ├── constants/
+│   │   │   └── statusPeca.js            # Constantes de status
+│   │   ├── controllers/                 # Camada de controle (req/res)
+│   │   │   ├── authController.js        # Login e perfil
+│   │   │   ├── pecasController.js       # CRUD de peças
+│   │   │   ├── colaboradoresController.js# CRUD de colaboradores
+│   │   │   ├── fotosController.js       # Upload/deleção de fotos
+│   │   │   ├── locaisController.js      # CRUD de locais
+│   │   │   └── configController.js      # Configurações do site
+│   │   ├── services/                    # Camada de negócios (lógica)
+│   │   │   ├── authService.js           # Autenticação JWT + bcrypt
+│   │   │   ├── pecaService.js           # Regras de negócio de peças
+│   │   │   ├── colaboradorService.js    # Regras de colaboradores (LGPD)
+│   │   │   ├── fotoService.js           # Upload/deleção de fotos
+│   │   │   ├── localService.js          # CRUD de locais de apresentação
+│   │   │   ├── fileService.js           # Persistência de arquivos (PostgreSQL + disco)
+│   │   │   └── configService.js         # Configurações do site
+│   │   ├── middleware/
+│   │   │   ├── auth.js                  # JWT: autenticar, autenticarOpcional, apenasAdmin
+│   │   │   ├── upload.js                # Multer (memoryStorage, filtros, limites)
+│   │   │   └── validateId.js            # Validação de IDs numéricos nos params
+│   │   ├── routes/                      # Definição de rotas Express
+│   │   │   ├── auth.js                  # /api/auth
+│   │   │   ├── pecas.js                 # /api/pecas (+ fotos, colaboradores, locais)
+│   │   │   ├── colaboradores.js         # /api/colaboradores
+│   │   │   ├── config.js                # /api/config
+│   │   │   └── upload.js               # /api/upload
+│   │   ├── validators/                  # Validação de dados de entrada
+│   │   │   ├── authValidator.js
+│   │   │   ├── pecaValidator.js
+│   │   │   └── colaboradorValidator.js
+│   │   ├── errors/
+│   │   │   └── AppError.js              # Classe padronizada de erros HTTP
+│   │   ├── lib/
+│   │   │   ├── prisma.js                # Instância singleton do Prisma Client
+│   │   │   └── logger.js                # Logger customizado
+│   │   ├── app.js                       # Configuração do Express (CORS, Helmet, rotas)
+│   │   └── index.js                     # Ponto de entrada (app.listen)
+│   └── package.json
+│
+├── docs/                       # Documentação
+├── package.json                # Scripts de orquestração (raiz)
 └── .gitignore
 ```
 
 ---
 
-## 🔌 API REST
+## Arquitetura
 
-Documentação completa em [`docs/API.md`](./API.md).
+```
+┌─────────────────────────────────────────────────────┐
+│                  NAVEGADOR                          │
+│  React SPA (GitHub Pages)                           │
+│  ┌──────────────────────────────────┐               │
+│  │ Pages → Components → api.js     │               │
+│  │    (Axios com JWT interceptor)   │               │
+│  └──────────┬───────────────────────┘               │
+└─────────────┼───────────────────────────────────────┘
+              │ HTTPS (JSON + multipart/form-data)
+              ▼
+┌─────────────────────────────────────────────────────┐
+│                RENDER.COM                           │
+│  Express API (Node.js Web Service)                  │
+│  ┌──────────────────────────────────┐               │
+│  │ Routes → Controllers → Services │               │
+│  │    ↓           ↓           ↓     │               │
+│  │ Middleware   Validators   Prisma │               │
+│  └──────────┬───────────────────────┘               │
+│             │                                       │
+│             ▼                                       │
+│  ┌─────────────────────┐                            │
+│  │    PostgreSQL        │                           │
+│  │  (Render Database)   │                           │
+│  └─────────────────────┘                            │
+└─────────────────────────────────────────────────────┘
+```
 
-### Endpoints Principais
+### Fluxo de uma requisição típica:
 
-| Método | Endpoint | Descrição | Auth |
-|:---|:---|:---|:---|
-| POST | `/api/auth/login` | Login admin | ❌ |
-| GET | `/api/pecas` | Listar peças | ❌ |
-| GET | `/api/pecas/:id` | Detalhes da peça | ❌ |
-| POST | `/api/pecas` | Criar peça | ✅ Admin |
-| PUT | `/api/pecas/:id` | Atualizar peça | ✅ Admin |
-| DELETE | `/api/pecas/:id` | Deletar peça | ✅ Admin |
-| GET | `/api/colaboradores` | Listar colaboradores | ❌ |
-| POST | `/api/colaboradores` | Cadastrar colaborador | ❌ |
-| PUT | `/api/colaboradores/:id` | Editar colaborador | ✅ Admin |
-| DELETE | `/api/colaboradores/:id` | Deletar colaborador | ✅ Admin |
-| POST | `/api/pecas/:id/colaboradores` | Alocar colaborador | ✅ Admin |
+1. O React chama `pecasAPI.listar()` via Axios
+2. Axios adiciona o JWT no header `Authorization: Bearer <token>` (se logado)
+3. Express recebe em `/api/pecas` → rota → middleware de validação → controller
+4. Controller chama o service correspondente
+5. Service executa queries no Prisma e retorna dados
+6. Controller envia a resposta JSON ao frontend
 
 ---
 
-## 🗄 Banco de Dados
+## Banco de Dados
 
-Documentação completa em [`docs/DATABASE.md`](./DATABASE.md).
+O Theatrum usa **PostgreSQL** via **Prisma ORM**. Todas as tabelas e relações estão definidas em `server/prisma/schema.prisma`.
 
-### Diagrama ER
+### Modelos e Relações
+
+| Modelo | Tabela | Descrição |
+|---|---|---|
+| `Usuario` | `usuarios` | Admin do sistema (login JWT) |
+| `Colaborador` | `colaboradores` | Atores, técnicos, diretores (cadastro público) |
+| `Peca` | `pecas` | Peças de teatro |
+| `LocalPeca` | `locais_pecas` | Locais/datas de apresentação (N por peça) |
+| `PecaColaborador` | `peca_colaboradores` | Tabela N:N entre peças e colaboradores |
+| `FotoPeca` | `fotos_pecas` | Fotos/vídeos das peças |
+| `ConfigSite` | `config_site` | Configurações editáveis (chave-valor) |
+| `Arquivo` | `arquivos` | Armazenamento binário de uploads no PostgreSQL |
+
+### Diagrama de Relações
 
 ```
-Usuario ←──── (1:N) ────→ [Administradores]
-Peca ←──── (N:N) ────→ Colaborador [via PecaColaborador]
-Peca ←──── (1:N) ────→ FotoPeca
-ConfigSite ←──── [Chave-Valor]
+Usuario (independente)
+
+Colaborador ◄──── PecaColaborador ────► Peca
+                     (N:N)                │
+                                          ├── FotoPeca (1:N)
+                                          └── LocalPeca (1:N)
+
+ConfigSite (independente, chave-valor)
+Arquivo (independente, armazenamento binário)
 ```
 
-### Como trocar para MySQL
+### Comandos úteis do Prisma
 
-1. Instale MySQL (ou use XAMPP)
-2. Crie o banco: `CREATE DATABASE theatrum;`
-3. Edite `server/.env`:
-   ```
-   DATABASE_URL="mysql://root:senha@localhost:3306/theatrum"
-   ```
-4. Edite `server/prisma/schema.prisma`:
-   ```prisma
-   provider = "mysql"
-   ```
-5. Execute: `npx prisma migrate dev --name init`
+```bash
+cd server
+npx prisma studio          # Abre interface visual do banco no navegador
+npx prisma db push         # Sincroniza o schema com o banco (sem migration)
+npx prisma migrate dev     # Cria migration formal
+npx prisma generate        # Re-gera o Prisma Client
+node prisma/seed.js        # Re-popula dados iniciais
+```
 
 ---
 
-## 🌐 Deploy
+## API REST — Endpoints
 
-### Frontend (Vercel / GitHub Pages)
+**URL base**: `https://projeto-teatro.onrender.com/api`
+
+### Autenticação (`/api/auth`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `/auth/login` | Público | Login (retorna JWT) |
+| `GET` | `/auth/me` | Admin | Perfil do usuário logado |
+
+### Peças (`/api/pecas`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/pecas` | Público | Listar todas as peças |
+| `GET` | `/pecas/:id` | Público | Detalhes de uma peça |
+| `POST` | `/pecas` | Admin | Criar peça |
+| `PUT` | `/pecas/:id` | Admin | Atualizar peça |
+| `DELETE` | `/pecas/:id` | Admin | Deletar peça |
+
+### Fotos de Peças (`/api/pecas/:id/fotos`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `/pecas/:id/fotos` | Admin | Upload de fotos (multipart, max 10) |
+| `DELETE` | `/pecas/:pecaId/fotos/:fotoId` | Admin | Remover foto |
+| `PUT` | `/pecas/:id/fotos/reordenar` | Admin | Reordenar fotos |
+| `PUT` | `/pecas/:id/fotos/:fotoId/capa` | Admin | Definir foto de capa |
+
+### Locais de Apresentação (`/api/pecas/:id/locais`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `/pecas/:id/locais` | Admin | Adicionar local |
+| `PUT` | `/pecas/:id/locais/:localId` | Admin | Atualizar local |
+| `DELETE` | `/pecas/:id/locais/:localId` | Admin | Remover local |
+
+### Alocação de Colaboradores (`/api/pecas/:id/colaboradores`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `/pecas/:id/colaboradores` | Admin | Alocar colaborador em peça |
+| `DELETE` | `/pecas/:id/colaboradores/:colabId` | Admin | Remover alocação |
+
+### Colaboradores (`/api/colaboradores`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/colaboradores` | Público* | Listar (dados sensíveis ocultos sem JWT) |
+| `GET` | `/colaboradores/:id` | Público* | Detalhes |
+| `POST` | `/colaboradores` | Público | Cadastro com foto (multipart) |
+| `PUT` | `/colaboradores/:id` | Admin | Atualizar |
+| `DELETE` | `/colaboradores/:id` | Admin | Deletar |
+
+> \* Dados sensíveis (celular, email, endereço) são omitidos para não-admins (LGPD).
+
+### Configurações (`/api/config`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/config` | Público | Listar todas as configurações |
+| `PUT` | `/config/:chave` | Admin | Atualizar configuração |
+
+### Upload Genérico (`/api/upload`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `/upload` | Admin | Upload avulso de arquivo |
+
+### Health Check
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/api/saude` | Público | Verifica se a API está online |
+
+---
+
+## Autenticação
+
+O sistema usa **JWT (JSON Web Token)**:
+
+1. O admin faz `POST /api/auth/login` com `{ email, senha }`
+2. O servidor valida com bcrypt e retorna `{ token, usuario }`
+3. O frontend armazena o token em `localStorage` (`theatrum_token`)
+4. Todas as requisições subsequentes incluem `Authorization: Bearer <token>` via interceptor Axios
+5. Se o token expirar (ou for inválido), o interceptor remove o token e desloga o usuário
+
+### Middlewares de autenticação:
+
+- **`autenticar`** — Obrigatório: rejeita com 401 se não tiver token válido
+- **`autenticarOpcional`** — Se tiver token válido, preenche `req.usuario`; senão, continua
+- **`apenasAdmin`** — Rejeita com 403 se `req.usuario.papel !== 'ADMIN'`
+
+---
+
+## Sistema de Uploads
+
+O Render usa **filesystem efêmero** (arquivos são apagados quando o container reinicia ou hiberna). Para resolver isso:
+
+1. **Multer** recebe o arquivo em memória (`memoryStorage`)
+2. **`FileService.salvarArquivo()`** salva o buffer em duas camadas:
+   - **PostgreSQL** (tabela `arquivos`) — persistência permanente
+   - **Disco local** (`/uploads/`) — cache rápido
+3. Quando alguém acessa `GET /uploads/nome.jpg`:
+   - Se o arquivo existir no disco → serve diretamente (rápido)
+   - Se não existir (container reiniciou) → busca do PostgreSQL, restaura em disco e serve
+
+Esse sistema é **transparente** para o frontend — a URL `/uploads/xxx.jpg` sempre funciona.
+
+---
+
+## Deploy em Produção
+
+### Frontend → GitHub Pages
+
 ```bash
 cd client
-npm run build  # Gera pasta dist/
+npm run deploy    # Faz build + publica na branch gh-pages
 ```
 
-### Backend (Render)
-- Configure como Web Service
-- Build command: `cd server && npm install && npx prisma migrate deploy`
-- Start command: `cd server && node src/index.js`
+Acesso: `https://pffabio.github.io/projeto_teatro/`
+
+### Backend → Render.com
+
+O Render faz deploy automático a cada push na branch `main`.
+
+**Variáveis de ambiente no Render:**
+
+| Variável | Valor |
+|---|---|
+| `DATABASE_URL` | `postgresql://...` (fornecido pelo Render PostgreSQL) |
+| `JWT_SECRET` | Uma chave secreta longa |
+| `NODE_ENV` | `production` |
+| `CLIENT_URL` | `https://pffabio.github.io` |
+
+**Build command do Render:**
+```
+npm install && npx prisma generate && npx prisma db push && node prisma/seed.js
+```
+
+**Start command:** `node src/index.js`
 
 ---
 
-## 📚 Documentação Adicional
+## Testes
 
-- [API.md](./API.md) — Documentação detalhada da API REST
-- [DATABASE.md](./DATABASE.md) — Modelo de dados e diagrama ER
-- [SETUP.md](./SETUP.md) — Guia completo de instalação e configuração
+```bash
+# Rodar todos os testes
+npm test
+
+# Apenas servidor
+npm run test:server    # Jest
+
+# Apenas cliente
+npm run test:client    # Vitest
+```
 
 ---
 
-## 📄 Licença
+## Credenciais Padrão
 
-Projeto acadêmico — Uso educacional.
+| Campo | Valor |
+|---|---|
+| **Email** | `admin@theatrum.com` |
+| **Senha** | `admin123` |
+
+> ⚠️ Em produção, troque a senha imediatamente após o primeiro deploy.
 
 ---
 
-*Desenvolvido com 🎭 por Theatrum Team*
+## Licença
+
+Projeto acadêmico — uso educacional.
