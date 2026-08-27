@@ -17,6 +17,16 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom', 'axios'],
+          leaflet: ['leaflet', 'react-leaflet'],
+        },
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
