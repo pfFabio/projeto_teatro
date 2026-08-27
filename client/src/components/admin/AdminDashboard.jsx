@@ -11,10 +11,10 @@ import AbaConfig from './AbaConfig';
 import { pecasAPI, colaboradoresAPI, configAPI } from '../../services/api';
 
 const ABAS = [
-  { id: 'pecas', label: '🎪 Peças', icone: '🎪' },
-  { id: 'colaboradores', label: '👥 Colaboradores', icone: '👥' },
-  { id: 'alocacoes', label: '🔗 Alocações', icone: '🔗' },
-  { id: 'config', label: '⚙ Configurações', icone: '⚙' },
+  { id: 'pecas', label: 'Peças', icone: '🎪' },
+  { id: 'colaboradores', label: 'Colaboradores', icone: '👥' },
+  { id: 'alocacoes', label: 'Alocações', icone: '🔗' },
+  { id: 'config', label: 'Configurações', icone: '⚙️' },
 ];
 
 export default function AdminDashboard({ usuario, onLogout }) {
@@ -108,16 +108,22 @@ export default function AdminDashboard({ usuario, onLogout }) {
       </div>
 
       {/* Navegação de Abas */}
-      <div className="admin-abas">
-        {ABAS.map((aba) => (
-          <button
-            key={aba.id}
-            className={`admin-aba ${abaAtiva === aba.id ? 'ativa' : ''}`}
-            onClick={() => setAbaAtiva(aba.id)}
-          >
-            {aba.label}
-          </button>
-        ))}
+      <div className="admin-abas" role="tablist" aria-label="Abas do painel administrativo">
+        {ABAS.map((aba) => {
+          const isAtiva = abaAtiva === aba.id;
+          return (
+            <button
+              key={aba.id}
+              role="tab"
+              aria-selected={isAtiva}
+              className={`admin-aba ${isAtiva ? 'ativa' : ''}`}
+              onClick={() => setAbaAtiva(aba.id)}
+            >
+              <span className="admin-aba-icone">{aba.icone}</span>
+              <span className="admin-aba-label">{aba.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Conteúdo da Aba */}
