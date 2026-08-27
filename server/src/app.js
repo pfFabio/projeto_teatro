@@ -86,8 +86,44 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Servir arquivos estáticos (imagens e vídeos enviados)
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+// Servir arquivos de uploads: Primeiro tenta disco local; se não encontrar (ex: container reiniciou no Render), busca do PostgreSQL
+const fs = require('fs');
+app.get('/uploads/:nome', async (req, res, next) => {
+  try {
+    const nomeArquivo = path.basename(req.params.nome);
+    const caminhoDisco = path.join(__dirname, '..', 'uploads', nomeArquivo);
+
+    // 1. Se o arquivo estiver em disco, serve diretamente
+    if (fs.existsSync(caminhoDisco)) {
+      return res.sendFile(caminhoDisco);
+    }
+
+    // 2. Se não estiver no disco local (devido ao filesystem efêmero do Render), busca do PostgreSQL
+    const prisma = require('./lib/prisma');
+    const arquivoBanco = await prisma.arquivo.findUnique({
+      where: { nome: nomeArquivo },
+    });
+
+    if (!arquivoBanco) {
+      return res.status(404).send('Arquivo não encontrado');
+    }
+
+    // Restaura em disco em segundo plano para cache
+    try {
+      await fs.promises.mkdir(path.dirname(caminhoDisco), { recursive: true });
+      await fs.promises.writeFile(caminhoDisco, arquivoBanco.dados);
+    } catch {
+      // Ignora erro de cache
+    }
+
+    res.setHeader('Content-Type', arquivoBanco.mimetype);
+    res.setHeader('Content-Length', arquivoBanco.tamanho);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.send(Buffer.from(arquivoBanco.dados));
+  } catch (erro) {
+    next(erro);
+  }
+});
 
 // =============================================================================
 // Rotas da API

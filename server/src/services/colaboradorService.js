@@ -134,15 +134,13 @@ class ColaboradorService {
     // Verifica se email já está cadastrado
     const existente = await prisma.colaborador.findUnique({ where: { email: emailNormalizado } });
     if (existente) {
-      if (arquivoFoto) {
-        await FileService.removerArquivo(`/uploads/${arquivoFoto.filename}`);
-      }
       throw AppError.conflict('Já existe um colaborador cadastrado com este email');
     }
 
     let fotoUrl = null;
     if (arquivoFoto) {
-      fotoUrl = `/uploads/${arquivoFoto.filename}`;
+      const salvo = await FileService.salvarArquivo(arquivoFoto);
+      if (salvo) fotoUrl = salvo.url;
     }
 
     const colaborador = await prisma.colaborador.create({
@@ -167,17 +165,11 @@ class ColaboradorService {
   static async atualizar(id, dados, novoArquivoFoto = null) {
     const validacao = validarAtualizacaoColaborador(dados);
     if (!validacao.valido) {
-      if (novoArquivoFoto) {
-        await FileService.removerArquivo(`/uploads/${novoArquivoFoto.filename}`);
-      }
       throw AppError.badRequest(validacao.mensagem);
     }
 
     const antigo = await prisma.colaborador.findUnique({ where: { id } });
     if (!antigo) {
-      if (novoArquivoFoto) {
-        await FileService.removerArquivo(`/uploads/${novoArquivoFoto.filename}`);
-      }
       throw AppError.notFound(`Colaborador com ID ${id} não encontrado`);
     }
 
@@ -194,21 +186,19 @@ class ColaboradorService {
       if (emailNorm !== antigo.email) {
         const outroComEmail = await prisma.colaborador.findUnique({ where: { email: emailNorm } });
         if (outroComEmail) {
-          if (novoArquivoFoto) {
-            await FileService.removerArquivo(`/uploads/${novoArquivoFoto.filename}`);
-          }
           throw AppError.conflict('Já existe outro colaborador cadastrado com este email');
         }
         dadosAtualizacao.email = emailNorm;
       }
     }
 
-    // Se uma nova foto foi enviada, deleta a foto anterior do disco
+    // Se uma nova foto foi enviada, deleta a foto anterior e salva a nova
     if (novoArquivoFoto) {
       if (antigo.fotoUrl) {
         await FileService.removerArquivo(antigo.fotoUrl);
       }
-      dadosAtualizacao.fotoUrl = `/uploads/${novoArquivoFoto.filename}`;
+      const salvo = await FileService.salvarArquivo(novoArquivoFoto);
+      if (salvo) dadosAtualizacao.fotoUrl = salvo.url;
     }
 
     const colaboradorAtualizado = await prisma.colaborador.update({

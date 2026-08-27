@@ -19,22 +19,21 @@ class FotoService {
 
     const peca = await prisma.peca.findUnique({ where: { id: pecaId } });
     if (!peca) {
-      // Remove arquivos enviados se a peça não existir
-      await FileService.removerMultiplosArquivos(arquivos.map(a => `/uploads/${a.filename}`));
       throw AppError.notFound(`Peça com ID ${pecaId} não encontrada`);
     }
 
     const totalFotos = await prisma.fotoPeca.count({ where: { pecaId } });
+    const arquivosSalvos = await FileService.salvarMultiplosArquivos(arquivos);
 
     const fotosCriadas = [];
-    for (let i = 0; i < arquivos.length; i++) {
-      const arquivo = arquivos[i];
-      const ehVideo = arquivo.mimetype.startsWith('video/');
+    for (let i = 0; i < arquivosSalvos.length; i++) {
+      const salvo = arquivosSalvos[i];
+      const ehVideo = salvo.mimetype.startsWith('video/');
 
       const foto = await prisma.fotoPeca.create({
         data: {
           pecaId,
-          url: `/uploads/${arquivo.filename}`,
+          url: salvo.url,
           descricao: descricao || '',
           tipo: ehVideo ? 'VIDEO' : 'IMAGEM',
           ordem: totalFotos + i,

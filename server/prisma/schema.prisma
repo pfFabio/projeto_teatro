@@ -23,7 +23,7 @@ model Usuario {
   nome         String
   papel        String   @default("ADMIN") // Apenas ADMIN por enquanto
   criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  atualizadoEm DateTime @default(now()) @updatedAt
 
   @@map("usuarios")
 }
@@ -43,7 +43,7 @@ model Colaborador {
   genero       String   // Masculino, Feminino, Não-binário, Prefiro não dizer
   fotoUrl      String?  // Caminho da foto enviada
   criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  atualizadoEm DateTime @default(now()) @updatedAt
 
   // Relação N:N com Peças (via tabela intermediária)
   pecas        PecaColaborador[]
@@ -64,7 +64,7 @@ model Peca {
   dataEstreia  String?  // Formato: "YYYY-MM-DD"
   status       String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA
   criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  atualizadoEm DateTime @default(now()) @updatedAt
 
   // Relacionamentos
   fotos         FotoPeca[]
@@ -91,7 +91,7 @@ model LocalPeca {
   horario      String?  // Ex: "Sexta e Sábado às 20h, Domingo às 18h"
   status       String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA
   criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  atualizadoEm DateTime @default(now()) @updatedAt
 
   peca         Peca     @relation(fields: [pecaId], references: [id], onDelete: Cascade)
 
@@ -108,7 +108,7 @@ model PecaColaborador {
   colaboradorId  Int
   funcaoNaPeca   String      // Ex: "Ator Principal", "Figurinista", "Iluminação"
   criadoEm       DateTime    @default(now())
-  atualizadoEm   DateTime    @updatedAt
+  atualizadoEm   DateTime    @default(now()) @updatedAt
 
   peca           Peca        @relation(fields: [pecaId], references: [id], onDelete: Cascade)
   colaborador    Colaborador @relation(fields: [colaboradorId], references: [id], onDelete: Cascade)
@@ -128,7 +128,7 @@ model FotoPeca {
   tipo         String   @default("IMAGEM") // IMAGEM | VIDEO
   ordem        Int      @default(0)
   criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  atualizadoEm DateTime @default(now()) @updatedAt
 
   peca         Peca     @relation(fields: [pecaId], references: [id], onDelete: Cascade)
 
@@ -144,7 +144,23 @@ model ConfigSite {
   valor        String
   tipo         String   @default("TEXT") // TEXT | IMAGE | HTML | VIDEO
   criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  atualizadoEm DateTime @default(now()) @updatedAt
 
   @@map("config_site")
+}
+
+// =============================================================================
+// Armazenamento Binário de Arquivos (Persistência no PostgreSQL do Render)
+// Impede a perda de uploads em containers com filesystem efêmero
+// =============================================================================
+model Arquivo {
+  id           Int      @id @default(autoincrement())
+  nome         String   @unique // Ex: "arquivos-1724765432-123456.jpg"
+  mimetype     String
+  dados        Bytes
+  tamanho      Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @default(now()) @updatedAt
+
+  @@map("arquivos")
 }

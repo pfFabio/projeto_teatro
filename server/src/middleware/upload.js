@@ -16,18 +16,8 @@ const TIPOS_PERMITIDOS = {
   'video/webm': '.webm',
 };
 
-// Configuração de armazenamento em disco
-const armazenamento = multer.diskStorage({
-  destination: (req, arquivo, cb) => {
-    cb(null, path.join(__dirname, '..', '..', 'uploads'));
-  },
-  filename: (req, arquivo, cb) => {
-    // Gerar nome único: timestamp + número aleatório + extensão original
-    const sufixoUnico = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const extensao = TIPOS_PERMITIDOS[arquivo.mimetype] || path.extname(arquivo.originalname);
-    cb(null, `${arquivo.fieldname}-${sufixoUnico}${extensao}`);
-  },
-});
+// Configuração de armazenamento em memória (Buffer para persistência no PostgreSQL)
+const armazenamento = multer.memoryStorage();
 
 // Filtro de tipos de arquivo
 const filtroArquivo = (req, arquivo, cb) => {
