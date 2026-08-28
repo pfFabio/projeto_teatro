@@ -51,11 +51,12 @@
   border-radius: var(--raio-xl);
   padding: var(--espaco-12);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
   gap: var(--espaco-10);
   align-items: center;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--sombra-card);
 }
 
 .home-propaganda::before {
@@ -69,20 +70,48 @@
   pointer-events: none;
 }
 
+.propaganda-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(212, 160, 23, 0.2) 0%, rgba(13, 189, 173, 0.2) 100%);
+  color: var(--cor-dourado);
+  border: 1px solid rgba(212, 160, 23, 0.4);
+  font-size: var(--texto-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: var(--raio-total);
+}
+
 .home-propaganda-info h2 {
-  font-size: var(--texto-4xl);
+  font-size: var(--texto-3xl);
   margin-bottom: var(--espaco-4);
+  line-height: 1.3;
 }
 
 .home-propaganda-info h2 span {
-  color: var(--cor-primaria-escura);
+  color: var(--cor-dourado);
 }
 
 .home-propaganda-info p {
   color: var(--cor-texto-secundario);
-  font-size: var(--texto-lg);
+  font-size: var(--texto-base);
   line-height: 1.8;
   margin-bottom: var(--espaco-6);
+}
+
+.home-propaganda-midia-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.home-propaganda-foto-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--raio-xl);
+  overflow: hidden;
 }
 
 .home-propaganda-img {
@@ -91,6 +120,7 @@
   aspect-ratio: 4/3;
   object-fit: cover;
   border: 1px solid var(--cor-borda);
+  display: block;
 }
 
 .home-propaganda-placeholder {
@@ -107,10 +137,110 @@
   font-family: var(--fonte-titulo);
   gap: var(--espaco-3);
   border: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+  padding: var(--espaco-4);
 }
 
 .home-propaganda-placeholder span:first-child {
   font-size: 3rem;
+}
+
+.propaganda-fotos-navegador {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  justifyContent: center;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  padding: 6px;
+  border-radius: var(--raio-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+}
+
+.propaganda-foto-thumb {
+  width: 44px;
+  height: 34px;
+  border-radius: var(--raio-sm);
+  overflow: hidden;
+  border: 2px solid transparent;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all var(--transicao-rapida);
+  flex-shrink: 0;
+}
+
+.propaganda-foto-thumb.ativa {
+  border-color: var(--cor-dourado);
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.propaganda-foto-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-propaganda-controles {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justifyContent: center;
+  gap: var(--espaco-4);
+  padding-top: var(--espaco-4);
+  border-top: 1px solid var(--cor-borda);
+  margin-top: var(--espaco-2);
+}
+
+.propaganda-nav-btn {
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all var(--transicao-rapida);
+}
+
+.propaganda-nav-btn:hover {
+  background: var(--cor-primaria);
+  color: white;
+  border-color: var(--cor-primaria);
+  transform: scale(1.1);
+}
+
+.propaganda-indicadores {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.propaganda-indicador {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cor-borda);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transicao-rapida);
+  padding: 0;
+}
+
+.propaganda-indicador.ativo {
+  background: var(--cor-dourado);
+  width: 24px;
+  border-radius: var(--raio-total);
 }
 
 .home-destaque-grid {
@@ -127,6 +257,7 @@
   .home-propaganda {
     grid-template-columns: 1fr;
     padding: var(--espaco-8);
+    gap: var(--espaco-6);
   }
   .home-destaque-grid { grid-template-columns: 1fr; }
 }

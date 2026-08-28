@@ -1,15 +1,13 @@
-// =============================================================================
-// Página Inicial — Carrossel de peças + Propaganda de aulas
-// =============================================================================
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Carrossel from '../components/common/Carousel';
-import { pecasAPI, configAPI, getMediaUrl } from '../services/api';
+import PropagandasSection from '../components/common/PropagandasSection';
+import { pecasAPI, configAPI, propagandasAPI, getMediaUrl } from '../services/api';
 import { getTag } from '../constants/statusPeca';
 
 export default function HomePage() {
   const [pecas, setPecas] = useState([]);
+  const [propagandas, setPropagandas] = useState([]);
   const [config, setConfig] = useState({});
   const [carregando, setCarregando] = useState(true);
 
@@ -19,13 +17,15 @@ export default function HomePage() {
 
   async function carregarDados() {
     try {
-      const [resPecas, resConfig] = await Promise.all([
+      const [resPecas, resConfig, resProps] = await Promise.all([
         pecasAPI.listar({ limite: 10 }),
         configAPI.listar(),
+        propagandasAPI.listar({ limite: 5, ativo: true }).catch(() => ({ data: { propagandas: [] } })),
       ]);
 
       setPecas(resPecas.data.pecas || []);
       setConfig(resConfig.data || {});
+      setPropagandas(resProps.data.propagandas || []);
     } catch (erro) {
       console.error('Erro ao carregar dados da home:', erro);
     } finally {
@@ -57,43 +57,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* === Propaganda de Aulas === */}
-      <section className="secao">
-        <div className="pagina-conteudo">
-          <div className="home-propaganda animar-entrada">
-            <div className="home-propaganda-info">
-              <h2>
-                {config.propaganda_titulo?.valor || 'Aulas de Teatro'}{' '}
-                <span>✨</span>
-              </h2>
-              <p>
-                {config.propaganda_texto?.valor ||
-                  'Descubra o artista que existe em você! Nossas aulas de teatro são para todas as idades e níveis de experiência. Venha desenvolver sua expressão corporal, oratória e criatividade em um ambiente acolhedor e inspirador.'}
-              </p>
-              <Link
-                to={config.propaganda_botao_link?.valor || '#contato'}
-                className="btn btn-dourado btn-lg"
-              >
-                {config.propaganda_botao_texto?.valor || 'Saiba Mais'} →
-              </Link>
-            </div>
-            <div>
-              {config.propaganda_imagem?.valor ? (
-                <img
-                  src={getMediaUrl(config.propaganda_imagem.valor)}
-                  alt="Aulas de Teatro"
-                  className="home-propaganda-img"
-                />
-              ) : (
-                <div className="home-propaganda-placeholder">
-                  <span>🎭</span>
-                  <span>Aulas de Teatro</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* === Propagandas / Anúncios Recentes (5 Mais Recentes) === */}
+      <PropagandasSection propagandas={propagandas} config={config} />
 
       {/* === Peças em Destaque === */}
       {pecasDestaque.length > 0 && (

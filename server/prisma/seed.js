@@ -266,6 +266,41 @@ async function main() {
   }
   console.log(`✅ ${alocacoes.length} alocações criadas`);
 
+  // =========================================================================
+  // 7. Propagandas e Anúncios de exemplo
+  // =========================================================================
+  const propagandas = [
+    {
+      titulo: 'Aulas de Teatro para Todas as Idades',
+      descricao: 'Descubra o artista que existe em você! Nossas aulas de teatro desenvolvem expressão corporal, oratória e criatividade em um ambiente inspirador e acolhedor. Turmas abertas para iniciantes e avançados.',
+      link: '#contato',
+      textoBotao: 'Inscreva-se Agora',
+      ativo: true,
+      ordem: 0,
+    },
+    {
+      titulo: 'Workshop de Expressão Corporal e Voz',
+      descricao: 'Aprofunde suas habilidades de palco com técnicas contemporâneas de presença cênica, respiração diafragmática e projeção vocal ministrado por diretores renomados.',
+      link: '#contato',
+      textoBotao: 'Garantir Vaga',
+      ativo: true,
+      ordem: 1,
+    },
+    {
+      titulo: 'Clube do Espectador Theatrum',
+      descricao: 'Participe do nosso clube de benefícios e ganhe 50% de desconto em todas as estreias da temporada, além de acesso exclusivo aos bastidores e debates com os elencos.',
+      link: '/pecas',
+      textoBotao: 'Conheça o Clube',
+      ativo: true,
+      ordem: 2,
+    },
+  ];
+
+  for (const prop of propagandas) {
+    await prisma.propaganda.create({ data: prop });
+  }
+  console.log(`✅ ${propagandas.length} propagandas criadas`);
+
   console.log('\n🎭 Seed concluído com sucesso!');
   console.log('   Admin: admin@theatrum.com / admin123\n');
 }

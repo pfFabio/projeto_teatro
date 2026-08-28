@@ -18,6 +18,7 @@ const rotasPecas = require('./routes/pecas');
 const rotasColaboradores = require('./routes/colaboradores');
 const rotasConfig = require('./routes/config');
 const rotasUpload = require('./routes/upload');
+const rotasPropagandas = require('./routes/propagandas');
 
 const app = express();
 
@@ -38,6 +39,7 @@ const limiterGeral = rateLimit({
   max: 500, // Limite de 500 requisições por janela por IP
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => ENV.NODE_ENV !== 'production',
   message: {
     erro: true,
     mensagem: 'Muitas requisições originadas deste IP. Tente novamente em alguns minutos.',
@@ -51,6 +53,7 @@ const limiterLogin = rateLimit({
   max: 20, // Máximo 20 tentativas de login por IP
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => ENV.NODE_ENV !== 'production',
   message: {
     erro: true,
     mensagem: 'Muitas tentativas de login consecutivas. Por segurança, tente novamente em 15 minutos.',
@@ -133,6 +136,7 @@ app.use('/api/pecas', rotasPecas);
 app.use('/api/colaboradores', rotasColaboradores);
 app.use('/api/config', rotasConfig);
 app.use('/api/upload', rotasUpload);
+app.use('/api/propagandas', rotasPropagandas);
 
 // Rota de health check
 app.get('/api/saude', (req, res) => {

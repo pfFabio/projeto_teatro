@@ -7,13 +7,15 @@ import { useState, useEffect, useCallback } from 'react';
 import AbaPecas from './AbaPecas';
 import AbaColaboradores from './AbaColaboradores';
 import AbaAlocacoes from './AbaAlocacoes';
+import AbaPropagandas from './AbaPropagandas';
 import AbaConfig from './AbaConfig';
-import { pecasAPI, colaboradoresAPI, configAPI } from '../../services/api';
+import { pecasAPI, colaboradoresAPI, configAPI, propagandasAPI } from '../../services/api';
 
 const ABAS = [
   { id: 'pecas', label: 'Peças', icone: '🎪' },
   { id: 'colaboradores', label: 'Colaboradores', icone: '👥' },
   { id: 'alocacoes', label: 'Alocações', icone: '🔗' },
+  { id: 'propagandas', label: 'Propagandas', icone: '📢' },
   { id: 'config', label: 'Configurações', icone: '⚙️' },
 ];
 
@@ -23,6 +25,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
   // State compartilhado entre abas
   const [pecas, setPecas] = useState([]);
   const [colaboradores, setColaboradores] = useState([]);
+  const [propagandas, setPropagandas] = useState([]);
   const [configs, setConfigs] = useState({});
   const [carregando, setCarregando] = useState(true);
 
@@ -37,14 +40,16 @@ export default function AdminDashboard({ usuario, onLogout }) {
   const carregarDados = useCallback(async () => {
     try {
       setCarregando(true);
-      const [resPecas, resColabs, resConfig] = await Promise.all([
+      const [resPecas, resColabs, resConfig, resProps] = await Promise.all([
         pecasAPI.listar({ limite: 100 }),
         colaboradoresAPI.listar({ limite: 100 }),
         configAPI.listar(),
+        propagandasAPI.listar({ limite: 100 }).catch(() => ({ data: { propagandas: [] } })),
       ]);
       setPecas(resPecas.data.pecas || []);
       setColaboradores(resColabs.data.colaboradores || []);
       setConfigs(resConfig.data || {});
+      setPropagandas(resProps.data.propagandas || []);
     } catch (erro) {
       console.error('Erro ao carregar dados do painel:', erro);
     } finally {
@@ -60,7 +65,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
     totalPecas: pecas.length,
     emCartaz: pecas.filter(p => p.status === 'EM_CARTAZ').length,
     totalColabs: colaboradores.length,
-    totalLocais: pecas.reduce((acc, p) => acc + (p.locais?.length || 0), 0),
+    totalPropagandas: propagandas.filter(p => p.ativo).length,
   };
 
   if (carregando) {
@@ -102,8 +107,8 @@ export default function AdminDashboard({ usuario, onLogout }) {
           <div className="admin-stat-label">Colaboradores</div>
         </div>
         <div className="admin-stat-card">
-          <div className="admin-stat-valor">{stats.totalLocais}</div>
-          <div className="admin-stat-label">Locais</div>
+          <div className="admin-stat-valor">{stats.totalPropagandas}</div>
+          <div className="admin-stat-label">Propagandas Ativas</div>
         </div>
       </div>
 
@@ -153,6 +158,11 @@ export default function AdminDashboard({ usuario, onLogout }) {
             pecas={pecas}
             colaboradores={colaboradores}
             onRecarregar={carregarDados}
+          />
+        )}
+        {abaAtiva === 'propagandas' && (
+          <AbaPropagandas
+            onRecarregarTotal={carregarDados}
           />
         )}
         {abaAtiva === 'config' && (

@@ -4,8 +4,8 @@
 
 import axios from 'axios';
 
-// Base URL da API (usa variável de ambiente em produção ou proxy /api em dev)
-const backendUrl = import.meta.env.VITE_API_URL
+// Base URL da API (usa VITE_API_URL apenas em produção no build, em dev usa o proxy do Vite)
+const backendUrl = import.meta.env.PROD && import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
   : '';
 
@@ -105,6 +105,31 @@ export const colaboradoresAPI = {
 export const configAPI = {
   listar: () => api.get('/config'),
   atualizar: (chave, dados) => api.put(`/config/${chave}`, dados),
+};
+
+// =============================================================================
+// Propagandas / Anúncios
+// =============================================================================
+export const propagandasAPI = {
+  listar: (params = {}) => api.get('/propagandas', { params }),
+  buscar: (id) => api.get(`/propagandas/${id}`),
+  criar: (dados) => {
+    if (dados instanceof FormData) {
+      return api.post('/propagandas', dados, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    }
+    return api.post('/propagandas', dados);
+  },
+  atualizar: (id, dados) => api.put(`/propagandas/${id}`, dados),
+  deletar: (id) => api.delete(`/propagandas/${id}`),
+
+  // Fotos da propaganda
+  adicionarFotos: (id, formData) => api.post(`/propagandas/${id}/fotos`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  deletarFoto: (propagandaId, fotoId) => api.delete(`/propagandas/${propagandaId}/fotos/${fotoId}`),
+  reordenarFotos: (id, fotosIds) => api.put(`/propagandas/${id}/fotos/reordenar`, { fotosIds }),
 };
 
 // =============================================================================

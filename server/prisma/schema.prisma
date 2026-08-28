@@ -164,3 +164,41 @@ model Arquivo {
 
   @@map("arquivos")
 }
+
+// =============================================================================
+// Propagandas / Anúncios do Site
+// Publicadas e gerenciadas pelo admin; as 5 mais recentes aparecem na Home
+// =============================================================================
+model Propaganda {
+  id           Int              @id @default(autoincrement())
+  titulo       String
+  descricao    String           // Texto da propaganda
+  link         String?          // URL ou link de redirecionamento (ex: #contato, /pecas)
+  textoBotao   String?          @default("Saiba Mais")
+  ativo        Boolean          @default(true)
+  ordem        Int              @default(0)
+  criadoEm     DateTime         @default(now())
+  atualizadoEm DateTime         @default(now()) @updatedAt
+
+  // Fotos da propaganda (com exclusão em cascata)
+  fotos        FotoPropaganda[]
+
+  @@map("propagandas")
+}
+
+// =============================================================================
+// Fotos das Propagandas
+// =============================================================================
+model FotoPropaganda {
+  id           Int        @id @default(autoincrement())
+  propagandaId Int
+  url          String     // Caminho do arquivo /uploads/...
+  ordem        Int        @default(0)
+  criadoEm     DateTime   @default(now())
+  atualizadoEm DateTime   @default(now()) @updatedAt
+
+  propaganda   Propaganda @relation(fields: [propagandaId], references: [id], onDelete: Cascade)
+
+  @@map("fotos_propagandas")
+}
+
