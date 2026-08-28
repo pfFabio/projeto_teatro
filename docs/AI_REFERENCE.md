@@ -108,8 +108,11 @@ O global error handler em `app.js` captura todos os `AppError` e responde com JS
 5. `server/src/routes/novaEntidade.js` — [NOVO] Definição de rotas
 6. `server/src/app.js` — Registrar: `app.use('/api/novaEntidade', rotasNovaEntidade)`
 7. `client/src/services/api.js` — Adicionar export de API (`novaEntidadeAPI = { ... }`)
-8. `client/src/pages/NovaEntidadePage.jsx` — [NOVO] Página
-9. `client/src/App.jsx` — Adicionar `<Route>` com lazy import
+8. `client/src/pages/NovaEntidadePage.jsx` — [NOVO] Página (ou componente admin)
+9. `client/src/App.jsx` — Adicionar `<Route>` com lazy import (se for página)
+
+> 💡 Exemplo real: a entidade `Propaganda` segue este padrão exatamente.
+> Veja `propagandaService.js`, `propagandasController.js`, `propagandas.js` (rotas), `AbaPropagandas.jsx`.
 
 ### Para modificar ESTILOS visuais:
 
@@ -143,6 +146,21 @@ O global error handler em `app.js` captura todos os `AppError` e responde com JS
 | Chaves disponíveis (seed) | `server/prisma/seed.js` (array `configs`) |
 | Lógica de leitura/escrita | `server/src/services/configService.js` |
 | Painel admin de edição | `client/src/components/admin/AbaConfig.jsx` |
+
+### Para modificar PROPAGANDAS:
+
+| O que alterar | Arquivo |
+|---|---|
+| Schema do banco (modelo) | `server/prisma/schema.prisma` (models `Propaganda`, `FotoPropaganda`) |
+| Validações de entrada | `server/src/validators/propagandaValidator.js` |
+| Lógica de negócio | `server/src/services/propagandaService.js` |
+| Controller (req/res) | `server/src/controllers/propagandasController.js` |
+| Definição de rotas | `server/src/routes/propagandas.js` |
+| API client (frontend) | `client/src/services/api.js` (`propagandasAPI`) |
+| Aba admin | `client/src/components/admin/AbaPropagandas.jsx` |
+| Modal de criação/edição | `client/src/components/admin/ModalPropagandaForm.jsx` |
+| Gestor de fotos | `client/src/components/admin/ModalFotosPropagandaManager.jsx` |
+| Seção na homepage | `client/src/components/common/PropagandasSection.jsx` |
 
 ---
 
@@ -205,6 +223,22 @@ model Arquivo {
   → Tabela: "arquivos"
   → Propósito: armazenamento persistente de uploads no PostgreSQL
 }
+
+model Propaganda {
+  id, titulo, descricao, link?, textoBotao? (default "Saiba Mais"),
+  ativo (Boolean, default true), ordem (Int, default 0),
+  criadoEm, atualizadoEm
+  → Relação: fotos FotoPropaganda[]
+  → Tabela: "propagandas"
+  → Exibição: as 5 mais recentes e ativas aparecem na HomePage como carrossel
+}
+
+model FotoPropaganda {
+  id, propagandaId (FK), url, ordem (Int, default 0),
+  criadoEm, atualizadoEm
+  → Relação: propaganda Propaganda (onDelete: Cascade)
+  → Tabela: "fotos_propagandas"
+}
 ```
 
 ---
@@ -266,6 +300,22 @@ PUT    /api/config/:chave       → [JWT+Admin] { valor } ou multipart { arquivo
 ```
 POST   /api/upload              → [JWT+Admin] multipart: { arquivo } → { url, nomeOriginal, tamanho, tipo }
 GET    /api/saude               → { status, mensagem, ambiente, timestamp }
+```
+
+### Propagandas
+```
+GET    /api/propagandas          → [?ativo=true&limite=5&busca=texto] → { propagandas[], total, pagina, totalPaginas }
+GET    /api/propagandas/:id      → Propaganda (com fotos)
+POST   /api/propagandas          → [JWT+Admin] multipart { titulo, descricao, link?, fotos[] } → Propaganda
+PUT    /api/propagandas/:id      → [JWT+Admin] { titulo?, descricao?, link?, ativo?, ordem? } → Propaganda
+DELETE /api/propagandas/:id      → [JWT+Admin] → { mensagem }
+```
+
+### Fotos de Propagandas
+```
+POST   /api/propagandas/:id/fotos           → [JWT+Admin] multipart: fotos[] → FotoPropaganda[]
+DELETE /api/propagandas/:id/fotos/:fotoId   → [JWT+Admin] → { mensagem }
+PUT    /api/propagandas/:id/fotos/reordenar  → [JWT+Admin] { fotosIds: number[] } → FotoPropaganda[]
 ```
 
 ### Arquivos Estáticos

@@ -260,6 +260,95 @@ Cria ou atualiza uma configuração.
 
 ---
 
+## 📢 Propagandas / Anúncios
+
+### GET `/propagandas`
+
+Lista propagandas com filtros e paginação.
+
+**Query Parameters:**
+| Parâmetro | Tipo | Descrição |
+|:---|:---|:---|
+| `ativo` | boolean | Filtrar por status ativo/inativo |
+| `busca` | string | Busca textual no título ou descrição |
+| `pagina` | number | Página atual (padrão: 1) |
+| `limite` | number | Itens por página (padrão: 20, max: 100) |
+
+**Resposta 200:**
+```json
+{
+  "propagandas": [
+    {
+      "id": 1,
+      "titulo": "Aulas de Teatro para Todas as Idades",
+      "descricao": "Descubra o artista que existe em você!...",
+      "link": "#contato",
+      "textoBotao": "Inscreva-se Agora",
+      "ativo": true,
+      "ordem": 0,
+      "criadoEm": "...",
+      "fotos": [
+        { "id": 1, "url": "/uploads/foto.jpg", "ordem": 0 }
+      ]
+    }
+  ],
+  "total": 3,
+  "pagina": 1,
+  "totalPaginas": 1
+}
+```
+
+### GET `/propagandas/:id`
+
+Retorna detalhes de uma propaganda com fotos.
+
+### POST `/propagandas` 🔐
+
+Cria uma nova propaganda com fotos opcionais. **Multipart form-data.**
+
+| Campo | Tipo | Obrigatório | Descrição |
+|:---|:---|:---|:---|
+| `titulo` | string | ✅ | Título da propaganda |
+| `descricao` | string | ✅ | Texto do anúncio |
+| `link` | string | ❌ | URL ou link interno |
+| `textoBotao` | string | ❌ | Texto do CTA (padrão: "Saiba Mais") |
+| `ativo` | boolean | ❌ | Se está visível (padrão: true) |
+| `ordem` | number | ❌ | Ordem de exibição (padrão: 0) |
+| `fotos` | File[] | ❌ | Até 10 fotos (JPG, PNG, WebP) |
+
+### PUT `/propagandas/:id` 🔐
+
+Atualiza textos e status de uma propaganda. Aceita atualização parcial.
+
+### DELETE `/propagandas/:id` 🔐
+
+Deleta uma propaganda, suas fotos do banco e os arquivos do disco.
+
+### POST `/propagandas/:id/fotos` 🔐
+
+Upload de fotos para uma propaganda existente. **Multipart form-data.**
+
+| Campo | Tipo | Descrição |
+|:---|:---|:---|
+| `fotos` | File[] | Até 10 arquivos (JPG, PNG, WebP) |
+
+### DELETE `/propagandas/:id/fotos/:fotoId` 🔐
+
+Deleta uma foto específica de uma propaganda.
+
+### PUT `/propagandas/:id/fotos/reordenar` 🔐
+
+Reordena as fotos de uma propaganda.
+
+**Body:**
+```json
+{
+  "fotosIds": [3, 1, 2]
+}
+```
+
+---
+
 ## 📤 Upload
 
 ### POST `/upload` 🔐

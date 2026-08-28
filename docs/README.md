@@ -34,9 +34,11 @@ O **Theatrum** permite que um administrador gerencie peças teatrais (com fotos,
 | Mapa interativo com locais de apresentação (Leaflet) | Público |
 | Cadastro de colaborador (ator, técnico, etc.) | Público |
 | Galeria de fotos e vídeos das peças | Público |
+| Carrossel de propagandas/anúncios na página inicial | Público |
 | Painel administrativo completo (CRUD de peças, colaboradores, alocações) | Admin |
 | Upload de fotos/vídeos para peças e colaboradores | Admin |
-| Configurações editáveis do site (título, propaganda, contato) | Admin |
+| CRUD de propagandas/anúncios com fotos e links | Admin |
+| Configurações editáveis do site (título, contato, etc.) | Admin |
 | Gerenciamento de locais e datas de apresentação | Admin |
 
 ---
@@ -123,26 +125,30 @@ theatrum/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── admin/          # Componentes do painel admin
-│   │   │   │   ├── AdminDashboard.jsx   # Dashboard com abas (peças, colaboradores, alocações, config)
-│   │   │   │   ├── AdminLogin.jsx       # Tela de login
-│   │   │   │   ├── AbaPecas.jsx         # CRUD de peças
-│   │   │   │   ├── AbaColaboradores.jsx # CRUD de colaboradores
-│   │   │   │   ├── AbaAlocacoes.jsx     # Alocação de colaboradores em peças
-│   │   │   │   ├── AbaConfig.jsx        # Configurações do site
-│   │   │   │   ├── ModalPecaForm.jsx    # Modal de criação/edição de peça
-│   │   │   │   ├── ModalFotosManager.jsx# Galeria de fotos (upload, reordenar, capa)
-│   │   │   │   └── ModalLocaisManager.jsx# Gerenciar locais de apresentação
+│   │   │   │   ├── AdminDashboard.jsx          # Dashboard com abas (peças, colaboradores, alocações, propagandas, config)
+│   │   │   │   ├── AdminLogin.jsx              # Tela de login
+│   │   │   │   ├── AbaPecas.jsx                # CRUD de peças
+│   │   │   │   ├── AbaColaboradores.jsx        # CRUD de colaboradores
+│   │   │   │   ├── AbaAlocacoes.jsx            # Alocação de colaboradores em peças
+│   │   │   │   ├── AbaPropagandas.jsx          # CRUD de propagandas/anúncios
+│   │   │   │   ├── AbaConfig.jsx               # Configurações do site
+│   │   │   │   ├── ModalPecaForm.jsx           # Modal de criação/edição de peça
+│   │   │   │   ├── ModalPropagandaForm.jsx     # Modal de criação/edição de propaganda
+│   │   │   │   ├── ModalFotosManager.jsx       # Galeria de fotos de peças (upload, reordenar, capa)
+│   │   │   │   ├── ModalFotosPropagandaManager.jsx # Galeria de fotos de propagandas
+│   │   │   │   └── ModalLocaisManager.jsx      # Gerenciar locais de apresentação
 │   │   │   ├── common/         # Componentes reutilizáveis
-│   │   │   │   ├── Carousel.jsx         # Carrossel de imagens/vídeos
-│   │   │   │   ├── ConfirmModal.jsx     # Modal de confirmação
-│   │   │   │   ├── MapView.jsx          # Mapa Leaflet
-│   │   │   │   └── Modal.jsx            # Modal genérico
+│   │   │   │   ├── Carousel.jsx                # Carrossel de imagens/vídeos (hero)
+│   │   │   │   ├── ConfirmModal.jsx            # Modal de confirmação
+│   │   │   │   ├── MapView.jsx                 # Mapa Leaflet
+│   │   │   │   ├── Modal.jsx                   # Modal genérico
+│   │   │   │   └── PropagandasSection.jsx      # Carrossel de propagandas (homepage)
 │   │   │   └── layout/         # Estrutura visual
-│   │   │       ├── Header.jsx           # Cabeçalho com navegação
-│   │   │       ├── Footer.jsx           # Rodapé
-│   │   │       └── Layout.jsx           # Wrapper (Header + conteúdo + Footer)
+│   │   │       ├── Header.jsx                  # Cabeçalho com navegação
+│   │   │       ├── Footer.jsx                  # Rodapé
+│   │   │       └── Layout.jsx                  # Wrapper (Header + conteúdo + Footer)
 │   │   ├── pages/              # Páginas (lazy loaded)
-│   │   │   ├── HomePage.jsx             # Página inicial (hero, peças em cartaz, propaganda)
+│   │   │   ├── HomePage.jsx             # Página inicial (hero, propagandas, peças em destaque)
 │   │   │   ├── PecasPage.jsx            # Listagem de peças com filtros
 │   │   │   ├── PecaDetalhesPage.jsx     # Detalhes de uma peça + mapa + elenco
 │   │   │   ├── ColaboradorPage.jsx      # Formulário público de cadastro
@@ -166,7 +172,7 @@ theatrum/
 ├── server/                     # Backend Express + Prisma
 │   ├── prisma/
 │   │   ├── schema.prisma                # Schema do banco (modelos, relações)
-│   │   └── seed.js                      # Dados iniciais (admin, peças, colaboradores)
+│   │   └── seed.js                      # Dados iniciais (admin, peças, colaboradores, propagandas)
 │   ├── src/
 │   │   ├── config/
 │   │   │   └── env.js                   # Validação de variáveis de ambiente
@@ -176,15 +182,17 @@ theatrum/
 │   │   │   ├── authController.js        # Login e perfil
 │   │   │   ├── pecasController.js       # CRUD de peças
 │   │   │   ├── colaboradoresController.js# CRUD de colaboradores
-│   │   │   ├── fotosController.js       # Upload/deleção de fotos
+│   │   │   ├── fotosController.js       # Upload/deleção de fotos de peças
 │   │   │   ├── locaisController.js      # CRUD de locais
+│   │   │   ├── propagandasController.js # CRUD de propagandas e fotos
 │   │   │   └── configController.js      # Configurações do site
 │   │   ├── services/                    # Camada de negócios (lógica)
 │   │   │   ├── authService.js           # Autenticação JWT + bcrypt
 │   │   │   ├── pecaService.js           # Regras de negócio de peças
 │   │   │   ├── colaboradorService.js    # Regras de colaboradores (LGPD)
-│   │   │   ├── fotoService.js           # Upload/deleção de fotos
+│   │   │   ├── fotoService.js           # Upload/deleção de fotos de peças
 │   │   │   ├── localService.js          # CRUD de locais de apresentação
+│   │   │   ├── propagandaService.js     # CRUD de propagandas + fotos
 │   │   │   ├── fileService.js           # Persistência de arquivos (PostgreSQL + disco)
 │   │   │   └── configService.js         # Configurações do site
 │   │   ├── middleware/
@@ -195,12 +203,14 @@ theatrum/
 │   │   │   ├── auth.js                  # /api/auth
 │   │   │   ├── pecas.js                 # /api/pecas (+ fotos, colaboradores, locais)
 │   │   │   ├── colaboradores.js         # /api/colaboradores
+│   │   │   ├── propagandas.js           # /api/propagandas (+ fotos)
 │   │   │   ├── config.js                # /api/config
 │   │   │   └── upload.js               # /api/upload
 │   │   ├── validators/                  # Validação de dados de entrada
 │   │   │   ├── authValidator.js
 │   │   │   ├── pecaValidator.js
-│   │   │   └── colaboradorValidator.js
+│   │   │   ├── colaboradorValidator.js
+│   │   │   └── propagandaValidator.js
 │   │   ├── errors/
 │   │   │   └── AppError.js              # Classe padronizada de erros HTTP
 │   │   ├── lib/
@@ -272,6 +282,8 @@ O Theatrum usa **PostgreSQL** via **Prisma ORM**. Todas as tabelas e relações 
 | `LocalPeca` | `locais_pecas` | Locais/datas de apresentação (N por peça) |
 | `PecaColaborador` | `peca_colaboradores` | Tabela N:N entre peças e colaboradores |
 | `FotoPeca` | `fotos_pecas` | Fotos/vídeos das peças |
+| `Propaganda` | `propagandas` | Anúncios/propagandas do site |
+| `FotoPropaganda` | `fotos_propagandas` | Fotos das propagandas |
 | `ConfigSite` | `config_site` | Configurações editáveis (chave-valor) |
 | `Arquivo` | `arquivos` | Armazenamento binário de uploads no PostgreSQL |
 
@@ -284,6 +296,8 @@ Colaborador ◄──── PecaColaborador ────► Peca
                      (N:N)                │
                                           ├── FotoPeca (1:N)
                                           └── LocalPeca (1:N)
+
+Propaganda ◄──── FotoPropaganda (1:N)
 
 ConfigSite (independente, chave-valor)
 Arquivo (independente, armazenamento binário)
@@ -365,6 +379,24 @@ node prisma/seed.js        # Re-popula dados iniciais
 |---|---|---|---|
 | `GET` | `/config` | Público | Listar todas as configurações |
 | `PUT` | `/config/:chave` | Admin | Atualizar configuração |
+
+### Propagandas (`/api/propagandas`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `GET` | `/propagandas` | Público | Listar propagandas (filtro: `?ativo=true&limite=5`) |
+| `GET` | `/propagandas/:id` | Público | Detalhes de uma propaganda |
+| `POST` | `/propagandas` | Admin | Criar propaganda (multipart, com fotos opcionais) |
+| `PUT` | `/propagandas/:id` | Admin | Atualizar propaganda |
+| `DELETE` | `/propagandas/:id` | Admin | Deletar propaganda e fotos |
+
+### Fotos de Propagandas (`/api/propagandas/:id/fotos`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| `POST` | `/propagandas/:id/fotos` | Admin | Upload de fotos (multipart, max 10) |
+| `DELETE` | `/propagandas/:id/fotos/:fotoId` | Admin | Remover foto |
+| `PUT` | `/propagandas/:id/fotos/reordenar` | Admin | Reordenar fotos |
 
 ### Upload Genérico (`/api/upload`)
 
