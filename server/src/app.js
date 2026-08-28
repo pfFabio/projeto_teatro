@@ -65,20 +65,37 @@ app.use('/api/auth/login', limiterLogin);
 // Middlewares de Parsing e CORS
 // =============================================================================
 
-const origensPermitidas = [
+const origensPadrao = [
   'http://localhost:5173',
   'http://localhost:3000',
-  ENV.CLIENT_URL,
+  'https://pffabio.github.io',
+];
+
+const origensPermitidas = [
+  ...origensPadrao,
+  ENV.CLIENT_URL ? ENV.CLIENT_URL.replace(/\/$/, '') : null,
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Permite requisições sem origin (como mobile apps, curl, postman) em desenvolvimento
-      if (!origin || origensPermitidas.length === 0 || origensPermitidas.includes(origin) || ENV.NODE_ENV !== 'production') {
+      // Permite requisições sem origin (mobile apps, curl, server-to-server)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const originNormalizada = origin.replace(/\/$/, '');
+
+      const permitida = origensPermitidas.some((o) =>
+        originNormalizada === o ||
+        originNormalizada.startsWith('http://localhost:') ||
+        originNormalizada.endsWith('.github.io')
+      );
+
+      if (permitida || ENV.NODE_ENV !== 'production') {
         callback(null, true);
       } else {
-        callback(new AppError('Bloqueado pelas políticas de CORS', 403));
+        callback(new AppError(`Origem ${origin} bloqueada pelas políticas de CORS`, 403));
       }
     },
     credentials: true,
