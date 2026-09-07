@@ -100,7 +100,8 @@ class FileService {
       return true;
     } catch (erro) {
       if (erro.code === 'ENOENT') {
-        return true;
+        logger.warn(`Tentativa de remover arquivo inexistente do disco: ${urlRelativa}`);
+        return false;
       }
       logger.error(`Erro ao remover arquivo do disco: ${urlRelativa}`, erro.message);
       return false;
