@@ -1,0 +1,563 @@
+{
+  "doi": "10.1007/s00530-014-0366-0",
+  "title": "Modeling performing arts metadata and relationships in content service for institutions",
+  "publication_year": 2014,
+  "host_venue": "Multimedia Systems",
+  "authors": [
+    "Pierfrancesco Bellini",
+    "Paolo Nesi"
+  ],
+  "open_access": {
+    "is_oa": true,
+    "oa_status": "hybrid",
+    "oa_url": "https://link.springer.com/content/pdf/10.1007/s00530-014-0366-0.pdf",
+    "any_repository_has_fulltext": true
+  },
+  "best_oa_location": {
+    "id": "doi:10.1007/s00530-014-0366-0",
+    "is_oa": true,
+    "landing_page_url": "https://doi.org/10.1007/s00530-014-0366-0",
+    "pdf_url": "https://link.springer.com/content/pdf/10.1007/s00530-014-0366-0.pdf",
+    "source": {
+      "id": "https://openalex.org/S112262039",
+      "display_name": "Multimedia Systems",
+      "issn_l": "0942-4962",
+      "issn": [
+        "0942-4962",
+        "1432-1882"
+      ],
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": true,
+      "host_organization": "https://openalex.org/P4310319900",
+      "host_organization_name": "Springer Science+Business Media",
+      "host_organization_lineage": [
+        "https://openalex.org/P4310319900",
+        "https://openalex.org/P4310319965"
+      ],
+      "host_organization_lineage_names": [
+        "Springer Science+Business Media",
+        "Springer Nature"
+      ],
+      "type": "journal"
+    },
+    "license": "cc-by",
+    "license_id": "https://openalex.org/licenses/cc-by",
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "Multimedia Systems",
+    "raw_type": "journal-article"
+  },
+  "all_locations": [
+    {
+      "pdf_url": "https://link.springer.com/content/pdf/10.1007/s00530-014-0366-0.pdf",
+      "landing_page": "https://doi.org/10.1007/s00530-014-0366-0"
+    },
+    {
+      "pdf_url": null,
+      "landing_page": "http://link.springer.com/article/10.1007%2Fs00530-014-0366-0"
+    }
+  ],
+  "abstract_inverted_index": {
+    "The": [
+      0,
+      31,
+      128,
+      139,
+      168,
+      192
+    ],
+    "modeling": [
+      1,
+      43
+    ],
+    "of": [
+      2,
+      9,
+      35,
+      44,
+      56,
+      66,
+      87,
+      123,
+      135,
+      174,
+      184,
+      217
+    ],
+    "performing": [
+      3,
+      58,
+      78,
+      102,
+      223
+    ],
+    "arts": [
+      4,
+      59,
+      103,
+      224
+    ],
+    "metadata": [
+      5
+    ],
+    "is": [
+      6,
+      150
+    ],
+    "considered": [
+      7
+    ],
+    "one": [
+      8
+    ],
+    "the": [
+      10,
+      22,
+      36,
+      42,
+      57,
+      64,
+      83,
+      116,
+      121,
+      136,
+      172,
+      177,
+      182,
+      211,
+      218,
+      222,
+      232
+    ],
+    "most": [
+      11,
+      32,
+      134
+    ],
+    "challenging": [
+      12
+    ],
+    "problems,": [
+      13
+    ],
+    "since": [
+      14
+    ],
+    "performances": [
+      15
+    ],
+    "add": [
+      16
+    ],
+    "complexities": [
+      17
+    ],
+    "related": [
+      18,
+      40,
+      220
+    ],
+    "to": [
+      19,
+      21,
+      28,
+      41,
+      47,
+      119,
+      187,
+      221
+    ],
+    "events": [
+      20
+    ],
+    "classical": [
+      23
+    ],
+    "cultural": [
+      24,
+      68
+    ],
+    "heritage": [
+      25,
+      69
+    ],
+    "descriptors": [
+      26
+    ],
+    "associated": [
+      27
+    ],
+    "physical": [
+      29
+    ],
+    "objects.": [
+      30
+    ],
+    "relevant": [
+      33,
+      197
+    ],
+    "lacks": [
+      34
+    ],
+    "present": [
+      37,
+      146,
+      229
+    ],
+    "models": [
+      38
+    ],
+    "are": [
+      39,
+      52,
+      61,
+      226
+    ],
+    "information": [
+      45
+    ],
+    "connected": [
+      46,
+      76
+    ],
+    "performers": [
+      48
+    ],
+    "and": [
+      49,
+      60,
+      70,
+      100,
+      148,
+      163,
+      181,
+      201
+    ],
+    "performances,": [
+      50
+    ],
+    "which": [
+      51,
+      225
+    ],
+    "obviously": [
+      53
+    ],
+    "distinguishing": [
+      54
+    ],
+    "aspects": [
+      55,
+      73
+    ],
+    "essential": [
+      62
+    ],
+    "for": [
+      63,
+      98,
+      126,
+      157
+    ],
+    "preservation": [
+      65
+    ],
+    "our": [
+      67
+    ],
+    "literature,": [
+      71
+    ],
+    "such": [
+      72
+    ],
+    "being": [
+      74
+    ],
+    "strongly": [
+      75
+    ],
+    "with": [
+      77,
+      145
+    ],
+    "arts.": [
+      79
+    ],
+    "This": [
+      80
+    ],
+    "paper": [
+      81,
+      169
+    ],
+    "presents": [
+      82
+    ],
+    "European": [
+      84,
+      117
+    ],
+    "Collected": [
+      85
+    ],
+    "Library": [
+      86
+    ],
+    "Artistic": [
+      88
+    ],
+    "Performance": [
+      89
+    ],
+    "(ECLAP)": [
+      90
+    ],
+    "semantic": [
+      91,
+      131,
+      161,
+      179
+    ],
+    "model": [
+      92,
+      132,
+      141,
+      180,
+      186,
+      213
+    ],
+    "that": [
+      93,
+      195
+    ],
+    "has": [
+      94,
+      111,
+      142
+    ],
+    "been": [
+      95,
+      112,
+      143
+    ],
+    "specifically": [
+      96
+    ],
+    "defined": [
+      97
+    ],
+    "aggregating": [
+      99
+    ],
+    "enriching": [
+      101
+    ],
+    "content": [
+      104,
+      108,
+      124
+    ],
+    "coming": [
+      105
+    ],
+    "from": [
+      106,
+      176
+    ],
+    "several": [
+      107
+    ],
+    "providers.": [
+      109
+    ],
+    "ECLAP": [
+      110,
+      130,
+      178,
+      185,
+      204,
+      212
+    ],
+    "set": [
+      113
+    ],
+    "up": [
+      114
+    ],
+    "by": [
+      115,
+      153,
+      203,
+      231
+    ],
+    "Commission": [
+      118
+    ],
+    "play": [
+      120
+    ],
+    "role": [
+      122
+    ],
+    "aggregator": [
+      125
+    ],
+    "Europeana.": [
+      127
+    ],
+    "proposed": [
+      129,
+      140
+    ],
+    "addresses": [
+      133
+    ],
+    "identified": [
+      137
+    ],
+    "problems.": [
+      138
+    ],
+    "compared": [
+      144
+    ],
+    "standards": [
+      147
+    ],
+    "it": [
+      149
+    ],
+    "now": [
+      151
+    ],
+    "supported": [
+      152
+    ],
+    "a": [
+      154
+    ],
+    "graphic": [
+      155
+    ],
+    "tool": [
+      156
+    ],
+    "user": [
+      158
+    ],
+    "navigation": [
+      159
+    ],
+    "among": [
+      160
+    ],
+    "relationships": [
+      162
+    ],
+    "Linked": [
+      164
+    ],
+    "Open": [
+      165
+    ],
+    "Data": [
+      166,
+      189
+    ],
+    "(LOD).": [
+      167
+    ],
+    "also": [
+      170
+    ],
+    "describes": [
+      171
+    ],
+    "generation": [
+      173
+    ],
+    "LOD": [
+      175
+    ],
+    "mapping": [
+      183
+    ],
+    "Europeana": [
+      188
+    ],
+    "Model": [
+      190
+    ],
+    "(EDM).": [
+      191
+    ],
+    "experience": [
+      193
+    ],
+    "highlighted": [
+      194
+    ],
+    "some": [
+      196,
+      216
+    ],
+    "elements": [
+      198
+    ],
+    "produced,": [
+      199
+    ],
+    "enriched": [
+      200
+    ],
+    "aggregated": [
+      202
+    ],
+    "cannot": [
+      205
+    ],
+    "be": [
+      206
+    ],
+    "mapped": [
+      207
+    ],
+    "into": [
+      208
+    ],
+    "EDM,": [
+      209
+    ],
+    "while": [
+      210
+    ],
+    "can": [
+      214
+    ],
+    "address": [
+      215
+    ],
+    "details": [
+      219
+    ],
+    "not": [
+      227
+    ],
+    "at": [
+      228
+    ],
+    "addressed": [
+      230
+    ],
+    "available": [
+      233
+    ],
+    "standards.": [
+      234
+    ]
+  }
+}

@@ -1,0 +1,502 @@
+{
+  "doi": "10.1145/3477314.3507023",
+  "title": "Ensuring privacy in the application of the Brazilian general data protection law (LGPD)",
+  "publication_year": 2022,
+  "host_venue": "Proceedings of the 37th ACM/SIGAPP Symposium on Applied Computing",
+  "authors": [
+    "Evandro Thalles Vale de Castro",
+    "Geovana Ramos Sousa Silva",
+    "Edna Dias Canedo"
+  ],
+  "open_access": {
+    "is_oa": false,
+    "oa_status": "closed",
+    "oa_url": null,
+    "any_repository_has_fulltext": false
+  },
+  "best_oa_location": {},
+  "all_locations": [
+    {
+      "pdf_url": null,
+      "landing_page": "https://doi.org/10.1145/3477314.3507023"
+    }
+  ],
+  "abstract_inverted_index": {
+    "Currently,": [
+      0
+    ],
+    "many": [
+      1
+    ],
+    "organizations": [
+      2,
+      77
+    ],
+    "make": [
+      3
+    ],
+    "use": [
+      4
+    ],
+    "of": [
+      5,
+      9,
+      17,
+      25,
+      42,
+      47,
+      56,
+      65,
+      87,
+      166
+    ],
+    "the": [
+      6,
+      15,
+      23,
+      37,
+      45,
+      52,
+      63,
+      84,
+      91,
+      99,
+      121,
+      125,
+      129,
+      135,
+      164,
+      191,
+      203
+    ],
+    "personal": [
+      7,
+      85
+    ],
+    "data": [
+      8,
+      13,
+      86
+    ],
+    "their": [
+      10
+    ],
+    "users.": [
+      11
+    ],
+    "Personal": [
+      12
+    ],
+    "is": [
+      14,
+      33,
+      59
+    ],
+    "set": [
+      16
+    ],
+    "information": [
+      18,
+      32,
+      58,
+      194
+    ],
+    "that": [
+      19,
+      50
+    ],
+    "can": [
+      20,
+      151
+    ],
+    "lead": [
+      21
+    ],
+    "to": [
+      22,
+      61,
+      72,
+      78,
+      83,
+      109,
+      113,
+      120,
+      162,
+      175,
+      177,
+      211
+    ],
+    "identification": [
+      24
+    ],
+    "a": [
+      26,
+      111,
+      131,
+      147,
+      184,
+      188
+    ],
+    "specific": [
+      27
+    ],
+    "person": [
+      28
+    ],
+    "and,": [
+      29
+    ],
+    "therefore,": [
+      30
+    ],
+    "this": [
+      31
+    ],
+    "generally": [
+      34
+    ],
+    "vital": [
+      35
+    ],
+    "for": [
+      36,
+      76
+    ],
+    "operations": [
+      38
+    ],
+    "and": [
+      39,
+      54,
+      81,
+      98,
+      150,
+      168,
+      193,
+      209
+    ],
+    "business": [
+      40
+    ],
+    "continuity": [
+      41
+    ],
+    "organizations.": [
+      43,
+      182
+    ],
+    "Consequently,": [
+      44
+    ],
+    "relevance": [
+      46
+    ],
+    "adopting": [
+      48
+    ],
+    "methodologies": [
+      49
+    ],
+    "guarantee": [
+      51
+    ],
+    "protection": [
+      53,
+      82
+    ],
+    "privacy": [
+      55,
+      192
+    ],
+    "user": [
+      57,
+      212
+    ],
+    "indispensable": [
+      60
+    ],
+    "prevent": [
+      62
+    ],
+    "leaking": [
+      64
+    ],
+    "sensible": [
+      66
+    ],
+    "information.": [
+      67,
+      213
+    ],
+    "Therefore,": [
+      68
+    ],
+    "laws": [
+      69
+    ],
+    "were": [
+      70
+    ],
+    "created": [
+      71
+    ],
+    "establish": [
+      73
+    ],
+    "essential": [
+      74
+    ],
+    "requirements": [
+      75,
+      122
+    ],
+    "provide": [
+      79
+    ],
+    "support": [
+      80,
+      114
+    ],
+    "users,": [
+      88
+    ],
+    "such": [
+      89
+    ],
+    "as": [
+      90
+    ],
+    "General": [
+      92,
+      101
+    ],
+    "European": [
+      93
+    ],
+    "Data": [
+      94,
+      102
+    ],
+    "Protection": [
+      95,
+      103
+    ],
+    "Regulation": [
+      96
+    ],
+    "(GDPR)": [
+      97
+    ],
+    "Brazilian": [
+      100
+    ],
+    "Law": [
+      104
+    ],
+    "(LGPD).": [
+      105
+    ],
+    "This": [
+      106,
+      144
+    ],
+    "work": [
+      107
+    ],
+    "aims": [
+      108
+    ],
+    "develop": [
+      110
+    ],
+    "framework": [
+      112,
+      132,
+      145
+    ],
+    "ICT": [
+      115
+    ],
+    "professionals": [
+      116
+    ],
+    "in": [
+      117,
+      173,
+      190,
+      199,
+      202,
+      207
+    ],
+    "adapting": [
+      118
+    ],
+    "companies": [
+      119
+    ],
+    "demanded": [
+      123
+    ],
+    "by": [
+      124,
+      154,
+      181
+    ],
+    "LGPD.": [
+      126
+    ],
+    "To": [
+      127
+    ],
+    "achieve": [
+      128
+    ],
+    "purpose,": [
+      130
+    ],
+    "based": [
+      133
+    ],
+    "on": [
+      134
+    ],
+    "BEST": [
+      136
+    ],
+    "methodology": [
+      137,
+      197
+    ],
+    "(Business": [
+      138
+    ],
+    "Engaged": [
+      139
+    ],
+    "Security": [
+      140
+    ],
+    "Transformation)": [
+      141
+    ],
+    "was": [
+      142,
+      159
+    ],
+    "proposed.": [
+      143
+    ],
+    "has": [
+      146
+    ],
+    "sustainable": [
+      148
+    ],
+    "approach": [
+      149
+    ],
+    "be": [
+      152
+    ],
+    "implemented": [
+      153,
+      198
+    ],
+    "any": [
+      155
+    ],
+    "organization.": [
+      156
+    ],
+    "A": [
+      157
+    ],
+    "survey": [
+      158
+    ],
+    "carried": [
+      160
+    ],
+    "out": [
+      161
+    ],
+    "collect": [
+      163
+    ],
+    "perception": [
+      165
+    ],
+    "Information": [
+      167
+    ],
+    "Communication": [
+      169
+    ],
+    "Technology": [
+      170
+    ],
+    "(ICT)": [
+      171
+    ],
+    "practitioners": [
+      172
+    ],
+    "relation": [
+      174
+    ],
+    "adherence": [
+      176
+    ],
+    "LGPD": [
+      178
+    ],
+    "adaptation": [
+      179
+    ],
+    "actions": [
+      180
+    ],
+    "As": [
+      183
+    ],
+    "result,": [
+      185
+    ],
+    "we": [
+      186
+    ],
+    "identified": [
+      187
+    ],
+    "weakness": [
+      189
+    ],
+    "security": [
+      195
+    ],
+    "management": [
+      196
+    ],
+    "organizations,": [
+      200
+    ],
+    "which,": [
+      201
+    ],
+    "future,": [
+      204
+    ],
+    "may": [
+      205
+    ],
+    "result": [
+      206
+    ],
+    "risks": [
+      208
+    ],
+    "damage": [
+      210
+    ]
+  }
+}

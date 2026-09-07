@@ -1,0 +1,58 @@
+{
+  "doi": "10.1007/978-3-030-01614-2_39",
+  "title": "Innovating Performing Arts Management Through a Product Lifecycle Management Approach",
+  "publication_year": 2018,
+  "host_venue": "IFIP advances in information and communication technology",
+  "authors": [
+    "Angelo Corallo",
+    "Mariangela Lazoi",
+    "Manuela Marra",
+    "Lorenzo Quarta"
+  ],
+  "open_access": {
+    "is_oa": true,
+    "oa_status": "green",
+    "oa_url": "https://inria.hal.science/hal-02075639",
+    "any_repository_has_fulltext": true
+  },
+  "best_oa_location": {
+    "id": "pmh:oai:HAL:hal-02075639v1",
+    "is_oa": true,
+    "landing_page_url": "https://inria.hal.science/hal-02075639",
+    "pdf_url": null,
+    "source": {
+      "id": "https://openalex.org/S4306402512",
+      "display_name": "HAL (Le Centre pour la Communication Scientifique Directe)",
+      "issn_l": null,
+      "issn": null,
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": false,
+      "host_organization": "https://openalex.org/I1294671590",
+      "host_organization_name": "Centre National de la Recherche Scientifique",
+      "host_organization_lineage": [
+        "https://openalex.org/I1294671590"
+      ],
+      "host_organization_lineage_names": [],
+      "type": "repository"
+    },
+    "license": "cc-by",
+    "license_id": "https://openalex.org/licenses/cc-by",
+    "version": "submittedVersion",
+    "is_accepted": false,
+    "is_published": false,
+    "raw_source_name": "15th IFIP International Conference on Product Lifecycle Management (PLM), Jul 2018, Turin, Italy. pp.420-431, &#x27E8;10.1007/978-3-030-01614-2_39&#x27E9;",
+    "raw_type": "info:eu-repo/semantics/conferenceObject"
+  },
+  "all_locations": [
+    {
+      "pdf_url": null,
+      "landing_page": "https://doi.org/10.1007/978-3-030-01614-2_39"
+    },
+    {
+      "pdf_url": null,
+      "landing_page": "https://inria.hal.science/hal-02075639"
+    }
+  ],
+  "abstract_inverted_index": null
+}

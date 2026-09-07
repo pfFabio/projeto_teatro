@@ -1,0 +1,466 @@
+{
+  "doi": "10.3390/ijgi11040266",
+  "title": "Increasing Access to Cultural Heritage Objects from Multiple Museums through Semantically-Aware Maps",
+  "publication_year": 2022,
+  "host_venue": "ISPRS International Journal of Geo-Information",
+  "authors": [
+    "Cristina Portalés",
+    "Pablo Casanova-Salas",
+    "Javier Sevilla",
+    "Jorge Sebastián Lozano",
+    "Arabella León",
+    "J. Javier Samper"
+  ],
+  "open_access": {
+    "is_oa": true,
+    "oa_status": "gold",
+    "oa_url": "https://www.mdpi.com/2220-9964/11/4/266/pdf?version=1650251932",
+    "any_repository_has_fulltext": true
+  },
+  "best_oa_location": {
+    "id": "doi:10.3390/ijgi11040266",
+    "is_oa": true,
+    "landing_page_url": "https://doi.org/10.3390/ijgi11040266",
+    "pdf_url": "https://www.mdpi.com/2220-9964/11/4/266/pdf?version=1650251932",
+    "source": {
+      "id": "https://openalex.org/S2764431341",
+      "display_name": "ISPRS International Journal of Geo-Information",
+      "issn_l": "2220-9964",
+      "issn": [
+        "2220-9964"
+      ],
+      "is_oa": true,
+      "is_in_doaj": true,
+      "is_core": true,
+      "host_organization": "https://openalex.org/P4310310987",
+      "host_organization_name": "Multidisciplinary Digital Publishing Institute",
+      "host_organization_lineage": [
+        "https://openalex.org/P4310310987"
+      ],
+      "host_organization_lineage_names": [
+        "Multidisciplinary Digital Publishing Institute"
+      ],
+      "type": "journal"
+    },
+    "license": "cc-by",
+    "license_id": "https://openalex.org/licenses/cc-by",
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "ISPRS International Journal of Geo-Information",
+    "raw_type": "journal-article"
+  },
+  "all_locations": [
+    {
+      "pdf_url": "https://www.mdpi.com/2220-9964/11/4/266/pdf?version=1650251932",
+      "landing_page": "https://doi.org/10.3390/ijgi11040266"
+    },
+    {
+      "pdf_url": "https://roderic.uv.es/bitstreams/24ab559b-7e6c-4217-9c63-40599fd43daa/download",
+      "landing_page": "https://hdl.handle.net/10550/93532"
+    },
+    {
+      "pdf_url": null,
+      "landing_page": "https://doaj.org/article/baee42ed0b2c460db0543dacf836f006"
+    }
+  ],
+  "abstract_inverted_index": {
+    "Geographical": [
+      0
+    ],
+    "information": [
+      1
+    ],
+    "is": [
+      2,
+      130
+    ],
+    "gaining": [
+      3
+    ],
+    "new": [
+      4,
+      24,
+      68
+    ],
+    "momentum": [
+      5
+    ],
+    "as": [
+      6,
+      139,
+      141
+    ],
+    "an": [
+      7,
+      53
+    ],
+    "analysis": [
+      8
+    ],
+    "and": [
+      9,
+      28,
+      40,
+      70,
+      81,
+      116,
+      153
+    ],
+    "visualization": [
+      10
+    ],
+    "tool": [
+      11
+    ],
+    "for": [
+      12,
+      135
+    ],
+    "collections": [
+      13
+    ],
+    "of": [
+      14,
+      21,
+      87,
+      98
+    ],
+    "cultural": [
+      15,
+      61
+    ],
+    "objects.": [
+      16,
+      74
+    ],
+    "It": [
+      17
+    ],
+    "provides": [
+      18
+    ],
+    "all": [
+      19
+    ],
+    "kinds": [
+      20
+    ],
+    "users": [
+      22
+    ],
+    "with": [
+      23
+    ],
+    "opportunities": [
+      25
+    ],
+    "to": [
+      26,
+      41,
+      112,
+      132,
+      147
+    ],
+    "contextualize": [
+      27
+    ],
+    "understand": [
+      29
+    ],
+    "these": [
+      30,
+      73
+    ],
+    "objects": [
+      31,
+      62
+    ],
+    "in": [
+      32,
+      124
+    ],
+    "ways": [
+      33
+    ],
+    "that": [
+      34,
+      56
+    ],
+    "resemble": [
+      35
+    ],
+    "our": [
+      36
+    ],
+    "ordinary": [
+      37
+    ],
+    "spatially-located": [
+      38
+    ],
+    "experience": [
+      39
+    ],
+    "do": [
+      42
+    ],
+    "so": [
+      43
+    ],
+    "better": [
+      44
+    ],
+    "than": [
+      45,
+      59,
+      89
+    ],
+    "textual": [
+      46
+    ],
+    "narratives.": [
+      47
+    ],
+    "The": [
+      48,
+      150
+    ],
+    "SeMap": [
+      49
+    ],
+    "project": [
+      50
+    ],
+    "has": [
+      51
+    ],
+    "built": [
+      52
+    ],
+    "online": [
+      54
+    ],
+    "resource": [
+      55
+    ],
+    "shows": [
+      57
+    ],
+    "more": [
+      58,
+      88
+    ],
+    "200,000": [
+      60
+    ],
+    "through": [
+      63
+    ],
+    "spatiotemporal": [
+      64
+    ],
+    "maps,": [
+      65
+    ],
+    "thus": [
+      66
+    ],
+    "enabling": [
+      67
+    ],
+    "experiences": [
+      69
+    ],
+    "perspectives": [
+      71
+    ],
+    "around": [
+      72
+    ],
+    "Data": [
+      75
+    ],
+    "come": [
+      76
+    ],
+    "from": [
+      77
+    ],
+    "the": [
+      78,
+      96,
+      99,
+      103,
+      113,
+      119,
+      125,
+      133,
+      137
+    ],
+    "CER.ES": [
+      79
+    ],
+    "repository": [
+      80
+    ],
+    "were": [
+      82
+    ],
+    "created": [
+      83
+    ],
+    "by": [
+      84,
+      102,
+      106,
+      117
+    ],
+    "a": [
+      85,
+      108
+    ],
+    "network": [
+      86
+    ],
+    "100": [
+      90
+    ],
+    "Spanish": [
+      91
+    ],
+    "museums.": [
+      92
+    ],
+    "This": [
+      93
+    ],
+    "article": [
+      94
+    ],
+    "explains": [
+      95
+    ],
+    "refinement": [
+      97
+    ],
+    "data": [
+      100
+    ],
+    "provided": [
+      101
+    ],
+    "repository,": [
+      104
+    ],
+    "mostly": [
+      105
+    ],
+    "adding": [
+      107,
+      142
+    ],
+    "semantic": [
+      109
+    ],
+    "structure": [
+      110
+    ],
+    "thanks": [
+      111
+    ],
+    "CIDOC-CRM": [
+      114
+    ],
+    "ontology,": [
+      115
+    ],
+    "simplifying": [
+      118
+    ],
+    "exceedingly": [
+      120
+    ],
+    "complex": [
+      121
+    ],
+    "terminologies": [
+      122
+    ],
+    "employed": [
+      123
+    ],
+    "original": [
+      126
+    ],
+    "records.": [
+      127
+    ],
+    "Particular": [
+      128
+    ],
+    "attention": [
+      129
+    ],
+    "paid": [
+      131
+    ],
+    "methods": [
+      134
+    ],
+    "geolocating": [
+      136
+    ],
+    "information,": [
+      138
+    ],
+    "well": [
+      140
+    ],
+    "temporal": [
+      143
+    ],
+    "filters": [
+      144
+    ],
+    "(among": [
+      145
+    ],
+    "others)": [
+      146
+    ],
+    "user": [
+      148
+    ],
+    "queries.": [
+      149
+    ],
+    "functionalities,": [
+      151
+    ],
+    "interface,": [
+      152
+    ],
+    "technical": [
+      154
+    ],
+    "requirements": [
+      155
+    ],
+    "are": [
+      156
+    ],
+    "also": [
+      157
+    ],
+    "explored": [
+      158
+    ],
+    "at": [
+      159
+    ],
+    "length.": [
+      160
+    ]
+  }
+}

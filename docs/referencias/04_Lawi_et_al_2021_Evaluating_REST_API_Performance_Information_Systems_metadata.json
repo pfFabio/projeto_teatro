@@ -1,0 +1,756 @@
+{
+  "doi": "10.3390/computers10110138",
+  "title": "Evaluating GraphQL and REST API Services Performance in a Massive and Intensive Accessible Information System",
+  "publication_year": 2021,
+  "host_venue": "Computers",
+  "authors": [
+    "Armin Lawi",
+    "Benny Leonard Enrico Panggabean",
+    "Takaichi Yoshida"
+  ],
+  "open_access": {
+    "is_oa": true,
+    "oa_status": "gold",
+    "oa_url": "https://www.mdpi.com/2073-431X/10/11/138/pdf",
+    "any_repository_has_fulltext": true
+  },
+  "best_oa_location": {
+    "id": "doi:10.3390/computers10110138",
+    "is_oa": true,
+    "landing_page_url": "https://doi.org/10.3390/computers10110138",
+    "pdf_url": "https://www.mdpi.com/2073-431X/10/11/138/pdf",
+    "source": {
+      "id": "https://openalex.org/S4210228075",
+      "display_name": "Computers",
+      "issn_l": "2073-431X",
+      "issn": [
+        "2073-431X"
+      ],
+      "is_oa": true,
+      "is_in_doaj": true,
+      "is_core": true,
+      "host_organization": "https://openalex.org/P4310310987",
+      "host_organization_name": "Multidisciplinary Digital Publishing Institute",
+      "host_organization_lineage": [
+        "https://openalex.org/P4310310987"
+      ],
+      "host_organization_lineage_names": [
+        "Multidisciplinary Digital Publishing Institute"
+      ],
+      "type": "journal"
+    },
+    "license": "cc-by",
+    "license_id": "https://openalex.org/licenses/cc-by",
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "Computers",
+    "raw_type": "journal-article"
+  },
+  "all_locations": [
+    {
+      "pdf_url": "https://www.mdpi.com/2073-431X/10/11/138/pdf",
+      "landing_page": "https://doi.org/10.3390/computers10110138"
+    },
+    {
+      "pdf_url": null,
+      "landing_page": "https://doaj.org/article/29d4876f9d8f4aad983c2c84aa1da3da"
+    }
+  ],
+  "abstract_inverted_index": {
+    "Currently,": [
+      0
+    ],
+    "most": [
+      1,
+      289
+    ],
+    "middleware": [
+      2
+    ],
+    "application": [
+      3
+    ],
+    "developers": [
+      4
+    ],
+    "have": [
+      5
+    ],
+    "two": [
+      6,
+      79,
+      99,
+      113,
+      164
+    ],
+    "choices": [
+      7
+    ],
+    "when": [
+      8,
+      279,
+      295
+    ],
+    "designing": [
+      9
+    ],
+    "or": [
+      10,
+      27
+    ],
+    "implementing": [
+      11
+    ],
+    "Application": [
+      12
+    ],
+    "Programming": [
+      13
+    ],
+    "Interface": [
+      14
+    ],
+    "(API)": [
+      15
+    ],
+    "services;": [
+      16
+    ],
+    "i.e.,": [
+      17,
+      188,
+      263
+    ],
+    "they": [
+      18
+    ],
+    "can": [
+      19
+    ],
+    "either": [
+      20
+    ],
+    "stick": [
+      21
+    ],
+    "with": [
+      22,
+      70,
+      98,
+      139
+    ],
+    "Representational": [
+      23
+    ],
+    "State": [
+      24
+    ],
+    "Transfer": [
+      25
+    ],
+    "(REST)": [
+      26
+    ],
+    "explore": [
+      28
+    ],
+    "the": [
+      29,
+      39,
+      53,
+      75,
+      78,
+      90,
+      109,
+      112,
+      118,
+      123,
+      145,
+      159,
+      163,
+      199,
+      204,
+      220,
+      232,
+      235,
+      276,
+      288
+    ],
+    "emerging": [
+      30
+    ],
+    "GraphQL": [
+      31,
+      45,
+      95,
+      256,
+      274
+    ],
+    "technology.": [
+      32
+    ],
+    "Although": [
+      33
+    ],
+    "REST": [
+      34,
+      93,
+      241,
+      292
+    ],
+    "is": [
+      35,
+      46,
+      108,
+      115,
+      144,
+      242,
+      257,
+      275,
+      287,
+      293
+    ],
+    "widely": [
+      36
+    ],
+    "regarded": [
+      37
+    ],
+    "as": [
+      38,
+      65,
+      102
+    ],
+    "standard": [
+      40
+    ],
+    "method": [
+      41,
+      107
+    ],
+    "for": [
+      42,
+      170,
+      253,
+      265,
+      270
+    ],
+    "API": [
+      43,
+      96,
+      172
+    ],
+    "development,": [
+      44
+    ],
+    "believed": [
+      47
+    ],
+    "to": [
+      48,
+      88,
+      207,
+      230,
+      246
+    ],
+    "be": [
+      49
+    ],
+    "revolutionary": [
+      50
+    ],
+    "in": [
+      51,
+      73,
+      202,
+      210,
+      248,
+      260
+    ],
+    "overcoming": [
+      52
+    ],
+    "main": [
+      54,
+      100
+    ],
+    "drawbacks": [
+      55
+    ],
+    "of": [
+      56,
+      77,
+      92,
+      111,
+      122,
+      183,
+      186,
+      234
+    ],
+    "REST,": [
+      57
+    ],
+    "especially": [
+      58
+    ],
+    "data-fetching": [
+      59
+    ],
+    "issues.": [
+      60
+    ],
+    "Nevertheless,": [
+      61
+    ],
+    "doubts": [
+      62
+    ],
+    "still": [
+      63,
+      243
+    ],
+    "remain,": [
+      64
+    ],
+    "there": [
+      66
+    ],
+    "are": [
+      67,
+      298
+    ],
+    "no": [
+      68
+    ],
+    "investigations": [
+      69
+    ],
+    "convincing": [
+      71
+    ],
+    "results": [
+      72,
+      151,
+      206,
+      239
+    ],
+    "evaluating": [
+      74
+    ],
+    "performance": [
+      76,
+      91,
+      149,
+      176,
+      212
+    ],
+    "services.": [
+      80
+    ],
+    "This": [
+      81
+    ],
+    "paper": [
+      82
+    ],
+    "proposes": [
+      83
+    ],
+    "a": [
+      84,
+      136
+    ],
+    "new": [
+      85
+    ],
+    "research": [
+      86
+    ],
+    "methodology": [
+      87
+    ],
+    "evaluate": [
+      89
+    ],
+    "and": [
+      94,
+      129,
+      147,
+      157,
+      194,
+      224,
+      251,
+      268,
+      284,
+      301
+    ],
+    "services": [
+      97,
+      114
+    ],
+    "ideas": [
+      101
+    ],
+    "novelties.": [
+      103
+    ],
+    "The": [
+      104,
+      142,
+      175,
+      214,
+      238
+    ],
+    "first": [
+      105
+    ],
+    "novel": [
+      106
+    ],
+    "evaluation": [
+      110,
+      150,
+      177,
+      205
+    ],
+    "performed": [
+      116
+    ],
+    "on": [
+      117,
+      135,
+      162
+    ],
+    "real": [
+      119
+    ],
+    "ongoing": [
+      120
+    ],
+    "operation": [
+      121
+    ],
+    "management": [
+      124
+    ],
+    "information": [
+      125
+    ],
+    "system,": [
+      126
+    ],
+    "where": [
+      127
+    ],
+    "massive": [
+      128
+    ],
+    "intensive": [
+      130
+    ],
+    "query": [
+      131
+    ],
+    "transactions": [
+      132
+    ],
+    "take": [
+      133
+    ],
+    "place": [
+      134
+    ],
+    "complex": [
+      137
+    ],
+    "database": [
+      138
+    ],
+    "many": [
+      140
+    ],
+    "relationships.": [
+      141
+    ],
+    "second": [
+      143
+    ],
+    "fair": [
+      146
+    ],
+    "independent": [
+      148
+    ],
+    "obtained": [
+      152
+    ],
+    "by": [
+      153,
+      303
+    ],
+    "distributing": [
+      154
+    ],
+    "client": [
+      155
+    ],
+    "requests": [
+      156
+    ],
+    "synchronizing": [
+      158
+    ],
+    "service": [
+      160
+    ],
+    "responses": [
+      161
+    ],
+    "virtually": [
+      165
+    ],
+    "separated": [
+      166
+    ],
+    "parallel": [
+      167
+    ],
+    "execution": [
+      168
+    ],
+    "paths": [
+      169
+    ],
+    "each": [
+      171
+    ],
+    "service,": [
+      173
+    ],
+    "respectively.": [
+      174
+    ],
+    "was": [
+      178,
+      227
+    ],
+    "investigated": [
+      179
+    ],
+    "using": [
+      180,
+      219
+    ],
+    "basic": [
+      181
+    ],
+    "measures": [
+      182
+    ],
+    "QoS": [
+      184
+    ],
+    "(Quality": [
+      185
+    ],
+    "Services),": [
+      187
+    ],
+    "response": [
+      189,
+      249
+    ],
+    "time,": [
+      190
+    ],
+    "throughput,": [
+      191,
+      254
+    ],
+    "CPU": [
+      192,
+      266
+    ],
+    "load,": [
+      193
+    ],
+    "memory": [
+      195,
+      271
+    ],
+    "usage.": [
+      196
+    ],
+    "We": [
+      197
+    ],
+    "use": [
+      198
+    ],
+    "term": [
+      200
+    ],
+    "efficiency": [
+      201
+    ],
+    "comparing": [
+      203
+    ],
+    "capture": [
+      208
+    ],
+    "differences": [
+      209
+    ],
+    "their": [
+      211
+    ],
+    "measures.": [
+      213
+    ],
+    "statistical": [
+      215
+    ],
+    "hypothesis": [
+      216
+    ],
+    "parameters": [
+      217
+    ],
+    "test": [
+      218
+    ],
+    "two-tails": [
+      221
+    ],
+    "paired": [
+      222
+    ],
+    "t-test,": [
+      223
+    ],
+    "boxplot": [
+      225
+    ],
+    "visualization": [
+      226
+    ],
+    "also": [
+      228
+    ],
+    "given": [
+      229
+    ],
+    "confirm": [
+      231
+    ],
+    "significance": [
+      233
+    ],
+    "comparison": [
+      236
+    ],
+    "results.": [
+      237
+    ],
+    "showed": [
+      240
+    ],
+    "faster": [
+      244
+    ],
+    "up": [
+      245
+    ],
+    "50.50%": [
+      247
+    ],
+    "time": [
+      250
+    ],
+    "37.16%": [
+      252
+    ],
+    "while": [
+      255
+    ],
+    "very": [
+      258
+    ],
+    "efficient": [
+      259
+    ],
+    "resource": [
+      261,
+      285
+    ],
+    "utilization,": [
+      262
+    ],
+    "37.26%": [
+      264
+    ],
+    "load": [
+      267
+    ],
+    "39.74%": [
+      269
+    ],
+    "utilization.": [
+      272
+    ],
+    "Therefore,": [
+      273
+    ],
+    "right": [
+      277
+    ],
+    "choice": [
+      278
+    ],
+    "data": [
+      280,
+      297
+    ],
+    "requirements": [
+      281
+    ],
+    "change": [
+      282
+    ],
+    "frequently,": [
+      283
+    ],
+    "utilization": [
+      286
+    ],
+    "important": [
+      290
+    ],
+    "consideration.": [
+      291
+    ],
+    "used": [
+      294
+    ],
+    "some": [
+      296
+    ],
+    "frequently": [
+      299
+    ],
+    "accessed": [
+      300
+    ],
+    "called": [
+      302
+    ],
+    "multiple": [
+      304
+    ],
+    "requests.": [
+      305
+    ]
+  }
+}
