@@ -22,7 +22,8 @@ export default function Footer() {
           <h4 className="footer-titulo">Navegação</h4>
           <ul className="footer-links">
             <li><Link to="/">Início</Link></li>
-            <li><Link to="/pecas">Peças</Link></li>
+            <li><Link to="/obras">Obras</Link></li>
+            <li><Link to="/agenda">Agenda</Link></li>
             <li><Link to="/colaborador">Seja Colaborador</Link></li>
             <li><Link to="/admin">Área Admin</Link></li>
           </ul>

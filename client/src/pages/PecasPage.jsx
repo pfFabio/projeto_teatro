@@ -1,5 +1,5 @@
 // =============================================================================
-// Página de Peças — Listagem com filtros e busca
+// Página de Obras — Catálogo de espetáculos com filtros e busca
 // Otimizado com useCallback e dependências controladas
 // =============================================================================
 
@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { pecasAPI, getMediaUrl } from '../services/api';
 import { getTag, statusFiltros } from '../constants/statusPeca';
+import defaultCover from '../assets/theatre-placeholder.jpg';
 
 export default function PecasPage() {
   const [pecas, setPecas] = useState([]);
@@ -30,7 +31,7 @@ export default function PecasPage() {
       setPecas(res.data.pecas || []);
       setTotalPaginas(res.data.totalPaginas || 1);
     } catch (erro) {
-      console.error('Erro ao carregar peças:', erro);
+      console.error('Erro ao carregar obras:', erro);
     } finally {
       setCarregando(false);
     }
@@ -53,9 +54,9 @@ export default function PecasPage() {
 
   return (
     <div className="pagina-conteudo">
-      <h1 className="pagina-titulo">🎪 Nossas Peças</h1>
+      <h1 className="pagina-titulo">🎭 Nossas Obras</h1>
       <p className="pagina-subtitulo">
-        Explore todos os espetáculos do Theatrum
+        Explore todas as obras e produções do Theatrum
       </p>
 
       {/* Barra de Filtros */}
@@ -63,7 +64,7 @@ export default function PecasPage() {
         <input
           type="text"
           className="campo-input"
-          placeholder="🔍 Buscar peça..."
+          placeholder="🔍 Buscar obra..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
         />
@@ -87,12 +88,12 @@ export default function PecasPage() {
       {carregando ? (
         <div className="carregando-container">
           <div className="spinner" />
-          <p>Carregando peças...</p>
+          <p>Carregando obras...</p>
         </div>
       ) : pecas.length === 0 ? (
         <div className="vazio">
           <div className="vazio-icone">🎭</div>
-          <p>Nenhuma peça encontrada</p>
+          <p>Nenhuma obra encontrada</p>
           {(busca || filtroStatus) && (
             <button
               className="btn btn-fantasma"
@@ -109,36 +110,26 @@ export default function PecasPage() {
         </div>
       ) : (
         <>
-          {/* Grid de Peças */}
+          {/* Grid de Obras */}
           <div className="pecas-grid">
             {pecas.map((peca) => {
               const tag = getTag(peca.status);
 
               return (
                 <Link
-                  to={`/pecas/${peca.id}`}
+                  to={`/obras/${peca.id}`}
                   key={peca.id}
                   className="card peca-card animar-entrada"
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >
                   <div className="peca-card-imagem">
-                    {peca.fotos?.[0]?.url && (
-                      <img
-                        src={getMediaUrl(peca.fotos[0].url)}
-                        alt={peca.titulo}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          const ph = e.target.parentElement.querySelector('.peca-card-placeholder');
-                          if (ph) ph.style.display = 'flex';
-                        }}
-                      />
-                    )}
-                    <div
-                      className="peca-card-placeholder"
-                      style={{ display: peca.fotos?.[0]?.url ? 'none' : 'flex' }}
-                    >
-                      🎭
-                    </div>
+                    <img
+                      src={peca.fotos?.[0]?.url ? getMediaUrl(peca.fotos[0].url) : defaultCover}
+                      alt={peca.titulo}
+                      onError={(e) => {
+                        e.target.src = defaultCover;
+                      }}
+                    />
                     <div className="peca-card-status">
                       <span className={`tag ${tag.classe}`}>{tag.texto}</span>
                     </div>
@@ -147,12 +138,10 @@ export default function PecasPage() {
                     <h3 className="peca-card-titulo">{peca.titulo}</h3>
                     <p className="peca-card-resumo">{peca.resumo}</p>
                     <div className="peca-card-meta">
-                      <span>
-                        📍 {peca.locais && peca.locais.length > 0
-                          ? peca.locais.map(l => l.cidade?.split(',')[0]?.trim()).filter(Boolean).join(', ')
-                          : peca.endereco?.split('—')[0]?.trim()}
+                      <span>👥 {peca._count?.colaboradores || 0} integrantes</span>
+                      <span style={{ color: 'var(--cor-primaria-clara)', fontWeight: 500 }}>
+                        Ver Obra →
                       </span>
-                      <span>👥 {peca._count?.colaboradores || 0}</span>
                     </div>
                   </div>
                 </Link>

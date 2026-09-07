@@ -1,9 +1,15 @@
+// =============================================================================
+// Página Inicial (HomePage) — Foco na experiência visual das obras teatrais
+// Fluxo do espectador: Início -> Obra (/obras/:id) -> Agenda (/agenda)
+// =============================================================================
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Carrossel from '../components/common/Carousel';
 import PropagandasSection from '../components/common/PropagandasSection';
 import { pecasAPI, configAPI, propagandasAPI, getMediaUrl } from '../services/api';
 import { getTag } from '../constants/statusPeca';
+import defaultCover from '../assets/theatre-placeholder.jpg';
 
 export default function HomePage() {
   const [pecas, setPecas] = useState([]);
@@ -33,8 +39,6 @@ export default function HomePage() {
     }
   }
 
-  // Separar peças em cartaz para destaque
-  const pecasEmCartaz = pecas.filter(p => p.status === 'EM_CARTAZ');
   const pecasDestaque = pecas.slice(0, 6);
 
   if (carregando) {
@@ -42,77 +46,72 @@ export default function HomePage() {
       <div className="pagina-conteudo">
         <div className="carregando-container">
           <div className="spinner" />
-          <p>Carregando espetáculos...</p>
+          <p>Carregando espetáculos do Theatrum...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* === Hero — Carrossel === */}
+    <div className="home-pagina">
+      {/* 1. HERO: Palco Cinematográfico das Obras */}
       <section className="home-hero">
         <div className="pagina-conteudo" style={{ paddingBottom: 0 }}>
           <Carrossel itens={pecas} />
         </div>
       </section>
 
-      {/* === Propagandas / Anúncios Recentes (5 Mais Recentes) === */}
-      <PropagandasSection propagandas={propagandas} config={config} />
-
-      {/* === Peças em Destaque === */}
+      {/* 2. VITRINE DE OBRAS: O foco total na arte e na experiência dos espetáculos */}
       {pecasDestaque.length > 0 && (
-        <section className="secao">
+        <section className="secao home-obras-secao">
           <div className="pagina-conteudo">
-            <h2 className="secao-titulo">🎪 Em Destaque</h2>
-            <p className="secao-subtitulo">
-              Confira os espetáculos que estão fazendo sucesso
-            </p>
+            <div className="home-secao-cabecalho">
+              <div>
+                <span className="home-secao-kicker">Repertório Artístico</span>
+                <h2 className="secao-titulo">🎭 Obras em Destaque</h2>
+              </div>
+              <p className="secao-subtitulo">
+                Conheça os espetáculos em cartaz e as próximas produções da nossa temporada.
+              </p>
+            </div>
 
             <div className="home-destaque-grid">
-              {pecasDestaque.map((peca, i) => {
+              {pecasDestaque.map((peca) => {
                 const tag = getTag(peca.status);
+                const capaFoto = peca.fotos?.[0]?.url ? getMediaUrl(peca.fotos[0].url) : defaultCover;
 
                 return (
                   <Link
-                    to={`/pecas/${peca.id}`}
+                    to={`/obras/${peca.id}`}
                     key={peca.id}
-                    className="card animar-entrada"
+                    className="card peca-card animar-entrada"
                     style={{ textDecoration: 'none', color: 'inherit' }}
+                    title={`Ver detalhes de ${peca.titulo}`}
                   >
                     <div className="peca-card-imagem">
-                      {peca.fotos?.[0]?.url && (
-                        <img
-                          src={getMediaUrl(peca.fotos[0].url)}
-                          alt={peca.titulo}
-                          className="card-imagem"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            const ph = e.target.parentElement.querySelector('.peca-card-placeholder');
-                            if (ph) ph.style.display = 'flex';
-                          }}
-                        />
-                      )}
-                      <div
-                        className="peca-card-placeholder"
-                        style={{ display: peca.fotos?.[0]?.url ? 'none' : 'flex' }}
-                      >
-                        🎭
-                      </div>
+                      <img
+                        src={capaFoto}
+                        alt={peca.titulo}
+                        className="card-imagem"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.src = defaultCover;
+                        }}
+                      />
                       <div className="peca-card-status">
                         <span className={`tag ${tag.classe}`}>{tag.texto}</span>
                       </div>
                     </div>
+
                     <div className="card-corpo">
                       <h3 className="card-titulo">{peca.titulo}</h3>
                       <p className="card-texto peca-card-resumo">{peca.resumo}</p>
+                      
                       <div className="peca-card-meta">
-                        <span>
-                          📍 {peca.locais && peca.locais.length > 0
-                            ? peca.locais.map(l => l.cidade?.split(',')[0]?.trim()).filter(Boolean).join(', ')
-                            : peca.endereco?.split('—')[0]?.trim()}
+                        <span>👥 {peca._count?.colaboradores || 0} integrantes</span>
+                        <span className="peca-card-cta-btn">
+                          Ver Obra →
                         </span>
-                        <span>👥 {peca._count?.colaboradores || 0} pessoas</span>
                       </div>
                     </div>
                   </Link>
@@ -120,14 +119,23 @@ export default function HomePage() {
               })}
             </div>
 
-            <div style={{ textAlign: 'center', marginTop: 'var(--espaco-8)' }}>
-              <Link to="/pecas" className="btn btn-fantasma btn-lg">
-                Ver Todas as Peças →
+            {/* Ações de Conversão da Home */}
+            <div className="home-acoes-rodape">
+              <Link to="/obras" className="btn btn-fantasma btn-lg">
+                Explorar Todas as Obras 🎭
+              </Link>
+              <Link to="/agenda" className="btn btn-primario btn-lg">
+                Consultar Agenda Completa 📅
               </Link>
             </div>
           </div>
         </section>
       )}
+
+      {/* 3. COMUNICADOS & NOVIDADES DA COMPANHIA */}
+      <section className="home-propagandas-container">
+        <PropagandasSection propagandas={propagandas} config={config} />
+      </section>
     </div>
   );
 }

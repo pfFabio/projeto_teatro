@@ -38,21 +38,21 @@ export default function Header() {
             Início
           </Link>
           <Link
-            to="/pecas"
-            className={`header-link ${ehAtivo('/pecas')}`}
+            to="/obras"
+            className={`header-link ${ehAtivo('/obras') || ehAtivo('/pecas')}`}
             onClick={() => setMenuAberto(false)}
           >
-            Peças
+            Obras
           </Link>
           <Link
-            to="/colaborador"
-            className={`header-link ${ehAtivo('/colaborador')}`}
+            to="/agenda"
+            className={`header-link ${ehAtivo('/agenda')}`}
             onClick={() => setMenuAberto(false)}
           >
-            Colaborador
+            Agenda
           </Link>
 
-          {ehAdmin ? (
+          {ehAdmin && (
             <>
               <Link
                 to="/admin"
@@ -68,14 +68,6 @@ export default function Header() {
                 Sair
               </button>
             </>
-          ) : (
-            <Link
-              to="/admin"
-              className="btn btn-primario btn-sm"
-              onClick={() => setMenuAberto(false)}
-            >
-              🔐 Admin
-            </Link>
           )}
         </nav>
       </div>

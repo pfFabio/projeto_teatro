@@ -11,6 +11,7 @@ import Layout from './components/layout/Layout';
 const HomePage = lazy(() => import('./pages/HomePage'));
 const PecasPage = lazy(() => import('./pages/PecasPage'));
 const PecaDetalhesPage = lazy(() => import('./pages/PecaDetalhesPage'));
+const AgendaPage = lazy(() => import('./pages/AgendaPage'));
 const ColaboradorPage = lazy(() => import('./pages/ColaboradorPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 
@@ -38,8 +39,11 @@ export default function App() {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/obras" element={<PecasPage />} />
+              <Route path="/obras/:id" element={<PecaDetalhesPage />} />
               <Route path="/pecas" element={<PecasPage />} />
               <Route path="/pecas/:id" element={<PecaDetalhesPage />} />
+              <Route path="/agenda" element={<AgendaPage />} />
               <Route path="/colaborador" element={<ColaboradorPage />} />
               <Route path="/admin" element={<AdminPage />} />
             </Routes>

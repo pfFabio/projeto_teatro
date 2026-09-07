@@ -148,10 +148,15 @@ async function main() {
 
   const pecasCriadas = [];
   for (const peca of pecas) {
-    const criada = await prisma.peca.create({ data: peca });
-    pecasCriadas.push(criada);
+    let existente = await prisma.peca.findFirst({
+      where: { titulo: peca.titulo },
+    });
+    if (!existente) {
+      existente = await prisma.peca.create({ data: peca });
+    }
+    pecasCriadas.push(existente);
   }
-  console.log(`✅ ${pecasCriadas.length} peças criadas`);
+  console.log(`✅ ${pecasCriadas.length} peças verificadas/criadas`);
 
   // =========================================================================
   // 5. Locais e datas de apresentação (múltiplos por peça)
@@ -201,11 +206,11 @@ async function main() {
       nomeLocal: 'Theatro Municipal de Niterói',
       cidade: 'Niterói, RJ',
       endereco: 'Rua Quinze de Novembro, 35 — Centro, Niterói, RJ',
-      latitude: -22.8943,
-      longitude: -43.1228,
+      latitude: -22.8953,
+      longitude: -43.1235,
       dataEstreia: '2026-10-10',
       dataFim: '2026-10-31',
-      horario: 'Sextas e Sábados às 20h, Domingos às 19h',
+      horario: 'Sextas e Sábados às 20h, Domingos às 18h',
       status: 'PROGRAMADA',
     },
 
@@ -237,9 +242,14 @@ async function main() {
   ];
 
   for (const local of locaisPecas) {
-    await prisma.localPeca.create({ data: local });
+    const localExistente = await prisma.localPeca.findFirst({
+      where: { pecaId: local.pecaId, nomeLocal: local.nomeLocal },
+    });
+    if (!localExistente) {
+      await prisma.localPeca.create({ data: local });
+    }
   }
-  console.log(`✅ ${locaisPecas.length} locais/datas de apresentação criados`);
+  console.log(`✅ locais/datas de apresentação verificados/criados`);
 
   // =========================================================================
   // 6. Alocação de colaboradores às peças
@@ -258,13 +268,18 @@ async function main() {
     { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[0].id, funcaoNaPeca: 'Christine' },
     { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[2].id, funcaoNaPeca: 'Diretora' },
     { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[3].id, funcaoNaPeca: 'Iluminação' },
-    { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[4].id, funcaoNaPeca: 'Figurino' },
+    { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[1].id, funcaoNaPeca: 'O Fantasma' },
   ];
 
   for (const aloc of alocacoes) {
-    await prisma.pecaColaborador.create({ data: aloc });
+    const alocExistente = await prisma.pecaColaborador.findFirst({
+      where: { pecaId: aloc.pecaId, colaboradorId: aloc.colaboradorId },
+    });
+    if (!alocExistente) {
+      await prisma.pecaColaborador.create({ data: aloc });
+    }
   }
-  console.log(`✅ ${alocacoes.length} alocações criadas`);
+  console.log(`✅ alocações de colaboradores verificadas/criadas`);
 
   // =========================================================================
   // 7. Propagandas e Anúncios de exemplo
@@ -297,9 +312,14 @@ async function main() {
   ];
 
   for (const prop of propagandas) {
-    await prisma.propaganda.create({ data: prop });
+    const propExistente = await prisma.propaganda.findFirst({
+      where: { titulo: prop.titulo },
+    });
+    if (!propExistente) {
+      await prisma.propaganda.create({ data: prop });
+    }
   }
-  console.log(`✅ ${propagandas.length} propagandas criadas`);
+  console.log(`✅ propagandas verificadas/criadas`);
 
   console.log('\n🎭 Seed concluído com sucesso!');
   console.log('   Admin: admin@theatrum.com / admin123\n');

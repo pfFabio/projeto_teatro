@@ -1,14 +1,15 @@
 // =============================================================================
-// Componente Carrossel — Slideshow de peças com auto-play
-// Refatorado com DRY e OCP (reutiliza getTag de constants/statusPeca)
+// Componente Carrossel — Slideshow cinematográfico com foco nas imagens das obras
+// Fluxo do cliente: Home -> Página da Obra (/obras/:id) -> Agenda (/agenda)
 // =============================================================================
 
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getMediaUrl } from '../../services/api';
 import { getTag } from '../../constants/statusPeca';
+import defaultCover from '../../assets/theatre-placeholder.jpg';
 
-export default function Carrossel({ itens = [], autoPlay = true, intervalo = 5000 }) {
+export default function Carrossel({ itens = [], autoPlay = true, intervalo = 6000 }) {
   const [indiceAtual, setIndiceAtual] = useState(0);
   const [pausado, setPausado] = useState(false);
 
@@ -42,7 +43,7 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
 
   return (
     <div
-      className="carrossel"
+      className="carrossel carrossel-imersivo"
       onMouseEnter={() => setPausado(true)}
       onMouseLeave={() => setPausado(false)}
     >
@@ -51,67 +52,56 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
         style={{ transform: `translateX(-${indiceAtual * 100}%)` }}
       >
         {itens.map((item, i) => {
-          const fotoUrl = getMediaUrl(item.fotos?.[0]?.url);
+          const fotoUrl = item.fotos?.[0]?.url ? getMediaUrl(item.fotos[0].url) : null;
           const tag = getTag(item.status);
 
           return (
             <div className="carrossel-slide" key={item.id || i}>
-              <div className="carrossel-layout">
-                {/* Lado Esquerdo / Painel de Informações */}
-                <div className="carrossel-info-panel">
-                  <div className="carrossel-tag-container">
-                    <span className={`tag ${tag.classe}`}>
-                      {tag.texto}
-                    </span>
-                    {item.dataEstreia && (
-                      <span className="carrossel-data-badge">
-                        📅 Estreia: {new Date(item.dataEstreia + 'T00:00:00').toLocaleDateString('pt-BR')}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <h2 className="carrossel-titulo">{item.titulo}</h2>
-                  <p className="carrossel-resumo">{item.resumo}</p>
-                  
-                  <div className="carrossel-local">
-                    <span>
-                      📍 {item.locais && item.locais.length > 0
-                        ? item.locais.map(l => l.cidade?.split(',')[0]?.trim()).filter(Boolean).join(' • ')
-                        : item.endereco?.split('—')[0]?.trim()}
-                    </span>
-                  </div>
+              {/* Imagem de Fundo em Widescreen Cinematográfico */}
+              <div className="carrossel-imagem-wrap">
+                <img
+                  className="carrossel-bg-img"
+                  src={fotoUrl || defaultCover}
+                  alt={item.titulo}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  onError={(e) => {
+                    e.target.src = defaultCover;
+                  }}
+                />
+                <div className="carrossel-degrade-overlay" />
+              </div>
 
-                  <div className="carrossel-acoes">
-                    <Link to={`/pecas/${item.id}`} className="btn btn-primario btn-lg">
-                      Ver Detalhes do Espetáculo →
-                    </Link>
-                  </div>
+              {/* Informações e Botão de Ação */}
+              <div className="carrossel-conteudo-hero">
+                <div className="carrossel-tag-container">
+                  <span className={`tag ${tag.classe}`}>
+                    {tag.texto}
+                  </span>
+                  {item.dataEstreia && (
+                    <span className="carrossel-data-badge">
+                      📅 Estreia: {new Date(item.dataEstreia + 'T00:00:00').toLocaleDateString('pt-BR')}
+                    </span>
+                  )}
                 </div>
 
-                {/* Lado Direito / Arte da Peça */}
-                <div className="carrossel-arte-container">
-                  {fotoUrl && (
-                    <img
-                      className="carrossel-arte-img"
-                      src={fotoUrl}
-                      alt={item.titulo}
-                      loading={i === 0 ? 'eager' : 'lazy'}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        const placeholder = e.target.parentElement.querySelector('.carrossel-arte-placeholder');
-                        if (placeholder) placeholder.style.display = 'flex';
-                      }}
-                    />
-                  )}
-                  <div
-                    className="carrossel-arte-placeholder"
-                    style={{ display: fotoUrl ? 'none' : 'flex' }}
+                <h2 className="carrossel-titulo">
+                  <Link to={`/obras/${item.id}`} className="carrossel-titulo-link">
+                    {item.titulo}
+                  </Link>
+                </h2>
+
+                <p className="carrossel-resumo">{item.resumo}</p>
+
+                <div className="carrossel-acoes">
+                  <Link to={`/obras/${item.id}`} className="btn btn-primario btn-lg">
+                    Ver Obra →
+                  </Link>
+                  <Link
+                    to={`/agenda?busca=${encodeURIComponent(item.titulo)}`}
+                    className="btn btn-fantasma btn-lg carrossel-btn-agenda"
                   >
-                    <span style={{ fontSize: '4.5rem' }}>🎭</span>
-                    <span style={{ fontSize: 'var(--texto-base)', color: 'var(--cor-texto-secundario)', marginTop: '8px' }}>
-                      Theatrum Espetáculos
-                    </span>
-                  </div>
+                    Ver Datas na Agenda 📅
+                  </Link>
                 </div>
               </div>
             </div>
@@ -127,11 +117,10 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
             onClick={slideAnterior}
             aria-label="Slide anterior"
             title="Anterior"
+            type="button"
           >
             ‹
           </button>
-
-          {/* Indicadores */}
           <div className="carrossel-indicadores">
             {itens.map((_, i) => (
               <button
@@ -139,15 +128,16 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 500
                 className={`carrossel-indicador ${i === indiceAtual ? 'ativo' : ''}`}
                 onClick={() => setIndiceAtual(i)}
                 aria-label={`Ir para slide ${i + 1}`}
+                type="button"
               />
             ))}
           </div>
-
           <button
             className="carrossel-nav-btn"
             onClick={proximoSlide}
             aria-label="Próximo slide"
             title="Próximo"
+            type="button"
           >
             ›
           </button>
