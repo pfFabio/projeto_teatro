@@ -55,6 +55,7 @@ export default function ModalFotosManager({ aberto, peca, onFechar, onAtualizado
       setErro(err.response?.data?.mensagem || 'Erro ao enviar fotos/vídeos');
     } finally {
       setEnviando(false);
+      if (e.target) e.target.value = '';
     }
   }
 
@@ -118,6 +119,48 @@ export default function ModalFotosManager({ aberto, peca, onFechar, onAtualizado
       >
         {erro && <div className="alerta alerta-erro">⚠ {erro}</div>}
 
+        {/* Guia de Formato e Dimensões Recomendadas */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, rgba(13, 189, 173, 0.08), rgba(212, 163, 89, 0.06))',
+            border: '1px solid rgba(13, 189, 173, 0.25)',
+            borderRadius: 'var(--raio-lg)',
+            padding: '14px 18px',
+            marginBottom: '18px',
+            fontSize: 'var(--texto-xs)',
+            color: 'var(--cor-texto-secundario)',
+            lineHeight: 1.6,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontWeight: 700,
+              fontSize: 'var(--texto-sm)',
+              color: 'var(--cor-primaria)',
+              marginBottom: '6px',
+            }}
+          >
+            <span>💡 Especificações Recomendadas para Imagens</span>
+          </div>
+          <ul style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+            <li>
+              <strong>Formatos aceitos:</strong> JPG, PNG e WebP (Recomendado: <strong>JPG</strong> ou <strong>WebP</strong> para melhor velocidade e compressão).
+            </li>
+            <li>
+              <strong>Proporção ideal:</strong> <strong>16:9 (Horizontal / Paisagem)</strong> — ex: <code>1920×1080px</code> ou <code>1280×720px</code>. Este formato preenche perfeitamente o banner cinematográfico da página de detalhes e o carrossel da Home.
+            </li>
+            <li>
+              <strong>Foto de Capa:</strong> A 1ª imagem da lista é automaticamente a <strong>Capa Principal</strong> da obra no site. Use as setas ou o botão "Definir Capa" para alterar a ordem.
+            </li>
+            <li>
+              <strong>Vídeos & Limite:</strong> Aceita também MP4 e WebM. Tamanho máximo permitido: <strong>50 MB</strong> por arquivo.
+            </li>
+          </ul>
+        </div>
+
         <div style={{ marginBottom: '24px' }}>
           <label
             className="upload-area"
@@ -128,19 +171,23 @@ export default function ModalFotosManager({ aberto, peca, onFechar, onAtualizado
               justifyContent: 'center',
               padding: '24px',
               cursor: 'pointer',
+              border: '2px dashed var(--cor-borda)',
+              borderRadius: 'var(--raio-lg)',
+              background: 'var(--cor-fundo-card)',
+              transition: 'all var(--transicao-normal)',
             }}
           >
-            <div className="upload-area-icone">📤</div>
+            <div className="upload-area-icone" style={{ fontSize: '2rem', marginBottom: '8px' }}>📤</div>
             <div style={{ fontWeight: 600, color: 'var(--cor-texto)', marginBottom: '4px' }}>
-              {enviando ? 'Enviando arquivos...' : 'Clique para selecionar fotos e vídeos'}
+              {enviando ? 'Enviando arquivos...' : 'Clique para selecionar fotos ou vídeos da peça'}
             </div>
-            <div style={{ fontSize: 'var(--texto-xs)', color: 'var(--cor-texto-terciario)' }}>
-              Formatos suportados: JPG, PNG, WebP, GIF, MP4, WebM (Max 50MB)
+            <div style={{ fontSize: 'var(--texto-xs)', color: 'var(--cor-texto-terciario)', textAlign: 'center' }}>
+              Formatos: JPG, PNG, WebP, GIF, MP4, WebM • Proporção ideal: <strong>16:9</strong> • Máx 50MB
             </div>
             <input
               type="file"
               multiple
-              accept="image/*,video/*"
+              accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
               onChange={handleUploadFotos}
               disabled={enviando}
               style={{ display: 'none' }}

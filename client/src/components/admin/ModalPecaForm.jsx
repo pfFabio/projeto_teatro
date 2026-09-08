@@ -268,7 +268,9 @@ export default function ModalPecaForm({
           >
             <div>
               <div style={{ fontWeight: 600, fontSize: 'var(--texto-sm)' }}>📸 Fotos e Vídeos da Peça</div>
-              <div style={{ fontSize: 'var(--texto-xs)', color: 'var(--cor-texto-secundario)' }}>Pôsteres e mídias de divulgação</div>
+              <div style={{ fontSize: 'var(--texto-xs)', color: 'var(--cor-texto-secundario)' }}>
+                Fotos de divulgação e capa (Recomendado: 16:9 / JPG, PNG, WebP)
+              </div>
             </div>
             <button
               type="button"
