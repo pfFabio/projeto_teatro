@@ -18,7 +18,12 @@ coverage/
 __pycache__/
 *.py[cod]
 
-# PDFs e audiobooks de referência
+# Referências, audiobooks e ferramentas locais de pesquisa
 *.pdf
 docs/referencias/audiobooks/
+docs/referencias/Fichamento*
+docs/referencias/build_audiobooks.py
+docs/referencias/generate_fichamento_pdf.py
+docs/referencias/process_audiobooks.py
+
 
