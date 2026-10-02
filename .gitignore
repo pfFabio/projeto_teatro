@@ -15,3 +15,10 @@ coverage/
 .idea/
 .agents/
 .docs/
+__pycache__/
+*.py[cod]
+
+# PDFs e audiobooks de referência
+*.pdf
+docs/referencias/audiobooks/
+
