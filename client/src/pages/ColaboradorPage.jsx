@@ -1,21 +1,48 @@
 // =============================================================================
 // Página do Colaborador — Formulário de cadastro público
-// Gerenciamento seguro de memória para previews de arquivo
+// Campos estendidos da Ata #02 com conformidade LGPD e gerenciamento de memória
 // =============================================================================
 
 import { useState, useEffect } from 'react';
 import { colaboradoresAPI } from '../services/api';
 
+const ESTADOS_BR = [
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+];
+
 export default function ColaboradorPage() {
   const [formulario, setFormulario] = useState({
     nome: '',
+    nomeArtistico: '',
     funcao: '',
     idade: '',
+    dataNascimento: '',
+    genero: '',
+    etniaRaca: '',
+    orientacaoSexual: '',
     celular: '',
     email: '',
+    redeSocial: '',
     endereco: '',
-    genero: '',
+    bairro: '',
+    cidade: '',
+    estado: 'RJ',
+    cep: '',
+    drtOmb: '',
+    habilitacao: '',
+    tipoSanguineo: '',
+    peso: '',
+    altura: '',
+    manequim: '',
+    sapato: '',
+    saude: '',
+    historico: '',
   });
+
+  const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
+  const [consentimentoLGPD, setConsentimentoLGPD] = useState(true);
   const [outraFuncao, setOutraFuncao] = useState('');
   const [foto, setFoto] = useState(null);
   const [fotoPreview, setFotoPreview] = useState(null);
@@ -51,7 +78,7 @@ export default function ColaboradorPage() {
   async function enviarFormulario(e) {
     e.preventDefault();
 
-    // Validação
+    // Validação de campos obrigatórios
     const camposObrigatorios = ['nome', 'funcao', 'idade', 'celular', 'email', 'endereco', 'genero'];
     for (const campo of camposObrigatorios) {
       if (!formulario[campo] || String(formulario[campo]).trim() === '') {
@@ -71,6 +98,11 @@ export default function ColaboradorPage() {
       return;
     }
 
+    if (!consentimentoLGPD) {
+      setErro('É necessário autorizar o tratamento de dados pessoais conforme a LGPD');
+      return;
+    }
+
     try {
       setEnviando(true);
       setErro('');
@@ -79,7 +111,7 @@ export default function ColaboradorPage() {
       Object.entries(formulario).forEach(([chave, valor]) => {
         if (chave === 'funcao' && valor === 'Outro') {
           formData.append('funcao', outraFuncao.trim());
-        } else {
+        } else if (valor !== undefined && valor !== null && String(valor).trim() !== '') {
           formData.append(chave, String(valor).trim());
         }
       });
@@ -98,25 +130,47 @@ export default function ColaboradorPage() {
     }
   }
 
-  // Tela de sucesso
   if (sucesso) {
     return (
       <div className="pagina-conteudo">
-        <div className="colab-form-container">
-          <div className="colab-form colab-sucesso animar-entrada">
-            <div className="colab-sucesso-icone">🎉</div>
-            <h2>Cadastro Realizado!</h2>
-            <p style={{ color: 'var(--cor-texto-secundario)', fontSize: 'var(--texto-lg)' }}>
-              Obrigado por se cadastrar como colaborador do Theatrum!<br />
-              Nossa equipe entrará em contato em breve.
+        <div className="colab-form-container animar-entrada">
+          <div className="colab-sucesso card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🎉</div>
+            <h2>Cadastro Enviado com Sucesso!</h2>
+            <p style={{ color: 'var(--cor-texto-secundario)', maxWidth: '440px', margin: '12px auto' }}>
+              Obrigado por querer fazer parte da Theatrum Mundi. Seus dados foram recebidos com segurança e nossa produção entrará em contato quando surgirem oportunidades em nossas montagens.
             </p>
             <button
-              className="btn btn-primario btn-lg"
+              className="btn btn-primario"
               onClick={() => {
-                if (fotoPreview) URL.revokeObjectURL(fotoPreview);
                 setSucesso(false);
-                setFormulario({ nome: '', funcao: '', idade: '', celular: '', email: '', endereco: '', genero: '' });
-                setOutraFuncao('');
+                setFormulario({
+                  nome: '',
+                  nomeArtistico: '',
+                  funcao: '',
+                  idade: '',
+                  dataNascimento: '',
+                  genero: '',
+                  etniaRaca: '',
+                  orientacaoSexual: '',
+                  celular: '',
+                  email: '',
+                  redeSocial: '',
+                  endereco: '',
+                  bairro: '',
+                  cidade: '',
+                  estado: 'RJ',
+                  cep: '',
+                  drtOmb: '',
+                  habilitacao: '',
+                  tipoSanguineo: '',
+                  peso: '',
+                  altura: '',
+                  manequim: '',
+                  sapato: '',
+                  saude: '',
+                  historico: '',
+                });
                 setFoto(null);
                 setFotoPreview(null);
               }}
@@ -136,7 +190,7 @@ export default function ColaboradorPage() {
         <form className="colab-form animar-entrada" onSubmit={enviarFormulario}>
           <h2 className="colab-form-titulo">🎭 Seja um Colaborador</h2>
           <p className="colab-form-desc">
-            Preencha o formulário abaixo para fazer parte da nossa equipe de teatro
+            Preencha o formulário abaixo para fazer parte da nossa equipe artística e técnica
           </p>
 
           {erro && (
@@ -171,8 +225,8 @@ export default function ColaboradorPage() {
             </label>
           </div>
 
+          {/* 1. DADOS OBRIGATÓRIOS PRINCIPAIS */}
           <div className="colab-form-grid">
-            {/* Nome */}
             <div className="campo-grupo">
               <label className="campo-label">Nome Completo *</label>
               <input
@@ -185,9 +239,19 @@ export default function ColaboradorPage() {
               />
             </div>
 
-            {/* Função/Cargo */}
             <div className="campo-grupo">
-              <label className="campo-label">Função / Cargo *</label>
+              <label className="campo-label">Nome Artístico / Como prefere ser chamado</label>
+              <input
+                type="text"
+                className="campo-input"
+                placeholder="Ex: Nome de palco"
+                value={formulario.nomeArtistico}
+                onChange={(e) => atualizarCampo('nomeArtistico', e.target.value)}
+              />
+            </div>
+
+            <div className="campo-grupo">
+              <label className="campo-label">Função / Cargo Principal *</label>
               <select
                 className="campo-select"
                 value={formulario.funcao}
@@ -213,9 +277,8 @@ export default function ColaboradorPage() {
               </select>
             </div>
 
-            {/* Campo condicional para Outro */}
             {formulario.funcao === 'Outro' && (
-              <div className="campo-grupo colab-form-full animar-entrada">
+              <div className="campo-grupo animar-entrada">
                 <label className="campo-label">Qual é a sua Função / Cargo? *</label>
                 <input
                   type="text"
@@ -232,7 +295,6 @@ export default function ColaboradorPage() {
               </div>
             )}
 
-            {/* Idade */}
             <div className="campo-grupo">
               <label className="campo-label">Idade *</label>
               <input
@@ -247,7 +309,6 @@ export default function ColaboradorPage() {
               />
             </div>
 
-            {/* Gênero */}
             <div className="campo-grupo">
               <label className="campo-label">Gênero *</label>
               <select
@@ -260,24 +321,24 @@ export default function ColaboradorPage() {
                 <option value="Masculino">Masculino</option>
                 <option value="Feminino">Feminino</option>
                 <option value="Não-binário">Não-binário</option>
+                <option value="Cisgênero">Cisgênero</option>
+                <option value="Transgênero">Transgênero</option>
                 <option value="Prefiro não dizer">Prefiro não dizer</option>
               </select>
             </div>
 
-            {/* Celular */}
             <div className="campo-grupo">
-              <label className="campo-label">Celular *</label>
+              <label className="campo-label">Celular / WhatsApp *</label>
               <input
                 type="tel"
                 className="campo-input"
-                placeholder="(11) 99999-9999"
+                placeholder="(21) 99999-9999"
                 value={formulario.celular}
                 onChange={(e) => atualizarCampo('celular', e.target.value)}
                 required
               />
             </div>
 
-            {/* Email */}
             <div className="campo-grupo">
               <label className="campo-label">Email *</label>
               <input
@@ -290,18 +351,170 @@ export default function ColaboradorPage() {
               />
             </div>
 
-            {/* Endereço */}
             <div className="campo-grupo colab-form-full">
-              <label className="campo-label">Endereço *</label>
+              <label className="campo-label">Endereço (Rua, número) *</label>
               <input
                 type="text"
                 className="campo-input"
-                placeholder="Rua, número, bairro — Cidade, Estado"
+                placeholder="Rua, número, complemento"
                 value={formulario.endereco}
                 onChange={(e) => atualizarCampo('endereco', e.target.value)}
                 required
               />
             </div>
+          </div>
+
+          {/* Toggle para Dados Estendidos / Artísticos (Opcionais) */}
+          <div style={{ margin: '20px 0 10px 0' }}>
+            <button
+              type="button"
+              className="btn btn-fantasma btn-sm"
+              onClick={() => setMostrarCamposAvancados(!mostrarCamposAvancados)}
+            >
+              {mostrarCamposAvancados ? '▲ Ocultar informações artísticas adicionais' : '▼ Preencher ficha artística e técnica completa (opcional)'}
+            </button>
+          </div>
+
+          {mostrarCamposAvancados && (
+            <div className="colab-form-grid animar-entrada" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--cor-borda)' }}>
+              <div className="campo-grupo">
+                <label className="campo-label">Bairro</label>
+                <input
+                  type="text"
+                  className="campo-input"
+                  placeholder="Seu bairro"
+                  value={formulario.bairro}
+                  onChange={(e) => atualizarCampo('bairro', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo">
+                <label className="campo-label">Cidade</label>
+                <input
+                  type="text"
+                  className="campo-input"
+                  placeholder="Ex: Niterói, Rio de Janeiro, Maricá"
+                  value={formulario.cidade}
+                  onChange={(e) => atualizarCampo('cidade', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo">
+                <label className="campo-label">Estado</label>
+                <select
+                  className="campo-select"
+                  value={formulario.estado}
+                  onChange={(e) => atualizarCampo('estado', e.target.value)}
+                >
+                  {ESTADOS_BR.map(uf => (
+                    <option key={uf} value={uf}>{uf}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="campo-grupo">
+                <label className="campo-label">Rede Social / Instagram</label>
+                <input
+                  type="text"
+                  className="campo-input"
+                  placeholder="@seu.perfil"
+                  value={formulario.redeSocial}
+                  onChange={(e) => atualizarCampo('redeSocial', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo">
+                <label className="campo-label">DRT / Registro Profissional</label>
+                <input
+                  type="text"
+                  className="campo-input"
+                  placeholder="Número de registro"
+                  value={formulario.drtOmb}
+                  onChange={(e) => atualizarCampo('drtOmb', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo">
+                <label className="campo-label">Habilitação (CNH)</label>
+                <input
+                  type="text"
+                  className="campo-input"
+                  placeholder="Ex: Carro, Moto, Não possui"
+                  value={formulario.habilitacao}
+                  onChange={(e) => atualizarCampo('habilitacao', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo">
+                <label className="campo-label">Tipo Sanguíneo</label>
+                <input
+                  type="text"
+                  className="campo-input"
+                  placeholder="Ex: O+, A+, etc."
+                  value={formulario.tipoSanguineo}
+                  onChange={(e) => atualizarCampo('tipoSanguineo', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo">
+                <label className="campo-label">Altura & Peso</label>
+                <input
+                  type="text"
+                  className="campo-input"
+                  placeholder="Ex: 1,75 m / 70 kg"
+                  value={formulario.altura}
+                  onChange={(e) => atualizarCampo('altura', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo">
+                <label className="campo-label">Manequim & Calçado</label>
+                <input
+                  type="text"
+                  className="campo-input"
+                  placeholder="Ex: 38 / 40"
+                  value={formulario.manequim}
+                  onChange={(e) => atualizarCampo('manequim', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo colab-form-full">
+                <label className="campo-label">Condições de Saúde ou Alergias (Sigiloso)</label>
+                <textarea
+                  className="campo-textarea"
+                  rows="2"
+                  placeholder="Informe alergias medicamentosas, alimentares ou restrições de esforço físico..."
+                  value={formulario.saude}
+                  onChange={(e) => atualizarCampo('saude', e.target.value)}
+                />
+              </div>
+
+              <div className="campo-grupo colab-form-full">
+                <label className="campo-label">Histórico de Atuações & Formação Artística</label>
+                <textarea
+                  className="campo-textarea"
+                  rows="3"
+                  placeholder="Conte um pouco sobre suas experiências prévias no teatro ou audiovisual..."
+                  value={formulario.historico}
+                  onChange={(e) => atualizarCampo('historico', e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Consentimento LGPD */}
+          <div style={{ marginTop: '20px', padding: '12px', background: 'var(--cor-fundo-elevado)', borderRadius: 'var(--raio-md)', border: '1px solid var(--cor-borda)' }}>
+            <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', fontSize: 'var(--texto-xs)' }}>
+              <input
+                type="checkbox"
+                checked={consentimentoLGPD}
+                onChange={(e) => setConsentimentoLGPD(e.target.checked)}
+                style={{ marginTop: '2px' }}
+              />
+              <span>
+                Declaro que as informações acima são verdadeiras e autorizo a <strong>Theatrum Mundi</strong> a realizar o tratamento dos meus dados pessoais para fins de escalação de elenco, produção e contato, nos termos da Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
+              </span>
+            </label>
           </div>
 
           <button

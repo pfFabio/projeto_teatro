@@ -57,6 +57,7 @@ export default function AgendaPage() {
             pecaResumo: peca.resumo,
             pecaFoto: peca.fotos?.[0]?.url,
             pecaStatus: peca.status,
+            linkIngresso: peca.linkIngresso,
             nomeLocal: local.nomeLocal || 'Teatro',
             cidade: local.cidade || '',
             endereco: local.endereco || '',
@@ -77,6 +78,7 @@ export default function AgendaPage() {
           pecaResumo: peca.resumo,
           pecaFoto: peca.fotos?.[0]?.url,
           pecaStatus: peca.status,
+          linkIngresso: peca.linkIngresso,
           nomeLocal: peca.endereco?.split('—')[0]?.trim() || 'Teatro',
           cidade: peca.endereco?.includes(',') ? peca.endereco.split(',').pop()?.trim() : '',
           endereco: peca.endereco || '',
@@ -326,6 +328,18 @@ export default function AgendaPage() {
 
                   {/* Ações */}
                   <div className="agenda-card-acoes">
+                    {sessao.linkIngresso && (
+                      <a
+                        href={sessao.linkIngresso}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-primario btn-sm agenda-btn-ingresso"
+                        title="Comprar ingresso online"
+                      >
+                        🎟️ Ingressos
+                      </a>
+                    )}
+
                     <Link
                       to={`/obras/${sessao.pecaId}`}
                       className="btn btn-fantasma btn-sm"
@@ -336,7 +350,7 @@ export default function AgendaPage() {
                     {sessao.latitude && sessao.longitude ? (
                       <button
                         type="button"
-                        className="btn btn-primario btn-sm"
+                        className={`btn ${sessao.linkIngresso ? 'btn-secundario' : 'btn-primario'} btn-sm`}
                         onClick={() => setLocalMapaModal(sessao)}
                       >
                         Ver no Mapa 📍

@@ -19,6 +19,8 @@ const rotasColaboradores = require('./routes/colaboradores');
 const rotasConfig = require('./routes/config');
 const rotasUpload = require('./routes/upload');
 const rotasPropagandas = require('./routes/propagandas');
+const rotasIdeias = require('./routes/ideias');
+const rotasMemoria = require('./routes/memoria');
 
 const app = express();
 
@@ -154,6 +156,8 @@ app.use('/api/colaboradores', rotasColaboradores);
 app.use('/api/config', rotasConfig);
 app.use('/api/upload', rotasUpload);
 app.use('/api/propagandas', rotasPropagandas);
+app.use('/api/ideias', rotasIdeias);
+app.use('/api/memoria', rotasMemoria);
 
 // Rota de health check
 app.get('/api/saude', (req, res) => {

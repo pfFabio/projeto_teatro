@@ -154,7 +154,7 @@ describe('Página PecaDetalhesPage', () => {
     });
   });
 
-  it('deve exibir imagem padrão com legenda quando a obra não tem fotos', async () => {
+  it('deve exibir imagem padrão quando a obra não tem fotos', async () => {
     const pecaSemFotos = {
       ...pecaMock,
       fotos: [],
@@ -165,17 +165,19 @@ describe('Página PecaDetalhesPage', () => {
     renderComRota('1');
 
     await waitFor(() => {
-      expect(screen.getByText(/Imagem de divulgação/i)).toBeInTheDocument();
+      const imgPadrao = screen.getByAltText(pecaSemFotos.titulo);
+      expect(imgPadrao).toBeInTheDocument();
+      expect(imgPadrao).toHaveClass('peca-img-padrao');
     });
   });
 
-  it('deve exibir miniaturas quando a obra tem múltiplas fotos', async () => {
+  it('deve exibir setas para navegar quando a obra tem múltiplas fotos', async () => {
     pecasAPI.buscar.mockResolvedValueOnce({ data: pecaMock });
 
     renderComRota('1');
 
     await waitFor(() => {
-      // Deve haver botões de miniaturas para as 2 fotos
+      // Deve haver botões de navegação (anterior e próxima) para as fotos
       const thumbBtns = screen.getAllByRole('button', { name: /Foto|Cena|Bastidores/i });
       expect(thumbBtns.length).toBe(2);
     });

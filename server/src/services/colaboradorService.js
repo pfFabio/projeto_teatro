@@ -12,7 +12,7 @@ class ColaboradorService {
   /**
    * Lista colaboradores (filtragem e paginação)
    * @param {Object} params - Filtros e paginação
-   * @param {boolean} ehAdmin - Se true, inclui dados de contato sensíveis (celular, email, endereço)
+   * @param {boolean} ehAdmin - Se true, inclui dados sensíveis e confidenciais
    */
   static async listar({ funcao, genero, busca, pagina = 1, limite = 20 }, ehAdmin = false) {
     const pageNum = Math.max(1, parseInt(pagina, 10) || 1);
@@ -40,24 +40,49 @@ class ColaboradorService {
       where.OR = condicoes;
     }
 
+    // Campos públicos — Princípio da Minimização de Dados (LGPD)
     const select = {
       id: true,
       nome: true,
+      nomeArtistico: true,
       funcao: true,
       idade: true,
       genero: true,
       fotoUrl: true,
+      redeSocial: true,
       criadoEm: true,
       pecas: {
         include: { peca: { select: { id: true, titulo: true, status: true } } },
       },
     };
 
-    // Dados sensíveis liberados apenas para perfil autenticado de admin
+    // Dados sensíveis e fiscais liberados APENAS para administrador autenticado
     if (ehAdmin) {
       select.celular = true;
       select.email = true;
       select.endereco = true;
+      select.dataNascimento = true;
+      select.etniaRaca = true;
+      select.orientacaoSexual = true;
+      select.cpf = true;
+      select.rg = true;
+      select.drtOmb = true;
+      select.bairro = true;
+      select.cidade = true;
+      select.estado = true;
+      select.cep = true;
+      select.habilitacao = true;
+      select.tipoSanguineo = true;
+      select.peso = true;
+      select.altura = true;
+      select.manequim = true;
+      select.sapato = true;
+      select.saude = true;
+      select.mei = true;
+      select.nit = true;
+      select.pagamentos = true;
+      select.historico = true;
+      select.dataAdmissao = true;
     }
 
     const [colaboradores, total] = await Promise.all([
@@ -86,10 +111,12 @@ class ColaboradorService {
     const select = {
       id: true,
       nome: true,
+      nomeArtistico: true,
       funcao: true,
       idade: true,
       genero: true,
       fotoUrl: true,
+      redeSocial: true,
       criadoEm: true,
       pecas: {
         include: {
@@ -102,6 +129,28 @@ class ColaboradorService {
       select.celular = true;
       select.email = true;
       select.endereco = true;
+      select.dataNascimento = true;
+      select.etniaRaca = true;
+      select.orientacaoSexual = true;
+      select.cpf = true;
+      select.rg = true;
+      select.drtOmb = true;
+      select.bairro = true;
+      select.cidade = true;
+      select.estado = true;
+      select.cep = true;
+      select.habilitacao = true;
+      select.tipoSanguineo = true;
+      select.peso = true;
+      select.altura = true;
+      select.manequim = true;
+      select.sapato = true;
+      select.saude = true;
+      select.mei = true;
+      select.nit = true;
+      select.pagamentos = true;
+      select.historico = true;
+      select.dataAdmissao = true;
     }
 
     const colaborador = await prisma.colaborador.findUnique({
@@ -117,12 +166,11 @@ class ColaboradorService {
   }
 
   /**
-   * Cadastra novo colaborador (público)
+   * Cadastra novo colaborador (público ou admin)
    */
   static async criar(dados, arquivoFoto = null) {
     const validacao = validarCriacaoColaborador(dados);
     if (!validacao.valido) {
-      // Se foi feito upload mas validação falhou, remove arquivo temporário
       if (arquivoFoto) {
         await FileService.removerArquivo(`/uploads/${arquivoFoto.filename}`);
       }
@@ -143,17 +191,33 @@ class ColaboradorService {
       if (salvo) fotoUrl = salvo.url;
     }
 
+    const dadosCriacao = {
+      nome: dados.nome.trim(),
+      funcao: dados.funcao.trim(),
+      idade: parseInt(dados.idade, 10),
+      celular: dados.celular.trim(),
+      email: emailNormalizado,
+      endereco: dados.endereco.trim(),
+      genero: dados.genero.trim(),
+      fotoUrl,
+    };
+
+    // Campos estendidos opcionais (conforme formulário da Ata #02)
+    const camposOpcionais = [
+      'nomeArtistico', 'dataNascimento', 'etniaRaca', 'orientacaoSexual',
+      'cpf', 'rg', 'drtOmb', 'redeSocial', 'bairro', 'cidade', 'estado',
+      'cep', 'habilitacao', 'tipoSanguineo', 'peso', 'altura', 'manequim',
+      'sapato', 'saude', 'mei', 'nit', 'pagamentos', 'historico', 'dataAdmissao'
+    ];
+
+    for (const campo of camposOpcionais) {
+      if (dados[campo] !== undefined && dados[campo] !== null) {
+        dadosCriacao[campo] = String(dados[campo]).trim();
+      }
+    }
+
     const colaborador = await prisma.colaborador.create({
-      data: {
-        nome: dados.nome.trim(),
-        funcao: dados.funcao.trim(),
-        idade: parseInt(dados.idade, 10),
-        celular: dados.celular.trim(),
-        email: emailNormalizado,
-        endereco: dados.endereco.trim(),
-        genero: dados.genero.trim(),
-        fotoUrl,
-      },
+      data: dadosCriacao,
     });
 
     return colaborador;
@@ -180,6 +244,19 @@ class ColaboradorService {
     if (dados.celular !== undefined) dadosAtualizacao.celular = dados.celular.trim();
     if (dados.endereco !== undefined) dadosAtualizacao.endereco = dados.endereco.trim();
     if (dados.genero !== undefined) dadosAtualizacao.genero = dados.genero.trim();
+
+    const camposOpcionais = [
+      'nomeArtistico', 'dataNascimento', 'etniaRaca', 'orientacaoSexual',
+      'cpf', 'rg', 'drtOmb', 'redeSocial', 'bairro', 'cidade', 'estado',
+      'cep', 'habilitacao', 'tipoSanguineo', 'peso', 'altura', 'manequim',
+      'sapato', 'saude', 'mei', 'nit', 'pagamentos', 'historico', 'dataAdmissao'
+    ];
+
+    for (const campo of camposOpcionais) {
+      if (dados[campo] !== undefined) {
+        dadosAtualizacao[campo] = dados[campo] ? String(dados[campo]).trim() : null;
+      }
+    }
 
     if (dados.email !== undefined) {
       const emailNorm = dados.email.trim().toLowerCase();

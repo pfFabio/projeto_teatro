@@ -8,13 +8,15 @@ import AbaPecas from './AbaPecas';
 import AbaColaboradores from './AbaColaboradores';
 import AbaAlocacoes from './AbaAlocacoes';
 import AbaPropagandas from './AbaPropagandas';
+import AbaIdeias from './AbaIdeias';
 import AbaConfig from './AbaConfig';
-import { pecasAPI, colaboradoresAPI, configAPI, propagandasAPI } from '../../services/api';
+import { pecasAPI, colaboradoresAPI, configAPI, propagandasAPI, ideiasAPI } from '../../services/api';
 
 const ABAS = [
   { id: 'pecas', label: 'Peças', icone: '🎪' },
   { id: 'colaboradores', label: 'Colaboradores', icone: '👥' },
   { id: 'alocacoes', label: 'Alocações', icone: '🔗' },
+  { id: 'ideias', label: 'Ideias', icone: '💡' },
   { id: 'propagandas', label: 'Propagandas', icone: '📢' },
   { id: 'config', label: 'Configurações', icone: '⚙️' },
 ];
@@ -26,6 +28,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
   const [pecas, setPecas] = useState([]);
   const [colaboradores, setColaboradores] = useState([]);
   const [propagandas, setPropagandas] = useState([]);
+  const [ideias, setIdeias] = useState([]);
   const [configs, setConfigs] = useState({});
   const [carregando, setCarregando] = useState(true);
 
@@ -40,16 +43,18 @@ export default function AdminDashboard({ usuario, onLogout }) {
   const carregarDados = useCallback(async () => {
     try {
       setCarregando(true);
-      const [resPecas, resColabs, resConfig, resProps] = await Promise.all([
+      const [resPecas, resColabs, resConfig, resProps, resIdeias] = await Promise.all([
         pecasAPI.listar({ limite: 100 }),
         colaboradoresAPI.listar({ limite: 100 }),
         configAPI.listar(),
         propagandasAPI.listar({ limite: 100 }).catch(() => ({ data: { propagandas: [] } })),
+        ideiasAPI.listar({ limite: 100 }).catch(() => ({ data: { mensagens: [] } })),
       ]);
       setPecas(resPecas.data.pecas || []);
       setColaboradores(resColabs.data.colaboradores || []);
       setConfigs(resConfig.data || {});
       setPropagandas(resProps.data.propagandas || []);
+      setIdeias(resIdeias.data?.mensagens || resIdeias.data?.ideias || []);
     } catch (erro) {
       console.error('Erro ao carregar dados do painel:', erro);
     } finally {
@@ -66,6 +71,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
     emCartaz: pecas.filter(p => p.status === 'EM_CARTAZ').length,
     totalColabs: colaboradores.length,
     totalPropagandas: propagandas.filter(p => p.ativo).length,
+    ideiasNovas: ideias.filter(i => i.status === 'NOVA').length,
   };
 
   if (carregando) {
@@ -109,6 +115,12 @@ export default function AdminDashboard({ usuario, onLogout }) {
         <div className="admin-stat-card">
           <div className="admin-stat-valor">{stats.totalPropagandas}</div>
           <div className="admin-stat-label">Propagandas Ativas</div>
+        </div>
+        <div className="admin-stat-card" style={stats.ideiasNovas > 0 ? { borderColor: 'var(--cor-primaria)' } : {}}>
+          <div className="admin-stat-valor" style={stats.ideiasNovas > 0 ? { color: 'var(--cor-primaria)' } : {}}>
+            {stats.ideiasNovas > 0 ? `${stats.ideiasNovas} novas` : ideias.length}
+          </div>
+          <div className="admin-stat-label">💡 Ideias / Propostas</div>
         </div>
       </div>
 
@@ -157,6 +169,12 @@ export default function AdminDashboard({ usuario, onLogout }) {
           <AbaAlocacoes
             pecas={pecas}
             colaboradores={colaboradores}
+            onRecarregar={carregarDados}
+          />
+        )}
+        {abaAtiva === 'ideias' && (
+          <AbaIdeias
+            ideias={ideias}
             onRecarregar={carregarDados}
           />
         )}

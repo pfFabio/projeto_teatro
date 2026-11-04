@@ -35,6 +35,7 @@ describe('Componente Header', () => {
       expect(screen.getByRole('link', { name: /início/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /^obras$/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /^agenda$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^memória$/i })).toBeInTheDocument();
     });
 
     it('o link de Obras deve apontar para /obras e o de Agenda para /agenda', () => {
@@ -99,6 +100,7 @@ describe('Componente Header', () => {
       expect(screen.getByRole('link', { name: /início/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /^obras$/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /^agenda$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^memória$/i })).toBeInTheDocument();
     });
   });
 });

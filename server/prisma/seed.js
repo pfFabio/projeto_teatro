@@ -1,6 +1,6 @@
 // =============================================================================
-// Seed — Dados iniciais do banco de dados
-// Executa com: npx prisma db seed
+// Seed — Dados reais e oficiais do Theatrum Mundi (Reunião #02)
+// Executa com: node prisma/seed.js
 // =============================================================================
 
 const { PrismaClient } = require('@prisma/client');
@@ -9,37 +9,38 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🎭 Iniciando seed do Theatrum...\n');
+  console.log('🎭 Iniciando seed oficial do Theatrum Mundi...\n');
 
   // =========================================================================
-  // 1. Criar admin padrão
+  // 1. Criar admin padrão da companhia
   // =========================================================================
   const senhaHash = await bcrypt.hash('admin123', 10);
   const admin = await prisma.usuario.upsert({
     where: { email: 'admin@theatrum.com' },
-    update: {},
+    update: { senha: senhaHash },
     create: {
       email: 'admin@theatrum.com',
       senha: senhaHash,
-      nome: 'Administrador',
+      nome: 'Administrador Theatrum',
       papel: 'ADMIN',
     },
   });
-  console.log(`✅ Admin criado: ${admin.email} (senha: admin123)`);
+  console.log(`✅ Admin pronto: ${admin.email} (login: admin ou admin@theatrum.com / senha: admin123)`);
 
   // =========================================================================
-  // 2. Configurações iniciais do site
+  // 2. Configurações oficiais do site (Theatrum Mundi)
   // =========================================================================
   const configs = [
-    { chave: 'titulo_site', valor: 'Theatrum', tipo: 'TEXT' },
-    { chave: 'subtitulo_site', valor: 'Arte que transforma vidas', tipo: 'TEXT' },
-    { chave: 'propaganda_titulo', valor: 'Aulas de Teatro', tipo: 'TEXT' },
-    { chave: 'propaganda_texto', valor: 'Descubra o artista que existe em você! Nossas aulas de teatro são para todas as idades e níveis de experiência. Venha desenvolver sua expressão corporal, oratória e criatividade em um ambiente acolhedor e inspirador.', tipo: 'TEXT' },
-    { chave: 'propaganda_botao_texto', valor: 'Saiba Mais', tipo: 'TEXT' },
-    { chave: 'propaganda_botao_link', valor: '#contato', tipo: 'TEXT' },
-    { chave: 'rodape_texto', valor: '© 2026 Theatrum — Todos os direitos reservados.', tipo: 'TEXT' },
-    { chave: 'contato_email', valor: 'contato@theatrum.com', tipo: 'TEXT' },
-    { chave: 'contato_telefone', valor: '(11) 99999-9999', tipo: 'TEXT' },
+    { chave: 'titulo_site', valor: 'Theatrum Mundi', tipo: 'TEXT' },
+    { chave: 'subtitulo_site', valor: 'Pesquisa cênica, tradição e contemporaneidade nas artes da cena', tipo: 'TEXT' },
+    { chave: 'propaganda_titulo', valor: 'Da Janela, o Mar — Em Temporada', tipo: 'TEXT' },
+    { chave: 'propaganda_texto', valor: 'Espetáculo infantojuvenil contemplado pelo Edital Fluxos Fluminenses da SECEC/RJ. Teatro de animação, visualidade e sensibilidade poética. Garanta seus ingressos!', tipo: 'TEXT' },
+    { chave: 'propaganda_botao_texto', valor: 'Ver Espetáculo', tipo: 'TEXT' },
+    { chave: 'propaganda_botao_link', valor: '/obras', tipo: 'TEXT' },
+    { chave: 'rodape_texto', valor: '© 2026 Theatrum Mundi — Silvana da Costa, 437, Itaipuaçú - Maricá/RJ', tipo: 'TEXT' },
+    { chave: 'contato_email', valor: 'ciatheatrum@gmail.com', tipo: 'TEXT' },
+    { chave: 'contato_telefone', valor: '+55 21 97309-2514', tipo: 'TEXT' },
+    { chave: 'instagram_oficial', valor: '@theatrum.m', tipo: 'TEXT' },
   ];
 
   for (const config of configs) {
@@ -49,56 +50,65 @@ async function main() {
       create: config,
     });
   }
-  console.log(`✅ ${configs.length} configurações do site criadas`);
+  console.log(`✅ ${configs.length} configurações oficiais criadas/atualizadas`);
 
   // =========================================================================
-  // 3. Colaboradores de exemplo
+  // 3. Colaboradores reais da companhia
   // =========================================================================
   const colaboradores = [
     {
-      nome: 'Maria Silva',
-      funcao: 'Atriz',
-      idade: 28,
-      celular: '(11) 91234-5678',
-      email: 'maria.silva@email.com',
-      endereco: 'Rua das Flores, 123 — São Paulo, SP',
-      genero: 'Feminino',
-    },
-    {
-      nome: 'João Santos',
-      funcao: 'Ator',
-      idade: 35,
-      celular: '(11) 92345-6789',
-      email: 'joao.santos@email.com',
-      endereco: 'Av. Paulista, 456 — São Paulo, SP',
+      nome: 'Angelo Faria Turci',
+      nomeArtistico: 'Angelo Faria Turci',
+      funcao: 'Diretor e Dramaturgo',
+      idade: 48,
+      celular: '(21) 97309-2514',
+      email: 'angelofariaturci@gmail.com',
+      endereco: 'Rua Silvana da Costa, 437 — Itaipuaçú, Maricá, RJ',
       genero: 'Masculino',
+      redeSocial: '@angelofariaturci',
+      cidade: 'Maricá',
+      estado: 'RJ',
+      cep: '24936-600',
+      historico: 'Fundador e diretor do Theatrum Mundi. Dramaturgo de Da Janela, o Mar e Os Contadores.',
     },
     {
-      nome: 'Ana Oliveira',
-      funcao: 'Diretora',
-      idade: 42,
-      celular: '(11) 93456-7890',
-      email: 'ana.oliveira@email.com',
-      endereco: 'Rua Augusta, 789 — São Paulo, SP',
-      genero: 'Feminino',
+      nome: 'Rodrigo da Silva Patriota',
+      nomeArtistico: 'Rodrigo Patriota',
+      funcao: 'Diretor de Movimento / Ator',
+      idade: 33,
+      celular: '(21) 97599-6419',
+      email: 'rsp.patriota@gmail.com',
+      endereco: 'Rua Teodoro da Silva, 808 casa 2 — Vila Isabel, Rio de Janeiro, RJ',
+      genero: 'Cisgênero',
+      orientacaoSexual: 'Não declarado',
+      etniaRaca: 'Branco',
+      cpf: '155.094.077-51',
+      rg: '26.378.216-1',
+      drtOmb: 'XXXXXXXX',
+      redeSocial: '@rodrigopatriota',
+      bairro: 'Vila Isabel',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      habilitacao: 'Carro',
+      tipoSanguineo: 'O+',
+      dataNascimento: '17/02/1993',
+      dataAdmissao: '01/01/2012',
+      saude: 'Nenhuma alergia ou restrição física severa.',
+      historico: 'Ator e diretor de movimento da companhia desde a fundação em 2012.',
     },
     {
-      nome: 'Carlos Pereira',
-      funcao: 'Técnico de Iluminação',
-      idade: 30,
-      celular: '(11) 94567-8901',
-      email: 'carlos.pereira@email.com',
-      endereco: 'Rua Consolação, 321 — São Paulo, SP',
+      nome: 'Renato Mangolin',
+      nomeArtistico: 'Renato Mangolin',
+      funcao: 'Fotógrafo Cênico',
+      idade: 40,
+      celular: '(21) 98888-7777',
+      email: 'renato.mangolin@artecena.com',
+      endereco: 'Laranjeiras, Rio de Janeiro, RJ',
       genero: 'Masculino',
-    },
-    {
-      nome: 'Fernanda Costa',
-      funcao: 'Figurinista',
-      idade: 26,
-      celular: '(11) 95678-9012',
-      email: 'fernanda.costa@email.com',
-      endereco: 'Rua Oscar Freire, 654 — São Paulo, SP',
-      genero: 'Feminino',
+      redeSocial: '@renatomangolin',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Fotógrafo oficial de artes cênicas de Da Janela, o Mar e dezenas de montagens cariocas.',
     },
   ];
 
@@ -106,223 +116,239 @@ async function main() {
   for (const colab of colaboradores) {
     const criado = await prisma.colaborador.upsert({
       where: { email: colab.email },
-      update: {},
+      update: colab,
       create: colab,
     });
     colabsCriados.push(criado);
   }
-  console.log(`✅ ${colabsCriados.length} colaboradores criados`);
+  console.log(`✅ ${colabsCriados.length} colaboradores oficiais registrados com sucesso`);
 
   // =========================================================================
-  // 4. Peças de exemplo
+  // 4. Peças Oficiais do Theatrum Mundi
   // =========================================================================
-  const pecas = [
+  const pecasOficiais = [
     {
-      titulo: 'Hamlet — O Príncipe da Dinamarca',
-      resumo: 'Uma das mais célebres tragédias de Shakespeare. O príncipe Hamlet busca vingança após o assassinato de seu pai pelo próprio tio, que usurpou o trono e casou-se com sua mãe. Uma obra atemporal sobre traição, loucura e a condição humana.',
-      endereco: 'Teatro Municipal — Praça Ramos de Azevedo, s/n — República, São Paulo, SP',
-      latitude: -23.5453,
-      longitude: -46.6385,
-      dataEstreia: '2026-09-15',
-      status: 'PROGRAMADA',
-    },
-    {
-      titulo: 'Auto da Compadecida',
-      resumo: 'A obra-prima de Ariano Suassuna ganha vida no palco! Acompanhe as aventuras de João Grilo e Chicó, dois nordestinos espertos que usam a criatividade para sobreviver. Uma comédia brilhante sobre a cultura brasileira, fé e justiça divina.',
-      endereco: 'SESC Pinheiros — Rua Paes Leme, 195 — Pinheiros, São Paulo, SP',
-      latitude: -23.5671,
-      longitude: -46.6914,
-      dataEstreia: '2026-08-01',
+      titulo: 'Da Janela, o Mar',
+      resumo: 'Obra poética e sensível voltada ao público infantojuvenil que investiga sensibilidade, imaginação e neurodiversidade por meio de uma dramaturgia que articula teatro de animação, visualidade contemporânea e atuação física. O projeto foi contemplado pelo Edital Fluxos Fluminenses da Secretaria de Estado de Cultura e Economia Criativa do Rio de Janeiro (SECEC/RJ).',
+      endereco: 'Centro de Artes da UFF — Rua Miguel de Frias, 9 — Icaraí, Niterói, RJ',
+      latitude: -22.9056,
+      longitude: -43.1189,
+      dataEstreia: '2026-09-01',
       status: 'EM_CARTAZ',
+      linkIngresso: 'https://sympla.com.br/theatrum-mundi-da-janela-o-mar',
     },
     {
-      titulo: 'O Fantasma da Ópera',
-      resumo: 'O clássico musical que encanta plateias ao redor do mundo. Nos subterrâneos da Ópera de Paris, um gênio musical desfigurado vive obcecado por Christine, uma jovem soprano. Uma história de amor, obsessão e arte que transcende o tempo.',
-      endereco: 'Teatro Renault — Av. Brigadeiro Luís Antônio, 411 — Bela Vista, São Paulo, SP',
-      latitude: -23.5558,
-      longitude: -46.6451,
-      dataEstreia: '2026-06-10',
+      titulo: 'YARA',
+      resumo: 'Espetáculo que revisita o mito da Mãe D’Água a partir de uma perspectiva indígena e contemporânea, refletindo sobre o apagamento cultural e a conexão visceral entre humanidade e natureza. Contemplado por editais públicos, com mini-documentário e potente trabalho de corpo e ancestralidade.',
+      endereco: 'Teatro Gláucio Gill — Praça Cardeal Arcoverde, s/n — Copacabana, Rio de Janeiro, RJ',
+      latitude: -22.9667,
+      longitude: -43.1788,
+      dataEstreia: '2024-04-12',
+      status: 'EM_REPERTORIO',
+      linkIngresso: null,
+    },
+    {
+      titulo: 'Romeu e Julieta',
+      resumo: 'Adaptação popular e vibrante da tragédia de William Shakespeare combinando teatro físico, música ao vivo e teatro de bonecos. Montagem com circulação no Centro de Artes da UFF e pelos circuitos culturais SESC/RJ e SESI/SP.',
+      endereco: 'Teatro Ipanema — Rua Prudente de Morais, 824 — Ipanema, Rio de Janeiro, RJ',
+      latitude: -22.9846,
+      longitude: -43.2039,
+      dataEstreia: '2017-08-10',
+      status: 'EM_REPERTORIO',
+      linkIngresso: null,
+    },
+    {
+      titulo: 'Os Contadores',
+      resumo: 'Espetáculo marco na história do Theatrum Mundi. Criação voltada ao público infantojuvenil sobre o ciclo da vida e da morte por meio de fábulas universais. Acumulou mais de 20 premiações nacionais, incluindo o Prêmio Zilka Salaberry de Teatro Infantil e FENATA.',
+      endereco: 'Teatro Municipal de Niterói — Rua Quinze de Novembro, 35 — Centro, Niterói, RJ',
+      latitude: -22.8953,
+      longitude: -43.1235,
+      dataEstreia: '2012-05-15',
       status: 'ENCERRADA',
+      linkIngresso: null,
+    },
+    {
+      titulo: 'Quarto do Joca',
+      resumo: 'Próxima criação autoral da Theatrum Mundi. Uma imersão lúdica e sensorial no universo das descobertas, medos e fascínios da infância, combinando dramaturgia de objetos, luz expressiva e interação performática.',
+      endereco: 'Espaço Theatrum — Itaipuaçú, Maricá, RJ',
+      latitude: -22.9288,
+      longitude: -42.8193,
+      dataEstreia: '2027-03-20',
+      status: 'PROJETO_FUTURO',
+      linkIngresso: null,
     },
   ];
 
   const pecasCriadas = [];
-  for (const peca of pecas) {
+  for (const pecaData of pecasOficiais) {
     let existente = await prisma.peca.findFirst({
-      where: { titulo: peca.titulo },
+      where: { titulo: pecaData.titulo },
     });
     if (!existente) {
-      existente = await prisma.peca.create({ data: peca });
+      existente = await prisma.peca.create({ data: pecaData });
+    } else {
+      existente = await prisma.peca.update({
+        where: { id: existente.id },
+        data: pecaData,
+      });
     }
     pecasCriadas.push(existente);
   }
-  console.log(`✅ ${pecasCriadas.length} peças verificadas/criadas`);
+  console.log(`✅ ${pecasCriadas.length} peças oficiais salvas com status e links`);
 
   // =========================================================================
-  // 5. Locais e datas de apresentação (múltiplos por peça)
+  // 5. Fotos Oficiais de Renato Mangolin para "Da Janela, o Mar"
   // =========================================================================
-  const locaisPecas = [
-    // Hamlet — São Paulo e Rio de Janeiro
-    {
-      pecaId: pecasCriadas[0].id,
-      nomeLocal: 'Theatro Municipal de São Paulo',
-      cidade: 'São Paulo, SP',
-      endereco: 'Praça Ramos de Azevedo, s/n — República, São Paulo, SP',
-      latitude: -23.5453,
-      longitude: -46.6385,
-      dataEstreia: '2026-09-15',
-      dataFim: '2026-10-15',
-      horario: 'Quintas a Sábados às 20h, Domingos às 17h',
-      status: 'PROGRAMADA',
-    },
-    {
-      pecaId: pecasCriadas[0].id,
-      nomeLocal: 'Teatro Riachuelo Rio',
-      cidade: 'Rio de Janeiro, RJ',
-      endereco: 'Rua do Passeio, 38/40 — Centro, Rio de Janeiro, RJ',
-      latitude: -22.9126,
-      longitude: -43.1768,
-      dataEstreia: '2026-11-05',
-      dataFim: '2026-11-28',
-      horario: 'Sextas e Sábados às 20h30, Domingos às 18h',
-      status: 'PROGRAMADA',
-    },
-
-    // Auto da Compadecida — São Paulo e Niterói
-    {
-      pecaId: pecasCriadas[1].id,
-      nomeLocal: 'SESC Pinheiros',
-      cidade: 'São Paulo, SP',
-      endereco: 'Rua Paes Leme, 195 — Pinheiros, São Paulo, SP',
-      latitude: -23.5671,
-      longitude: -46.6914,
-      dataEstreia: '2026-08-01',
-      dataFim: '2026-09-30',
-      horario: 'Quartas a Domingos às 19h30',
-      status: 'EM_CARTAZ',
-    },
-    {
-      pecaId: pecasCriadas[1].id,
-      nomeLocal: 'Theatro Municipal de Niterói',
-      cidade: 'Niterói, RJ',
-      endereco: 'Rua Quinze de Novembro, 35 — Centro, Niterói, RJ',
-      latitude: -22.8953,
-      longitude: -43.1235,
-      dataEstreia: '2026-10-10',
-      dataFim: '2026-10-31',
-      horario: 'Sextas e Sábados às 20h, Domingos às 18h',
-      status: 'PROGRAMADA',
-    },
-
-    // O Fantasma da Ópera — São Paulo e Curitiba
-    {
-      pecaId: pecasCriadas[2].id,
-      nomeLocal: 'Teatro Renault',
-      cidade: 'São Paulo, SP',
-      endereco: 'Av. Brigadeiro Luís Antônio, 411 — Bela Vista, São Paulo, SP',
-      latitude: -23.5558,
-      longitude: -46.6451,
-      dataEstreia: '2026-06-10',
-      dataFim: '2026-07-30',
-      horario: 'Quintas a Domingos às 21h',
-      status: 'ENCERRADA',
-    },
-    {
-      pecaId: pecasCriadas[2].id,
-      nomeLocal: 'Teatro Guaíra',
-      cidade: 'Curitiba, PR',
-      endereco: 'Rua XV de Novembro, 971 — Centro, Curitiba, PR',
-      latitude: -25.4285,
-      longitude: -49.2652,
-      dataEstreia: '2026-12-01',
-      dataFim: '2026-12-20',
-      horario: 'Sextas e Sábados às 20h30',
-      status: 'PROGRAMADA',
-    },
+  const pecaJanela = pecasCriadas[0]; // Da Janela, o Mar
+  const fotosJanela = [
+    { url: '/uploads/da_janela_01.jpg', descricao: 'Da Janela, o Mar — Foto: Renato Mangolin', tipo: 'IMAGEM', ordem: 0 },
+    { url: '/uploads/da_janela_02.jpg', descricao: 'Da Janela, o Mar — Cena de Teatro de Animação (Renato Mangolin)', tipo: 'IMAGEM', ordem: 1 },
+    { url: '/uploads/da_janela_03.jpg', descricao: 'Da Janela, o Mar — Visualidade Cênica e Corpo (Renato Mangolin)', tipo: 'IMAGEM', ordem: 2 },
+    { url: '/uploads/da_janela_04.jpg', descricao: 'Da Janela, o Mar — Poesia e Luz (Renato Mangolin)', tipo: 'IMAGEM', ordem: 3 },
+    { url: '/uploads/da_janela_05.jpg', descricao: 'Da Janela, o Mar — O Mar no Palco (Renato Mangolin)', tipo: 'IMAGEM', ordem: 4 },
   ];
 
-  for (const local of locaisPecas) {
-    const localExistente = await prisma.localPeca.findFirst({
-      where: { pecaId: local.pecaId, nomeLocal: local.nomeLocal },
+  // Limpa fotos anteriores genéricas de Da Janela, o Mar se houver
+  await prisma.fotoPeca.deleteMany({ where: { pecaId: pecaJanela.id } });
+  for (const f of fotosJanela) {
+    await prisma.fotoPeca.create({
+      data: {
+        pecaId: pecaJanela.id,
+        url: f.url,
+        descricao: f.descricao,
+        tipo: f.tipo,
+        ordem: f.ordem,
+      },
     });
-    if (!localExistente) {
-      await prisma.localPeca.create({ data: local });
-    }
   }
-  console.log(`✅ locais/datas de apresentação verificados/criados`);
+  console.log(`✅ ${fotosJanela.length} fotos oficiais de Renato Mangolin vinculadas a "Da Janela, o Mar"`);
 
   // =========================================================================
-  // 6. Alocação de colaboradores às peças
+  // 6. Downloads Técnicos (Press Kit) para "Da Janela, o Mar"
   // =========================================================================
-  const alocacoes = [
-    // Hamlet
-    { pecaId: pecasCriadas[0].id, colaboradorId: colabsCriados[0].id, funcaoNaPeca: 'Ofélia' },
-    { pecaId: pecasCriadas[0].id, colaboradorId: colabsCriados[1].id, funcaoNaPeca: 'Hamlet' },
-    { pecaId: pecasCriadas[0].id, colaboradorId: colabsCriados[2].id, funcaoNaPeca: 'Diretora' },
-    { pecaId: pecasCriadas[0].id, colaboradorId: colabsCriados[3].id, funcaoNaPeca: 'Iluminação' },
-    // Auto da Compadecida
-    { pecaId: pecasCriadas[1].id, colaboradorId: colabsCriados[1].id, funcaoNaPeca: 'João Grilo' },
-    { pecaId: pecasCriadas[1].id, colaboradorId: colabsCriados[0].id, funcaoNaPeca: 'Nossa Senhora' },
-    { pecaId: pecasCriadas[1].id, colaboradorId: colabsCriados[4].id, funcaoNaPeca: 'Figurinista' },
-    // Fantasma da Ópera
-    { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[0].id, funcaoNaPeca: 'Christine' },
-    { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[2].id, funcaoNaPeca: 'Diretora' },
-    { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[3].id, funcaoNaPeca: 'Iluminação' },
-    { pecaId: pecasCriadas[2].id, colaboradorId: colabsCriados[1].id, funcaoNaPeca: 'O Fantasma' },
-  ];
-
-  for (const aloc of alocacoes) {
-    const alocExistente = await prisma.pecaColaborador.findFirst({
-      where: { pecaId: aloc.pecaId, colaboradorId: aloc.colaboradorId },
-    });
-    if (!alocExistente) {
-      await prisma.pecaColaborador.create({ data: aloc });
-    }
-  }
-  console.log(`✅ alocações de colaboradores verificadas/criadas`);
-
-  // =========================================================================
-  // 7. Propagandas e Anúncios de exemplo
-  // =========================================================================
-  const propagandas = [
+  const downloadsJanela = [
     {
-      titulo: 'Aulas de Teatro para Todas as Idades',
-      descricao: 'Descubra o artista que existe em você! Nossas aulas de teatro desenvolvem expressão corporal, oratória e criatividade em um ambiente inspirador e acolhedor. Turmas abertas para iniciantes e avançados.',
-      link: '#contato',
-      textoBotao: 'Inscreva-se Agora',
-      ativo: true,
-      ordem: 0,
-    },
-    {
-      titulo: 'Workshop de Expressão Corporal e Voz',
-      descricao: 'Aprofunde suas habilidades de palco com técnicas contemporâneas de presença cênica, respiração diafragmática e projeção vocal ministrado por diretores renomados.',
-      link: '#contato',
-      textoBotao: 'Garantir Vaga',
-      ativo: true,
+      titulo: 'Rider Técnico Completo',
+      descricao: 'Especificações completas de iluminação, mapa de som, microfonação e dimensões de palco',
+      url: '/downloads/RIDER_TECNICO_Da_Janela_o_Mar.pdf',
+      tamanho: '3.4 MB',
+      formato: 'PDF',
       ordem: 1,
     },
     {
-      titulo: 'Clube do Espectador Theatrum',
-      descricao: 'Participe do nosso clube de benefícios e ganhe 50% de desconto em todas as estreias da temporada, além de acesso exclusivo aos bastidores e debates com os elencos.',
-      link: '/pecas',
-      textoBotao: 'Conheça o Clube',
-      ativo: true,
+      titulo: 'Projeto de Encenação e Portfólio',
+      descricao: 'Conceito artístico, sinopse, histórico da obra e ficha técnica para curadores e programadores',
+      url: '/downloads/PROJETO_Da_Janela_o_Mar.pdf',
+      tamanho: '6.5 MB',
+      formato: 'PDF',
       ordem: 2,
+    },
+    {
+      titulo: 'Dramaturgia Original',
+      descricao: 'Texto integral da dramaturgia poética por Angelo Faria Turci',
+      url: '/downloads/DRAMATURGIA_Da_Janela_o_Mar.pdf',
+      tamanho: '68 KB',
+      formato: 'PDF',
+      ordem: 3,
+    },
+    {
+      titulo: 'Ficha Técnica & Detalhes de Produção',
+      descricao: 'Elenco completo, operadores de técnica, equipe criativa e classificação indicativa',
+      url: '/downloads/FICHA_TECNICA_Da_Janela_o_Mar.pdf',
+      tamanho: '27 KB',
+      formato: 'PDF',
+      ordem: 4,
     },
   ];
 
-  for (const prop of propagandas) {
-    const propExistente = await prisma.propaganda.findFirst({
-      where: { titulo: prop.titulo },
+  await prisma.downloadTecnico.deleteMany({ where: { pecaId: pecaJanela.id } });
+  for (const d of downloadsJanela) {
+    await prisma.downloadTecnico.create({
+      data: {
+        pecaId: pecaJanela.id,
+        titulo: d.titulo,
+        descricao: d.descricao,
+        url: d.url,
+        tamanho: d.tamanho,
+        formato: d.formato,
+        ordem: d.ordem,
+      },
     });
-    if (!propExistente) {
-      await prisma.propaganda.create({ data: prop });
-    }
   }
-  console.log(`✅ propagandas verificadas/criadas`);
+  console.log(`✅ ${downloadsJanela.length} materiais técnicos (press kit) cadastrados para download`);
 
-  console.log('\n🎭 Seed concluído com sucesso!');
-  console.log('   Admin: admin@theatrum.com / admin123\n');
+  // =========================================================================
+  // 7. Locais e Apresentações na Agenda
+  // =========================================================================
+  const locais = [
+    {
+      pecaId: pecaJanela.id,
+      nomeLocal: 'Centro de Artes da UFF',
+      cidade: 'Niterói, RJ',
+      endereco: 'Rua Miguel de Frias, 9 — Icaraí, Niterói, RJ',
+      latitude: -22.9056,
+      longitude: -43.1189,
+      dataEstreia: '2026-11-07',
+      dataFim: '2026-11-29',
+      horario: 'Sábados e Domingos às 16h',
+      status: 'EM_CARTAZ',
+    },
+    {
+      pecaId: pecaJanela.id,
+      nomeLocal: 'Casa de Cultura Laura Alvim',
+      cidade: 'Rio de Janeiro, RJ',
+      endereco: 'Av. Vieira Souto, 176 — Ipanema, Rio de Janeiro, RJ',
+      latitude: -22.9868,
+      longitude: -43.2033,
+      dataEstreia: '2026-12-05',
+      dataFim: '2026-12-20',
+      horario: 'Sábados e Domingos às 16h30',
+      status: 'PROGRAMADA',
+    },
+  ];
+
+  await prisma.localPeca.deleteMany({ where: { pecaId: pecaJanela.id } });
+  for (const loc of locais) {
+    await prisma.localPeca.create({ data: loc });
+  }
+  console.log(`✅ Locais de apresentação da temporada cadastrados`);
+
+  // =========================================================================
+  // 8. Alocação de Colaboradores à Peça
+  // =========================================================================
+  await prisma.pecaColaborador.deleteMany({ where: { pecaId: pecaJanela.id } });
+  await prisma.pecaColaborador.create({
+    data: {
+      pecaId: pecaJanela.id,
+      colaboradorId: colabsCriados[0].id, // Angelo
+      funcaoNaPeca: 'Direção e Dramaturgia',
+    },
+  });
+  await prisma.pecaColaborador.create({
+    data: {
+      pecaId: pecaJanela.id,
+      colaboradorId: colabsCriados[1].id, // Rodrigo
+      funcaoNaPeca: 'Direção de Movimento e Ator',
+    },
+  });
+  await prisma.pecaColaborador.create({
+    data: {
+      pecaId: pecaJanela.id,
+      colaboradorId: colabsCriados[2].id, // Renato Mangolin
+      funcaoNaPeca: 'Fotografia Cênica',
+    },
+  });
+  console.log(`✅ Equipe criativa alocada a "Da Janela, o Mar"`);
+
+  // =========================================================================
+  // 9. Itens da Memória da Companhia (Linha do Tempo)
+  // =========================================================================
+  const memoriaService = require('../src/services/memoriaService');
+  await memoriaService.listar(); // Auto-popula itens padrão da história da Cia se não existirem
+  console.log(`✅ Memória da Companhia inicializada com marco histórico 2012-2026`);
+
+  console.log('\n🎭 Seed concluído com total sucesso!');
+  console.log('   Admin: admin / admin123 ou admin@theatrum.com\n');
 }
 
 main()

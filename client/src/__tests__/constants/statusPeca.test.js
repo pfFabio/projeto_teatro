@@ -10,9 +10,13 @@ describe('statusPeca constants', () => {
     expect(tagMap).toHaveProperty('EM_CARTAZ');
     expect(tagMap).toHaveProperty('PROGRAMADA');
     expect(tagMap).toHaveProperty('ENCERRADA');
+    expect(tagMap).toHaveProperty('EM_REPERTORIO');
+    expect(tagMap).toHaveProperty('PROJETO_FUTURO');
 
     expect(tagMap.EM_CARTAZ.classe).toBe('tag-em-cartaz');
     expect(tagMap.EM_CARTAZ.texto).toBe('Em Cartaz');
+    expect(tagMap.EM_REPERTORIO.classe).toBe('tag-em-repertorio');
+    expect(tagMap.PROJETO_FUTURO.classe).toBe('tag-projeto-futuro');
   });
 
   test('statusFiltros deve conter opção padrão para todas as peças', () => {

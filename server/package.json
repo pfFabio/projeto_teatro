@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "build": "npx prisma generate && npx prisma migrate deploy",
+    "build": "node -e \"const fs=require('fs'); const url=process.env.DATABASE_URL||''; if(url.startsWith('postgres')){ let s=fs.readFileSync('prisma/schema.prisma','utf8'); fs.writeFileSync('prisma/schema.prisma', s.replace(/provider = \\\"sqlite\\\"/, 'provider = \\\"postgresql\\\"')); }\" && npx prisma generate && npx prisma db push",
     "seed": "node prisma/seed.js",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx prisma db seed",

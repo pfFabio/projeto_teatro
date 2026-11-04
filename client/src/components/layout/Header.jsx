@@ -1,10 +1,11 @@
 // =============================================================================
-// Componente Header — Barra de navegação fixa
+// Componente Header — Barra de navegação fixa com logo Theatrum e Memória
 // =============================================================================
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import logoTheatrum from '../../assets/logo-theatrum.png';
 
 export default function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -17,8 +18,15 @@ export default function Header() {
     <header className="header">
       <div className="header-inner">
         <Link to="/" className="header-logo">
-          <span className="header-logo-icone">🎭</span>
-          <span>Theatrum</span>
+          <img
+            src={logoTheatrum}
+            alt="Theatrum"
+            className="header-logo-img"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+          <span className="header-logo-texto">Theatrum</span>
         </Link>
 
         <button
@@ -50,6 +58,13 @@ export default function Header() {
             onClick={() => setMenuAberto(false)}
           >
             Agenda
+          </Link>
+          <Link
+            to="/memoria"
+            className={`header-link ${ehAtivo('/memoria')}`}
+            onClick={() => setMenuAberto(false)}
+          >
+            Memória
           </Link>
 
           {ehAdmin && (

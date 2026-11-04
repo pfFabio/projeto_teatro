@@ -12,6 +12,7 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const PecasPage = lazy(() => import('./pages/PecasPage'));
 const PecaDetalhesPage = lazy(() => import('./pages/PecaDetalhesPage'));
 const AgendaPage = lazy(() => import('./pages/AgendaPage'));
+const MemoriaPage = lazy(() => import('./pages/MemoriaPage'));
 const ColaboradorPage = lazy(() => import('./pages/ColaboradorPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 
@@ -44,6 +45,7 @@ export default function App() {
               <Route path="/pecas" element={<PecasPage />} />
               <Route path="/pecas/:id" element={<PecaDetalhesPage />} />
               <Route path="/agenda" element={<AgendaPage />} />
+              <Route path="/memoria" element={<MemoriaPage />} />
               <Route path="/colaborador" element={<ColaboradorPage />} />
               <Route path="/admin" element={<AdminPage />} />
             </Routes>

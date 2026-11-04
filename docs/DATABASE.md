@@ -16,72 +16,9 @@ O Theatrum usa **Prisma ORM** com **PostgreSQL** como banco de dados. Em produç
 
 ## Diagrama Entidade-Relacionamento
 
-```
-┌──────────────────┐       ┌──────────────────────┐       ┌──────────────────┐
-│    usuarios       │       │   peca_colaboradores  │       │  colaboradores    │
-├──────────────────┤       ├──────────────────────┤       ├──────────────────┤
-│ id (PK)          │       │ id (PK)              │       │ id (PK)          │
-│ email (UNIQUE)   │       │ pecaId (FK) ─────────┤──┐    │ nome             │
-│ senha            │       │ colaboradorId (FK) ──┤──┤──→ │ funcao           │
-│ nome             │       │ funcaoNaPeca         │  │    │ idade            │
-│ papel            │       │ criadoEm             │  │    │ celular          │
-│ criadoEm         │       │ atualizadoEm         │  │    │ email (UNIQUE)   │
-│ atualizadoEm     │       │                      │  │    │ endereco         │
-└──────────────────┘       │ UNIQUE(pecaId,       │  │    │ genero           │
-                           │   colaboradorId)     │  │    │ fotoUrl          │
-                           └──────────────────────┘  │    │ criadoEm         │
-                                                     │    │ atualizadoEm     │
-┌──────────────────┐       ┌──────────────────────┐  │    └──────────────────┘
-│    pecas          │       │    fotos_pecas        │  │
-├──────────────────┤       ├──────────────────────┤  │
-│ id (PK) ←────────┤───────┤ pecaId (FK)          │  │
-│ titulo           │  ┌────┤ id (PK)              │  │
-│ resumo           │  │    │ url                  │  │
-│ endereco         │←─┘    │ descricao            │  │
-│ latitude         │       │ tipo                 │  │
-│ longitude        │       │ ordem                │  │
-│ dataEstreia      │       │ criadoEm             │  │
-│ status           │       │ atualizadoEm         │  │
-│ criadoEm         │←──────┤                      │  │
-│ atualizadoEm     │       └──────────────────────┘  │
-└──────────────────┘                                  │
-         │                                            │
-         ├── locais_pecas (1:N) ─────────────────────┘
-         │
-┌──────────────────┐       ┌──────────────────────┐
-│   locais_pecas    │       │   config_site         │
-├──────────────────┤       ├──────────────────────┤
-│ id (PK)          │       │ id (PK)              │
-│ pecaId (FK)      │       │ chave (UNIQUE)       │
-│ nomeLocal        │       │ valor                │
-│ cidade           │       │ tipo                 │
-│ endereco         │       │ criadoEm             │
-│ latitude         │       │ atualizadoEm         │
-│ longitude        │       └──────────────────────┘
-│ dataEstreia      │
-│ dataFim          │       ┌──────────────────────┐
-│ horario          │       │   arquivos            │
-│ status           │       ├──────────────────────┤
-│ criadoEm         │       │ id (PK)              │
-│ atualizadoEm     │       │ nome (UNIQUE)        │
-└──────────────────┘       │ mimetype             │
-                           │ dados (BYTES)        │
-┌──────────────────┐       │ tamanho              │
-│   propagandas     │       │ criadoEm             │
-├──────────────────┤       │ atualizadoEm         │
-│ id (PK)          │       └──────────────────────┘
-│ titulo           │
-│ descricao        │       ┌──────────────────────┐
-│ link             │       │  fotos_propagandas    │
-│ textoBotao       │       ├──────────────────────┤
-│ ativo            │───────┤ id (PK)              │
-│ ordem            │       │ propagandaId (FK)    │
-│ criadoEm         │       │ url                  │
-│ atualizadoEm     │       │ ordem                │
-└──────────────────┘       │ criadoEm             │
-                           │ atualizadoEm         │
-                           └──────────────────────┘
-```
+![Diagrama entidade-relacionamento do Theatrum](./database-diagram.svg)
+
+O diagrama inclui as 13 tabelas e seus relacionamentos por chave estrangeira. Para editar no draw.io, abra [database-diagram.drawio](./database-diagram.drawio). O arquivo-fonte do schema, com todos os campos e restrições, continua em `server/prisma/schema.prisma`.
 
 ---
 

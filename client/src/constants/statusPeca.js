@@ -11,6 +11,8 @@ export const tagMap = {
   EM_CARTAZ: { classe: 'tag-em-cartaz', texto: 'Em Cartaz' },
   ENCERRADA: { classe: 'tag-encerrada', texto: 'Encerrada' },
   PROGRAMADA: { classe: 'tag-programada', texto: 'Programada' },
+  EM_REPERTORIO: { classe: 'tag-em-repertorio', texto: 'Em Repertório' },
+  PROJETO_FUTURO: { classe: 'tag-projeto-futuro', texto: 'Projeto Futuro' },
 };
 
 /**
@@ -19,7 +21,9 @@ export const tagMap = {
 export const statusFiltros = [
   { valor: '', texto: 'Todas' },
   { valor: 'EM_CARTAZ', texto: '🟢 Em Cartaz' },
+  { valor: 'EM_REPERTORIO', texto: '🎭 Em Repertório' },
   { valor: 'PROGRAMADA', texto: '🔵 Programadas' },
+  { valor: 'PROJETO_FUTURO', texto: '💡 Projetos Futuros' },
   { valor: 'ENCERRADA', texto: '🔴 Encerradas' },
 ];
 

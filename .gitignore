@@ -20,10 +20,14 @@ __pycache__/
 
 # Referências, audiobooks e ferramentas locais de pesquisa
 *.pdf
+!client/public/downloads/*.pdf
 docs/referencias/audiobooks/
 docs/referencias/Fichamento*
 docs/referencias/build_audiobooks.py
 docs/referencias/generate_fichamento_pdf.py
 docs/referencias/process_audiobooks.py
 
-
+# Arquivos temporários e rascunhos locais
+drive_page.html
+TEATRO.jpg
+t-rj-teatrogenerico_r.jpg

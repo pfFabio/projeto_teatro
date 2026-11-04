@@ -24,6 +24,7 @@ export default function ModalPecaForm({
     longitude: '',
     dataEstreia: '',
     status: 'PROGRAMADA',
+    linkIngresso: '',
   });
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState('');
@@ -40,6 +41,7 @@ export default function ModalPecaForm({
         longitude: peca.longitude || '',
         dataEstreia: peca.dataEstreia || '',
         status: peca.status || 'PROGRAMADA',
+        linkIngresso: peca.linkIngresso || '',
       });
     } else {
       setFormPeca({
@@ -50,6 +52,7 @@ export default function ModalPecaForm({
         longitude: '',
         dataEstreia: '',
         status: 'PROGRAMADA',
+        linkIngresso: '',
       });
     }
     setErro('');
@@ -221,9 +224,25 @@ export default function ModalPecaForm({
           >
             <option value="PROGRAMADA">Programada</option>
             <option value="EM_CARTAZ">Em Cartaz</option>
+            <option value="EM_REPERTORIO">Em Repertório</option>
+            <option value="PROJETO_FUTURO">Projeto Futuro</option>
             <option value="ENCERRADA">Encerrada</option>
           </select>
         </div>
+      </div>
+
+      <div className="campo-grupo">
+        <label className="campo-label">🔗 Link de Venda de Ingressos (Sympla, Fever, etc.)</label>
+        <input
+          type="url"
+          className="campo-input"
+          value={formPeca.linkIngresso}
+          onChange={e => setFormPeca({ ...formPeca, linkIngresso: e.target.value })}
+          placeholder="Ex: https://www.sympla.com.br/theatrum-mundi-..."
+        />
+        <span style={{ fontSize: 'var(--texto-xs)', color: 'var(--cor-texto-terciario)', marginTop: '4px', display: 'block' }}>
+          Quando preenchido, o botão &quot;Comprar Ingresso&quot; é ativado na página da obra e na Agenda.
+        </span>
       </div>
 
       {peca && (

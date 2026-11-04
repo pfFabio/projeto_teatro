@@ -82,6 +82,28 @@ async function removerColaborador(req, res, next) {
   }
 }
 
+// POST /api/pecas/:id/downloads — Adicionar download técnico à peça (admin only)
+async function adicionarDownload(req, res, next) {
+  try {
+    const id = req.params.idNum || parseInt(req.params.id, 10);
+    const download = await PecaService.adicionarDownloadTecnico(id, req.body);
+    res.status(201).json(download);
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+// DELETE /api/pecas/downloads/:downloadId — Remover download técnico (admin only)
+async function removerDownload(req, res, next) {
+  try {
+    const downloadId = parseInt(req.params.downloadId, 10);
+    const resultado = await PecaService.removerDownloadTecnico(downloadId);
+    res.json(resultado);
+  } catch (erro) {
+    next(erro);
+  }
+}
+
 module.exports = {
   listarPecas,
   buscarPeca,
@@ -90,4 +112,6 @@ module.exports = {
   deletarPeca,
   alocarColaborador,
   removerColaborador,
+  adicionarDownload,
+  removerDownload,
 };

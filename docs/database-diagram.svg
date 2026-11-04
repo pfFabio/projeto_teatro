@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1640" viewBox="0 0 2200 1640" role="img" aria-labelledby="title description">
+  <title id="title">Diagrama entidade-relacionamento do Theatrum</title>
+  <desc id="description">Diagrama com as treze tabelas do banco de dados e as relações entre peças, colaboradores, locais, mídias, downloads e propagandas.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #20243a; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 17px; fill: #5f6478; }
+      .table { fill: #fff; stroke: #b9bfd2; stroke-width: 2; }
+      .head { fill: #302b58; }
+      .head-text { fill: #fff; font-size: 19px; font-weight: 700; }
+      .field { font-size: 15px; }
+      .muted { font-size: 13px; fill: #687087; }
+      .relation { fill: none; stroke: #7866ba; stroke-width: 3; }
+      .relation-label { font-size: 14px; font-weight: 700; fill: #59499a; }
+      .standalone { fill: #f0eff7; stroke: #d3d0e3; stroke-width: 1.5; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7866ba"/>
+    </marker>
+  </defs>
+  <rect width="2200" height="1640" fill="#f7f8fc"/>
+  <text class="title" x="60" y="58">Theatrum — diagrama do banco de dados</text>
+  <text class="subtitle" x="60" y="88">13 tabelas · PK = chave primária · FK = chave estrangeira · relações 1:N e N:N</text>
+
+  <!-- Relacionamentos -->
+  <path class="relation" marker-end="url(#arrow)" d="M850 493 H1000"/>
+  <text class="relation-label" x="886" y="480">1:N</text>
+  <path class="relation" marker-end="url(#arrow)" d="M1350 493 H1540"/>
+  <text class="relation-label" x="1400" y="480">N:1</text>
+  <path class="relation" marker-end="url(#arrow)" d="M670 650 V845 H950"/>
+  <text class="relation-label" x="690" y="830">1:N</text>
+  <path class="relation" marker-end="url(#arrow)" d="M730 650 V1110 H950"/>
+  <text class="relation-label" x="750" y="1095">1:N</text>
+  <path class="relation" marker-end="url(#arrow)" d="M790 650 V1410 H950"/>
+  <text class="relation-label" x="810" y="1395">1:N</text>
+  <path class="relation" marker-end="url(#arrow)" d="M1900 1070 H1940"/>
+  <text class="relation-label" x="1897" y="1054">1:N</text>
+
+  <!-- Entidades sem relacionamento por FK -->
+  <g>
+    <rect class="table" x="60" y="120" width="330" height="190" rx="10"/>
+    <path class="head" d="M70 120 H380 Q390 120 390 130 V166 H60 V130 Q60 120 70 120Z"/>
+    <text class="head-text" x="82" y="150">usuarios</text>
+    <text class="field" x="82" y="194">PK  id</text>
+    <text class="field" x="82" y="220">email (UNIQUE), senha, nome</text>
+    <text class="field" x="82" y="246">papel, resetToken</text>
+    <text class="field" x="82" y="272">criadoEm, atualizadoEm</text>
+  </g>
+  <g>
+    <rect class="table" x="60" y="350" width="330" height="190" rx="10"/>
+    <path class="head" d="M70 350 H380 Q390 350 390 360 V396 H60 V360 Q60 350 70 350Z"/>
+    <text class="head-text" x="82" y="380">mensagens_ideias</text>
+    <text class="field" x="82" y="424">PK  id</text>
+    <text class="field" x="82" y="450">nome, email, telefone, titulo</text>
+    <text class="field" x="82" y="476">descricao, consentimento, status</text>
+    <text class="field" x="82" y="502">criadoEm, atualizadoEm</text>
+  </g>
+  <g>
+    <rect class="table" x="60" y="580" width="330" height="190" rx="10"/>
+    <path class="head" d="M70 580 H380 Q390 580 390 590 V626 H60 V590 Q60 580 70 580Z"/>
+    <text class="head-text" x="82" y="610">memoria_itens</text>
+    <text class="field" x="82" y="654">PK  id</text>
+    <text class="field" x="82" y="680">ano, titulo, categoria, descricao</text>
+    <text class="field" x="82" y="706">local, imagemUrl, destaque, ordem</text>
+    <text class="field" x="82" y="732">criadoEm, atualizadoEm</text>
+  </g>
+  <g>
+    <rect class="table" x="60" y="810" width="330" height="170" rx="10"/>
+    <path class="head" d="M70 810 H380 Q390 810 390 820 V856 H60 V820 Q60 810 70 810Z"/>
+    <text class="head-text" x="82" y="840">config_site</text>
+    <text class="field" x="82" y="884">PK  id</text>
+    <text class="field" x="82" y="910">chave (UNIQUE), valor, tipo</text>
+    <text class="field" x="82" y="936">criadoEm, atualizadoEm</text>
+  </g>
+  <g>
+    <rect class="table" x="60" y="1020" width="330" height="190" rx="10"/>
+    <path class="head" d="M70 1020 H380 Q390 1020 390 1030 V1066 H60 V1030 Q60 1020 70 1020Z"/>
+    <text class="head-text" x="82" y="1050">arquivos</text>
+    <text class="field" x="82" y="1094">PK  id</text>
+    <text class="field" x="82" y="1120">nome (UNIQUE), mimetype</text>
+    <text class="field" x="82" y="1146">dados (Bytes), tamanho</text>
+    <text class="field" x="82" y="1172">criadoEm, atualizadoEm</text>
+    <text class="muted" x="82" y="1194">Sem FK declarada no schema</text>
+  </g>
+
+  <!-- Peças e associação N:N -->
+  <g>
+    <rect class="table" x="490" y="360" width="360" height="290" rx="10"/>
+    <path class="head" d="M500 360 H840 Q850 360 850 370 V406 H490 V370 Q490 360 500 360Z"/>
+    <text class="head-text" x="512" y="390">pecas</text>
+    <text class="field" x="512" y="434">PK  id</text>
+    <text class="field" x="512" y="460">titulo, resumo, endereco</text>
+    <text class="field" x="512" y="486">latitude, longitude</text>
+    <text class="field" x="512" y="512">dataEstreia, status, linkIngresso</text>
+    <text class="field" x="512" y="538">criadoEm, atualizadoEm</text>
+    <text class="muted" x="512" y="598">Relaciona-se a locais, fotos, downloads</text>
+    <text class="muted" x="512" y="620">e colaboradores via tabela associativa</text>
+  </g>
+  <g>
+    <rect class="table" x="1000" y="400" width="350" height="185" rx="10"/>
+    <path class="head" d="M1010 400 H1340 Q1350 400 1350 410 V446 H1000 V410 Q1000 400 1010 400Z"/>
+    <text class="head-text" x="1022" y="430">peca_colaboradores</text>
+    <text class="field" x="1022" y="474">PK  id</text>
+    <text class="field" x="1022" y="500">FK  pecaId → pecas.id</text>
+    <text class="field" x="1022" y="526">FK  colaboradorId → colaboradores.id</text>
+    <text class="field" x="1022" y="552">funcaoNaPeca · UNIQUE(pecaId, colaboradorId)</text>
+  </g>
+  <g>
+    <rect class="table" x="1540" y="360" width="390" height="290" rx="10"/>
+    <path class="head" d="M1550 360 H1920 Q1930 360 1930 370 V406 H1540 V370 Q1540 360 1550 360Z"/>
+    <text class="head-text" x="1562" y="390">colaboradores</text>
+    <text class="field" x="1562" y="434">PK  id</text>
+    <text class="field" x="1562" y="460">nome, nomeArtistico, funcao, idade</text>
+    <text class="field" x="1562" y="486">celular, email (UNIQUE), endereco</text>
+    <text class="field" x="1562" y="512">genero, fotoUrl, dataNascimento</text>
+    <text class="field" x="1562" y="538">cpf, rg, dados profissionais e pessoais</text>
+    <text class="field" x="1562" y="564">criadoEm, atualizadoEm</text>
+    <text class="muted" x="1562" y="620">Demais campos pessoais definidos no Prisma</text>
+  </g>
+
+  <!-- Entidades dependentes de peça -->
+  <g>
+    <rect class="table" x="950" y="760" width="350" height="185" rx="10"/>
+    <path class="head" d="M960 760 H1290 Q1300 760 1300 770 V806 H950 V770 Q950 760 960 760Z"/>
+    <text class="head-text" x="972" y="790">fotos_pecas</text>
+    <text class="field" x="972" y="834">PK  id</text>
+    <text class="field" x="972" y="860">FK  pecaId → pecas.id</text>
+    <text class="field" x="972" y="886">url, descricao, tipo, ordem</text>
+    <text class="field" x="972" y="912">criadoEm, atualizadoEm</text>
+  </g>
+  <g>
+    <rect class="table" x="950" y="1010" width="350" height="225" rx="10"/>
+    <path class="head" d="M960 1010 H1290 Q1300 1010 1300 1020 V1056 H950 V1020 Q950 1010 960 1010Z"/>
+    <text class="head-text" x="972" y="1040">locais_pecas</text>
+    <text class="field" x="972" y="1084">PK  id</text>
+    <text class="field" x="972" y="1110">FK  pecaId → pecas.id</text>
+    <text class="field" x="972" y="1136">nomeLocal, cidade, endereco</text>
+    <text class="field" x="972" y="1162">latitude, longitude, horario</text>
+    <text class="field" x="972" y="1188">dataEstreia, dataFim, status</text>
+    <text class="field" x="972" y="1214">criadoEm, atualizadoEm</text>
+  </g>
+  <g>
+    <rect class="table" x="950" y="1300" width="350" height="220" rx="10"/>
+    <path class="head" d="M960 1300 H1290 Q1300 1300 1300 1310 V1346 H950 V1310 Q950 1300 960 1300Z"/>
+    <text class="head-text" x="972" y="1330">downloads_tecnicos</text>
+    <text class="field" x="972" y="1374">PK  id</text>
+    <text class="field" x="972" y="1400">FK  pecaId → pecas.id</text>
+    <text class="field" x="972" y="1426">titulo, descricao, url</text>
+    <text class="field" x="972" y="1452">tamanho, formato, ordem</text>
+    <text class="field" x="972" y="1478">criadoEm, atualizadoEm</text>
+  </g>
+
+  <!-- Propagandas -->
+  <g>
+    <rect class="table" x="1540" y="970" width="360" height="200" rx="10"/>
+    <path class="head" d="M1550 970 H1890 Q1900 970 1900 980 V1016 H1540 V980 Q1540 970 1550 970Z"/>
+    <text class="head-text" x="1562" y="1000">propagandas</text>
+    <text class="field" x="1562" y="1044">PK  id</text>
+    <text class="field" x="1562" y="1070">titulo, descricao, link, textoBotao</text>
+    <text class="field" x="1562" y="1096">ativo, ordem, criadoEm, atualizadoEm</text>
+    <text class="muted" x="1562" y="1146">Uma propaganda pode ter várias fotos</text>
+  </g>
+  <g>
+    <rect class="table" x="1940" y="970" width="250" height="200" rx="10"/>
+    <path class="head" d="M1950 970 H2180 Q2190 970 2190 980 V1016 H1940 V980 Q1940 970 1950 970Z"/>
+    <text class="head-text" x="1962" y="1000">fotos_propagandas</text>
+    <text class="field" x="1962" y="1044">PK  id</text>
+    <text class="field" x="1962" y="1070">FK propagandaId</text>
+    <text class="field" x="1962" y="1096">url, ordem</text>
+    <text class="field" x="1962" y="1122">criadoEm, atualizadoEm</text>
+    <text class="muted" x="1962" y="1146">→ propagandas.id</text>
+  </g>
+
+  <rect class="standalone" x="60" y="1560" width="1780" height="58" rx="9"/>
+  <text class="subtitle" x="82" y="1596">Entidades sem FK declarada: usuarios, mensagens_ideias, memoria_itens, config_site e arquivos.</text>
+</svg>

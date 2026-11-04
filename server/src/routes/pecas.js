@@ -16,6 +16,8 @@ const {
   deletarPeca,
   alocarColaborador,
   removerColaborador,
+  adicionarDownload,
+  removerDownload,
 } = require('../controllers/pecasController');
 const {
   adicionarFotos,
@@ -52,5 +54,9 @@ router.delete('/:id/colaboradores/:colabId', autenticar, apenasAdmin, validateId
 router.post('/:id/locais', autenticar, apenasAdmin, validateId('id'), adicionarLocal);
 router.put('/:id/locais/:localId', autenticar, apenasAdmin, validateId('id', 'localId'), atualizarLocal);
 router.delete('/:id/locais/:localId', autenticar, apenasAdmin, validateId('id', 'localId'), deletarLocal);
+
+// Downloads técnicos (Press kit)
+router.post('/:id/downloads', autenticar, apenasAdmin, validateId('id'), adicionarDownload);
+router.delete('/downloads/:downloadId', autenticar, apenasAdmin, removerDownload);
 
 module.exports = router;

@@ -46,7 +46,7 @@ api.interceptors.response.use(
 );
 
 // =============================================================================
-// Autenticação
+// Autenticação e Segurança
 // =============================================================================
 export const authAPI = {
   login: (dadosOuEmail, senha) =>
@@ -54,10 +54,13 @@ export const authAPI = {
       ? api.post('/auth/login', dadosOuEmail)
       : api.post('/auth/login', { email: dadosOuEmail, senha }),
   perfil: () => api.get('/auth/me'),
+  alterarSenha: (dados) => api.post('/auth/alterar-senha', dados),
+  esqueciSenha: (dados) => api.post('/auth/esqueci-senha', dados),
+  redefinirSenha: (dados) => api.post('/auth/redefinir-senha', dados),
 };
 
 // =============================================================================
-// Peças
+// Peças de Teatro
 // =============================================================================
 export const pecasAPI = {
   listar: (params = {}) => api.get('/pecas', { params }),
@@ -82,6 +85,10 @@ export const pecasAPI = {
   adicionarLocal: (pecaId, dados) => api.post(`/pecas/${pecaId}/locais`, dados),
   atualizarLocal: (pecaId, localId, dados) => api.put(`/pecas/${pecaId}/locais/${localId}`, dados),
   deletarLocal: (pecaId, localId) => api.delete(`/pecas/${pecaId}/locais/${localId}`),
+
+  // Downloads técnicos (press kit)
+  adicionarDownload: (pecaId, dados) => api.post(`/pecas/${pecaId}/downloads`, dados),
+  removerDownload: (downloadId) => api.delete(`/pecas/downloads/${downloadId}`),
 };
 
 // =============================================================================
@@ -97,6 +104,26 @@ export const colaboradoresAPI = {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
   deletar: (id) => api.delete(`/colaboradores/${id}`),
+};
+
+// =============================================================================
+// Memória da Companhia (Linha do Tempo e Acervo)
+// =============================================================================
+export const memoriaAPI = {
+  listar: () => api.get('/memoria'),
+  criar: (dados) => api.post('/memoria', dados),
+  atualizar: (id, dados) => api.put(`/memoria/${id}`, dados),
+  deletar: (id) => api.delete(`/memoria/${id}`),
+};
+
+// =============================================================================
+// Ideias e Propostas de Parcerias ("Tem uma ideia?")
+// =============================================================================
+export const ideiasAPI = {
+  enviar: (dados) => api.post('/ideias', dados),
+  listar: (params = {}) => api.get('/ideias', { params }),
+  atualizarStatus: (id, status) => api.patch(`/ideias/${id}/status`, { status }),
+  deletar: (id) => api.delete(`/ideias/${id}`),
 };
 
 // =============================================================================

@@ -8,8 +8,8 @@ generator client {
 }
 
 datasource db {
-  // PostgreSQL em produção (Render) — SQLite é incompatível com filesystem efêmero
-  provider = "postgresql"
+  // SQLite para desenvolvimento local — PostgreSQL em produção (Render)
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -17,36 +17,62 @@ datasource db {
 // Usuário administrador do sistema
 // =============================================================================
 model Usuario {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  senha        String   // Hash bcrypt
-  nome         String
-  papel        String   @default("ADMIN") // Apenas ADMIN por enquanto
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @default(now()) @updatedAt
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique
+  senha               String    // Hash bcrypt
+  nome                String
+  papel               String    @default("ADMIN") // Apenas ADMIN por enquanto
+  resetToken          String?   // Token para recuperação de senha
+  resetTokenValidade  DateTime? // Expiração do token de recuperação
+  criadoEm            DateTime  @default(now())
+  atualizadoEm        DateTime  @default(now()) @updatedAt
 
   @@map("usuarios")
 }
 
 // =============================================================================
 // Colaborador — Ator, técnico, ou qualquer pessoa envolvida nas peças
-// Cadastrado via formulário público (sem autenticação)
+// Cadastrado via formulário público ou pelo admin (com proteção LGPD)
 // =============================================================================
 model Colaborador {
-  id           Int      @id @default(autoincrement())
-  nome         String
-  funcao       String   // Ator, Diretor, Técnico de Som, etc.
-  idade        Int
-  celular      String
-  email        String   @unique
-  endereco     String
-  genero       String   // Masculino, Feminino, Não-binário, Prefiro não dizer
-  fotoUrl      String?  // Caminho da foto enviada
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @default(now()) @updatedAt
+  id               Int       @id @default(autoincrement())
+  nome             String
+  nomeArtistico    String?
+  funcao           String    // Ator, Diretor, Técnico de Som, etc.
+  idade            Int?      @default(0)
+  celular          String
+  email            String    @unique
+  endereco         String
+  genero           String    // Masculino, Feminino, Não-binário, Prefiro não dizer
+  fotoUrl          String?   // Caminho da foto enviada
+  dataNascimento   String?   // DD/MM/AAAA ou YYYY-MM-DD
+  etniaRaca        String?   // Branco, Preto, Pardo, Amarelo, Indígena, etc.
+  orientacaoSexual String?   // Cisgênero, Transgênero, Heterossexual, etc.
+  cpf              String?   // Dado sensível (visível apenas para admin)
+  rg               String?   // Dado sensível (visível apenas para admin)
+  drtOmb           String?
+  redeSocial       String?   // @usuario
+  bairro           String?
+  cidade           String?
+  estado           String?
+  cep              String?
+  habilitacao      String?   // Carro, Moto, Não possui
+  tipoSanguineo    String?   // A+, O+, etc.
+  peso             String?
+  altura           String?
+  manequim         String?
+  sapato           String?
+  saude            String?   // Alergias, restrições médicas, etc. (sensível)
+  mei              String?
+  nit              String?
+  pagamentos       String?   // Histórico de pagamentos / cachês (sensível)
+  historico        String?   // Histórico de atuações
+  dataAdmissao     String?   // Data de admissão na companhia
+  criadoEm         DateTime  @default(now())
+  atualizadoEm     DateTime  @default(now()) @updatedAt
 
   // Relação N:N com Peças (via tabela intermediária)
-  pecas        PecaColaborador[]
+  pecas            PecaColaborador[]
 
   @@map("colaboradores")
 }
@@ -62,16 +88,77 @@ model Peca {
   latitude     Float?   // Para o mapa Leaflet
   longitude    Float?   // Para o mapa Leaflet
   dataEstreia  String?  // Formato: "YYYY-MM-DD"
-  status       String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA
+  status       String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA | EM_REPERTORIO | PROJETO_FUTURO
+  linkIngresso String?  // Link externo para compra de ingresso (Sympla, Fever, etc.)
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @default(now()) @updatedAt
 
   // Relacionamentos
-  fotos         FotoPeca[]
-  colaboradores PecaColaborador[]
-  locais        LocalPeca[]
+  fotos             FotoPeca[]
+  colaboradores     PecaColaborador[]
+  locais            LocalPeca[]
+  downloadsTecnicos DownloadTecnico[]
 
   @@map("pecas")
+}
+
+// =============================================================================
+// Downloads Técnicos da Peça ("Press Kit" para Programadores e Contratantes)
+// Rider técnico, projeto de encenação, dramaturgia, fotos em alta, clipping
+// =============================================================================
+model DownloadTecnico {
+  id           Int      @id @default(autoincrement())
+  pecaId       Int
+  titulo       String   // Ex: "Rider Técnico", "Projeto de Encenação", "Dramaturgia"
+  descricao    String?  // Ex: "Especificações de som, luz e palco"
+  url          String   // Caminho do arquivo ou link externo
+  tamanho      String?  // Ex: "3.2 MB"
+  formato      String?  @default("PDF") // PDF | ZIP | DOCX | MP4
+  ordem        Int      @default(0)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @default(now()) @updatedAt
+
+  peca         Peca     @relation(fields: [pecaId], references: [id], onDelete: Cascade)
+
+  @@map("downloads_tecnicos")
+}
+
+// =============================================================================
+// Formulário Público "Tem uma ideia?" / Propostas e Parcerias
+// Mensagens enviadas por visitantes e programadores para a companhia
+// =============================================================================
+model MensagemIdeia {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  email         String
+  telefone      String?
+  titulo        String?  // Título da ideia ou projeto
+  descricao     String   // Descrição da proposta
+  consentimento Boolean  @default(true) // Consentimento LGPD
+  status        String   @default("NOVA") // NOVA | LIDA | RESPONDIDA | ARQUIVADA
+  criadoEm      DateTime @default(now())
+  atualizadoEm  DateTime @default(now()) @updatedAt
+
+  @@map("mensagens_ideias")
+}
+
+// =============================================================================
+// Memória da Companhia (Linha do Tempo e Marcos Históricos)
+// =============================================================================
+model MemoriaItem {
+  id           Int      @id @default(autoincrement())
+  ano          String   // Ex: "2012", "2014–2017", "2017–2018", "2021–2024", "2024–2026"
+  titulo       String   // Ex: "Os Contadores", "Francisco, do tempo em que se nascia bufão"
+  categoria    String   @default("ESPETACULO") // ESPETACULO | PREMIO | FORMACAO | MARCO
+  descricao    String   // Texto explicativo da obra ou marco
+  local        String?  // Ex: "Centro de Artes UFF, Circuito SESC"
+  imagemUrl    String?  // Foto de registro
+  destaque     Boolean  @default(false)
+  ordem        Int      @default(0)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @default(now()) @updatedAt
+
+  @@map("memoria_itens")
 }
 
 // =============================================================================
@@ -89,7 +176,7 @@ model LocalPeca {
   dataEstreia  String?  // "YYYY-MM-DD"
   dataFim      String?  // "YYYY-MM-DD" opcional
   horario      String?  // Ex: "Sexta e Sábado às 20h, Domingo às 18h"
-  status       String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA
+  status       String   @default("PROGRAMADA") // EM_CARTAZ | ENCERRADA | PROGRAMADA | EM_REPERTORIO | PROJETO_FUTURO
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @default(now()) @updatedAt
 
@@ -201,4 +288,3 @@ model FotoPropaganda {
 
   @@map("fotos_propagandas")
 }
-
