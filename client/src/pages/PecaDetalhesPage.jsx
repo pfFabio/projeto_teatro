@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { pecasAPI, getMediaUrl } from '../services/api';
 import { getTag } from '../constants/statusPeca';
+import { PECAS_OFICIAIS } from '../constants/pecasOficiais';
 import defaultCover from '../assets/theatre-placeholder.jpg';
 
 export default function PecaDetalhesPage() {
@@ -19,8 +20,26 @@ export default function PecaDetalhesPage() {
     async function carregarPeca() {
       try {
         setCarregando(true);
-        const res = await pecasAPI.buscar(id);
-        setPeca(res.data);
+        let dadosPeca = null;
+        try {
+          const res = await pecasAPI.buscar(id);
+          dadosPeca = res.data;
+        } catch (errApi) {
+          console.warn('API indisponível em Detalhes. Usando dados canônicos Theatrum:', errApi);
+        }
+
+        if (!dadosPeca) {
+          dadosPeca = PECAS_OFICIAIS.find((p) => String(p.id) === String(id)) || null;
+        } else if (!dadosPeca.fotos || dadosPeca.fotos.length === 0) {
+          const oficial = PECAS_OFICIAIS.find(
+            (o) => o.titulo?.trim().toLowerCase() === dadosPeca.titulo?.trim().toLowerCase()
+          );
+          if (oficial && oficial.fotos?.length > 0) {
+            dadosPeca = { ...dadosPeca, fotos: oficial.fotos };
+          }
+        }
+
+        setPeca(dadosPeca);
       } catch (erro) {
         console.error('Erro ao buscar detalhes da obra:', erro);
       } finally {
@@ -126,6 +145,14 @@ export default function PecaDetalhesPage() {
             alt=""
             className="peca-hero-aura-img"
             onError={(e) => {
+              const currentSrc = e.target.src || '';
+              const fileName = currentSrc.split('/').pop()?.split('?')[0];
+              if (!e.target.dataset.triedLocal && fileName) {
+                e.target.dataset.triedLocal = 'true';
+                const baseUrl = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+                e.target.src = `${baseUrl}/uploads/${fileName}`;
+                return;
+              }
               e.target.src = defaultCover;
             }}
           />
@@ -148,6 +175,14 @@ export default function PecaDetalhesPage() {
                 alt={fotoAtual.descricao || peca.titulo}
                 className="peca-imagem-principal peca-hero-bg-media"
                 onError={(e) => {
+                  const currentSrc = e.target.src || '';
+                  const fileName = currentSrc.split('/').pop()?.split('?')[0];
+                  if (!e.target.dataset.triedLocal && fileName) {
+                    e.target.dataset.triedLocal = 'true';
+                    const baseUrl = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+                    e.target.src = `${baseUrl}/uploads/${fileName}`;
+                    return;
+                  }
                   e.target.src = defaultCover;
                 }}
               />

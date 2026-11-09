@@ -10,6 +10,7 @@ import Carrossel from '../components/common/Carousel';
 import PropagandasSection from '../components/common/PropagandasSection';
 import { pecasAPI, configAPI, propagandasAPI, ideiasAPI, getMediaUrl } from '../services/api';
 import { getTag } from '../constants/statusPeca';
+import { PECAS_OFICIAIS } from '../constants/pecasOficiais';
 import defaultCover from '../assets/theatre-placeholder.jpg';
 
 export default function HomePage() {
@@ -37,17 +38,44 @@ export default function HomePage() {
 
   async function carregarDados() {
     try {
-      const [resPecas, resConfig, resProps] = await Promise.all([
-        pecasAPI.listar({ limite: 12 }),
-        configAPI.listar(),
+      let pecasCarregadas = [];
+      try {
+        const resPecas = await pecasAPI.listar({ limite: 12 });
+        pecasCarregadas = resPecas.data?.pecas || [];
+      } catch (errPecas) {
+        console.warn('API de peças inacessível. Usando acervo oficial Theatrum:', errPecas);
+        pecasCarregadas = PECAS_OFICIAIS;
+      }
+
+      if (pecasCarregadas.length === 0) {
+        pecasCarregadas = PECAS_OFICIAIS;
+      } else {
+        // Enriquecer peças que não possuam fotos cadastradas no backend
+        pecasCarregadas = pecasCarregadas.map((p) => {
+          if (!p.fotos || p.fotos.length === 0) {
+            const oficial = PECAS_OFICIAIS.find(
+              (o) => o.titulo.trim().toLowerCase() === p.titulo.trim().toLowerCase()
+            );
+            if (oficial && oficial.fotos?.length > 0) {
+              return { ...p, fotos: oficial.fotos };
+            }
+          }
+          return p;
+        });
+      }
+
+      setPecas(pecasCarregadas);
+
+      const [resConfig, resProps] = await Promise.all([
+        configAPI.listar().catch(() => ({ data: {} })),
         propagandasAPI.listar({ limite: 5, ativo: true }).catch(() => ({ data: { propagandas: [] } })),
       ]);
 
-      setPecas(resPecas.data.pecas || []);
       setConfig(resConfig.data || {});
       setPropagandas(resProps.data.propagandas || []);
     } catch (erro) {
       console.error('Erro ao carregar dados da home:', erro);
+      setPecas(PECAS_OFICIAIS);
     } finally {
       setCarregando(false);
     }
@@ -139,6 +167,14 @@ export default function HomePage() {
                         className="card-imagem"
                         loading="lazy"
                         onError={(e) => {
+                          const currentSrc = e.target.src || '';
+                          const fileName = currentSrc.split('/').pop()?.split('?')[0];
+                          if (!e.target.dataset.triedLocal && fileName) {
+                            e.target.dataset.triedLocal = 'true';
+                            const baseUrl = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+                            e.target.src = `${baseUrl}/uploads/${fileName}`;
+                            return;
+                          }
                           e.target.src = defaultCover;
                         }}
                       />

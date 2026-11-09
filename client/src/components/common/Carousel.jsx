@@ -65,6 +65,14 @@ export default function Carrossel({ itens = [], autoPlay = true, intervalo = 600
                   alt={item.titulo}
                   loading={i === 0 ? 'eager' : 'lazy'}
                   onError={(e) => {
+                    const currentSrc = e.target.src || '';
+                    const fileName = currentSrc.split('/').pop()?.split('?')[0];
+                    if (!e.target.dataset.triedLocal && fileName) {
+                      e.target.dataset.triedLocal = 'true';
+                      const baseUrl = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+                      e.target.src = `${baseUrl}/uploads/${fileName}`;
+                      return;
+                    }
                     e.target.src = defaultCover;
                   }}
                 />

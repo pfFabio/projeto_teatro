@@ -378,31 +378,68 @@ async function main() {
   console.log(`✅ ${pecasCriadas.length} peças oficiais salvas com status e links`);
 
   // =========================================================================
-  // 5. Fotos Oficiais de Renato Mangolin para "Da Janela, o Mar"
+  // 5. Fotos Oficiais do Repertório Theatrum Mundi
   // =========================================================================
-  const pecaJanela = pecasCriadas[0]; // Da Janela, o Mar
-  const fotosJanela = [
-    { url: '/uploads/da_janela_01.jpg', descricao: 'Da Janela, o Mar — Foto: Renato Mangolin', tipo: 'IMAGEM', ordem: 0 },
-    { url: '/uploads/da_janela_02.jpg', descricao: 'Da Janela, o Mar — Cena de Teatro de Animação (Renato Mangolin)', tipo: 'IMAGEM', ordem: 1 },
-    { url: '/uploads/da_janela_03.jpg', descricao: 'Da Janela, o Mar — Visualidade Cênica e Corpo (Renato Mangolin)', tipo: 'IMAGEM', ordem: 2 },
-    { url: '/uploads/da_janela_04.jpg', descricao: 'Da Janela, o Mar — Poesia e Luz (Renato Mangolin)', tipo: 'IMAGEM', ordem: 3 },
-    { url: '/uploads/da_janela_05.jpg', descricao: 'Da Janela, o Mar — O Mar no Palco (Renato Mangolin)', tipo: 'IMAGEM', ordem: 4 },
+  const pecaJanela = pecasCriadas.find((p) => p.titulo === 'Da Janela, o Mar') || pecasCriadas[0];
+  const pecaYara = pecasCriadas.find((p) => p.titulo === 'YARA');
+  const pecaRomeu = pecasCriadas.find((p) => p.titulo === 'Romeu e Julieta');
+  const pecaContadores = pecasCriadas.find((p) => p.titulo === 'Os Contadores');
+  const pecaJoca = pecasCriadas.find((p) => p.titulo === 'Quarto do Joca');
+
+  const pecasComFotos = [
+    {
+      peca: pecaJanela,
+      fotos: [
+        { url: '/uploads/da_janela_01.jpg', descricao: 'Da Janela, o Mar — Foto Oficial: Renato Mangolin (Capa)', tipo: 'IMAGEM', ordem: 0 },
+        { url: '/uploads/da_janela_02.jpg', descricao: 'Da Janela, o Mar — Cena de Teatro de Animação (Renato Mangolin)', tipo: 'IMAGEM', ordem: 1 },
+        { url: '/uploads/da_janela_03.jpg', descricao: 'Da Janela, o Mar — Visualidade Cênica e Corpo (Renato Mangolin)', tipo: 'IMAGEM', ordem: 2 },
+        { url: '/uploads/da_janela_04.jpg', descricao: 'Da Janela, o Mar — Poesia e Luz (Renato Mangolin)', tipo: 'IMAGEM', ordem: 3 },
+        { url: '/uploads/da_janela_05.jpg', descricao: 'Da Janela, o Mar — O Mar no Palco (Renato Mangolin)', tipo: 'IMAGEM', ordem: 4 },
+        { url: '/uploads/da_janela_06.jpg', descricao: 'Da Janela, o Mar — Cenografia Panorâmica Widescreen', tipo: 'IMAGEM', ordem: 5 },
+      ],
+    },
+    {
+      peca: pecaYara,
+      fotos: [
+        { url: '/uploads/obra_yara_01.jpg', descricao: 'YARA — Mito da Mãe D’Água e Ancestralidade (Theatrum Mundi)', tipo: 'IMAGEM', ordem: 0 },
+      ],
+    },
+    {
+      peca: pecaRomeu,
+      fotos: [
+        { url: '/uploads/obra_romeu_01.jpg', descricao: 'Romeu e Julieta — Tragédia Popular e Teatro Físico (Theatrum Mundi)', tipo: 'IMAGEM', ordem: 0 },
+      ],
+    },
+    {
+      peca: pecaContadores,
+      fotos: [
+        { url: '/uploads/obra_contadores_01.jpg', descricao: 'Os Contadores — Mais de 20 Premiações Nacionais (Theatrum Mundi)', tipo: 'IMAGEM', ordem: 0 },
+      ],
+    },
+    {
+      peca: pecaJoca,
+      fotos: [
+        { url: '/uploads/obra_quarto_joca_01.jpg', descricao: 'Quarto do Joca — Universo Lúdico de Objetos e Descobertas', tipo: 'IMAGEM', ordem: 0 },
+      ],
+    },
   ];
 
-  // Limpa fotos anteriores genéricas de Da Janela, o Mar se houver
-  await prisma.fotoPeca.deleteMany({ where: { pecaId: pecaJanela.id } });
-  for (const f of fotosJanela) {
-    await prisma.fotoPeca.create({
-      data: {
-        pecaId: pecaJanela.id,
-        url: f.url,
-        descricao: f.descricao,
-        tipo: f.tipo,
-        ordem: f.ordem,
-      },
-    });
+  for (const item of pecasComFotos) {
+    if (!item.peca) continue;
+    await prisma.fotoPeca.deleteMany({ where: { pecaId: item.peca.id } });
+    for (const f of item.fotos) {
+      await prisma.fotoPeca.create({
+        data: {
+          pecaId: item.peca.id,
+          url: f.url,
+          descricao: f.descricao,
+          tipo: f.tipo,
+          ordem: f.ordem,
+        },
+      });
+    }
   }
-  console.log(`✅ ${fotosJanela.length} fotos oficiais de Renato Mangolin vinculadas a "Da Janela, o Mar"`);
+  console.log(`✅ Fotos oficiais de todo o repertório vinculadas com sucesso`);
 
   // =========================================================================
   // 6. Downloads Técnicos (Press Kit) para "Da Janela, o Mar"
@@ -532,7 +569,6 @@ async function main() {
   console.log(`✅ ${alocacoesJanela.length} profissionais alocados à ficha técnica de "Da Janela, o Mar"`);
 
   // Alocações para as demais peças históricas do grupo
-  const pecaYara = pecasCriadas.find(p => p.titulo === 'YARA');
   if (pecaYara) {
     await prisma.pecaColaborador.deleteMany({ where: { pecaId: pecaYara.id } });
     await prisma.pecaColaborador.create({
@@ -543,7 +579,6 @@ async function main() {
     });
   }
 
-  const pecaRomeu = pecasCriadas.find(p => p.titulo === 'Romeu e Julieta');
   if (pecaRomeu) {
     await prisma.pecaColaborador.deleteMany({ where: { pecaId: pecaRomeu.id } });
     await prisma.pecaColaborador.create({
@@ -554,7 +589,6 @@ async function main() {
     });
   }
 
-  const pecaContadores = pecasCriadas.find(p => p.titulo === 'Os Contadores');
   if (pecaContadores) {
     await prisma.pecaColaborador.deleteMany({ where: { pecaId: pecaContadores.id } });
     await prisma.pecaColaborador.create({
@@ -563,6 +597,32 @@ async function main() {
     await prisma.pecaColaborador.create({
       data: { pecaId: pecaContadores.id, colaboradorId: colabsCriados[1].id, funcaoNaPeca: 'Ator Criador (Prêmio de Atuação)' },
     });
+  }
+
+  // =========================================================================
+  // 8.1. Persistência de Arquivos no PostgreSQL (tabela 'arquivos')
+  // Garante que o Render sirva os arquivos mesmo com filesystem efêmero
+  // =========================================================================
+  const fs = require('fs');
+  const path = require('path');
+  const uploadDir = path.join(__dirname, '..', 'uploads');
+  if (fs.existsSync(uploadDir)) {
+    const arquivosDisco = fs.readdirSync(uploadDir);
+    let countPersistidos = 0;
+    for (const nomeArq of arquivosDisco) {
+      if (nomeArq.endsWith('.jpg') || nomeArq.endsWith('.jpeg') || nomeArq.endsWith('.png') || nomeArq.endsWith('.pdf')) {
+        const filePath = path.join(uploadDir, nomeArq);
+        const buffer = fs.readFileSync(filePath);
+        const mime = nomeArq.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg';
+        await prisma.arquivo.upsert({
+          where: { nome: nomeArq },
+          update: { dados: buffer, tamanho: buffer.length, mimetype: mime },
+          create: { nome: nomeArq, dados: buffer, tamanho: buffer.length, mimetype: mime },
+        });
+        countPersistidos++;
+      }
+    }
+    console.log(`✅ ${countPersistidos} arquivos de mídia e PDFs persistidos na tabela 'arquivos' do PostgreSQL`);
   }
 
   // =========================================================================

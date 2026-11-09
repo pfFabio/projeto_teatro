@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { pecasAPI, getMediaUrl } from '../services/api';
 import { getTag, statusFiltros } from '../constants/statusPeca';
+import { PECAS_OFICIAIS } from '../constants/pecasOficiais';
 import defaultCover from '../assets/theatre-placeholder.jpg';
 
 export default function PecasPage() {
@@ -27,11 +28,51 @@ export default function PecasPage() {
         ...(paramsBusca.busca ? { busca: paramsBusca.busca } : {}),
       };
 
-      const res = await pecasAPI.listar(params);
-      setPecas(res.data.pecas || []);
-      setTotalPaginas(res.data.totalPaginas || 1);
+      let pecasLista = [];
+      try {
+        const res = await pecasAPI.listar(params);
+        pecasLista = res.data?.pecas || [];
+        setTotalPaginas(res.data?.totalPaginas || 1);
+      } catch (errApi) {
+        console.warn('API indisponível em Obras. Usando acervo oficial Theatrum:', errApi);
+        pecasLista = PECAS_OFICIAIS;
+        setTotalPaginas(1);
+      }
+
+      if (pecasLista.length === 0 && !paramsBusca.busca && !paramsBusca.status) {
+        pecasLista = PECAS_OFICIAIS;
+      } else {
+        // Enriquecer fotos oficiais se a peça no backend não possuir fotos
+        pecasLista = pecasLista.map((p) => {
+          if (!p.fotos || p.fotos.length === 0) {
+            const oficial = PECAS_OFICIAIS.find(
+              (o) => o.titulo.trim().toLowerCase() === p.titulo.trim().toLowerCase()
+            );
+            if (oficial && oficial.fotos?.length > 0) {
+              return { ...p, fotos: oficial.fotos };
+            }
+          }
+          return p;
+        });
+      }
+
+      // Aplica filtros se veio do fallback estático
+      if (paramsBusca.status) {
+        pecasLista = pecasLista.filter((p) => p.status === paramsBusca.status);
+      }
+      if (paramsBusca.busca) {
+        const termo = paramsBusca.busca.toLowerCase();
+        pecasLista = pecasLista.filter(
+          (p) =>
+            p.titulo?.toLowerCase().includes(termo) ||
+            p.resumo?.toLowerCase().includes(termo)
+        );
+      }
+
+      setPecas(pecasLista);
     } catch (erro) {
       console.error('Erro ao carregar obras:', erro);
+      setPecas(PECAS_OFICIAIS);
     } finally {
       setCarregando(false);
     }
@@ -127,6 +168,14 @@ export default function PecasPage() {
                       src={peca.fotos?.[0]?.url ? getMediaUrl(peca.fotos[0].url) : defaultCover}
                       alt={peca.titulo}
                       onError={(e) => {
+                        const currentSrc = e.target.src || '';
+                        const fileName = currentSrc.split('/').pop()?.split('?')[0];
+                        if (!e.target.dataset.triedLocal && fileName) {
+                          e.target.dataset.triedLocal = 'true';
+                          const baseUrl = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+                          e.target.src = `${baseUrl}/uploads/${fileName}`;
+                          return;
+                        }
                         e.target.src = defaultCover;
                       }}
                     />

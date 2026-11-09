@@ -8,6 +8,10 @@ dist-ssr/
 *.db-journal
 server/uploads/*
 !server/uploads/.gitkeep
+!server/uploads/*.jpg
+!server/uploads/*.jpeg
+!server/uploads/*.png
+!server/uploads/*.pdf
 .DS_Store
 Thumbs.db
 coverage/

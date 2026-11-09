@@ -15,13 +15,34 @@ const api = axios.create({
 });
 
 /**
- * Converte URLs relativas (/uploads/...) em URLs absolutas quando em produção
+ * Converte URLs relativas (/uploads/..., /downloads/...) em URLs adequadas ao ambiente.
+ * Para arquivos estáticos empacotados com a aplicação (fotos oficiais das peças e downloads),
+ * prioriza o carregamento direto do host da SPA (GitHub Pages CDN), garantindo
+ * renderização imediata, sem 404 e sem latência de cold start do Render.
  */
 export function getMediaUrl(url) {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  if (!backendUrl) return url;
-  return `${backendUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+
+  const cleanPath = url.startsWith('/') ? url.slice(1) : url;
+  const baseUrl = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+
+  // 1. Arquivos estáticos oficiais empacotados no client/public (uploads oficiais e downloads)
+  if (
+    cleanPath.startsWith('uploads/da_janela_') ||
+    cleanPath.startsWith('uploads/obra_') ||
+    cleanPath.startsWith('downloads/') ||
+    cleanPath.startsWith('images/')
+  ) {
+    return `${baseUrl}/${cleanPath}`;
+  }
+
+  // 2. Uploads dinâmicos de runtime enviados via painel administrativo
+  if (backendUrl) {
+    return `${backendUrl}/${cleanPath}`;
+  }
+
+  return `${baseUrl}/${cleanPath}`;
 }
 
 // Interceptor — adiciona token JWT se existir
