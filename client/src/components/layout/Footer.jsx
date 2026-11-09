@@ -44,11 +44,10 @@ export default function Footer() {
         <div>
           <h4 className="footer-titulo">Contato & Sede</h4>
           <ul className="footer-links">
-            <li><a href="mailto:contato@theatrum.com">contato@theatrum.com</a></li>
             <li><a href="mailto:ciatheatrum@gmail.com">ciatheatrum@gmail.com</a></li>
-            <li><a href="tel:+5511999999999">(11) 99999-9999</a></li>
             <li><a href="tel:+5521973092514">+55 (21) 97309-2514</a></li>
-            <li><span className="footer-endereco">Itaipuaçú, Maricá / RJ</span></li>
+            <li><a href="https://instagram.com/theatrum.m" target="_blank" rel="noopener noreferrer">@theatrum.m</a></li>
+            <li><span className="footer-endereco">Silvana da Costa, 437, Itaipuaçú — Maricá/RJ</span></li>
           </ul>
         </div>
       </div>

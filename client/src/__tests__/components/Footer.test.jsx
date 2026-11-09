@@ -49,11 +49,11 @@ describe('Componente Footer', () => {
       </BrowserRouter>
     );
 
-    const linkEmail = screen.getByRole('link', { name: 'contato@theatrum.com' });
-    expect(linkEmail).toHaveAttribute('href', 'mailto:contato@theatrum.com');
+    const linkEmail = screen.getByRole('link', { name: 'ciatheatrum@gmail.com' });
+    expect(linkEmail).toHaveAttribute('href', 'mailto:ciatheatrum@gmail.com');
 
-    const linkTelefone = screen.getByRole('link', { name: '(11) 99999-9999' });
-    expect(linkTelefone).toHaveAttribute('href', 'tel:+5511999999999');
+    const linkTelefone = screen.getByRole('link', { name: '+55 (21) 97309-2514' });
+    expect(linkTelefone).toHaveAttribute('href', 'tel:+5521973092514');
   });
 
   it('deve exibir o aviso de copyright com o ano corrente', () => {
