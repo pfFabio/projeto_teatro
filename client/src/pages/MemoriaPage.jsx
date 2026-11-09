@@ -118,12 +118,13 @@ export default function MemoriaPage() {
               key={item.id || idx}
               className={`memoria-timeline-item ${item.destaque ? 'item-destaque' : ''}`}
             >
-              <div className="memoria-timeline-marcador">
-                <span className="memoria-timeline-ano">{item.ano}</span>
+              <div className="memoria-timeline-marcador" aria-hidden="true">
+                <div className="memoria-marcador-ponto" />
               </div>
 
               <div className="memoria-timeline-conteudo card">
                 <div className="memoria-card-cabecalho">
+                  <span className="memoria-badge-ano">{item.ano}</span>
                   <span className={`tag tag-categoria-${item.categoria.toLowerCase()}`}>
                     {item.categoria === 'ESPETACULO'
                       ? '🎭 Espetáculo'
