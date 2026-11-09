@@ -53,7 +53,7 @@ async function main() {
   console.log(`✅ ${configs.length} configurações oficiais criadas/atualizadas`);
 
   // =========================================================================
-  // 3. Colaboradores reais da companhia
+  // 3. Colaboradores reais da companhia (Extraídos da Ficha Técnica e Portfólio)
   // =========================================================================
   const colaboradores = [
     {
@@ -69,7 +69,7 @@ async function main() {
       cidade: 'Maricá',
       estado: 'RJ',
       cep: '24936-600',
-      historico: 'Fundador e diretor do Theatrum Mundi. Dramaturgo de Da Janela, o Mar e Os Contadores.',
+      historico: 'Fundador e diretor do Theatrum Mundi. Dramaturgo de Da Janela, o Mar, Os Contadores, YARA e Francisco, do tempo em que se nascia bufão. Pesquisador cênico.',
     },
     {
       nome: 'Rodrigo da Silva Patriota',
@@ -84,7 +84,6 @@ async function main() {
       etniaRaca: 'Branco',
       cpf: '155.094.077-51',
       rg: '26.378.216-1',
-      drtOmb: 'XXXXXXXX',
       redeSocial: '@rodrigopatriota',
       bairro: 'Vila Isabel',
       cidade: 'Rio de Janeiro',
@@ -94,7 +93,161 @@ async function main() {
       dataNascimento: '17/02/1993',
       dataAdmissao: '01/01/2012',
       saude: 'Nenhuma alergia ou restrição física severa.',
-      historico: 'Ator e diretor de movimento da companhia desde a fundação em 2012.',
+      historico: 'Ator, preparador corporal e diretor de movimento da companhia desde a fundação em 2012.',
+    },
+    {
+      nome: 'Gustavo Martinez',
+      nomeArtistico: 'Gustavo Martinez',
+      funcao: 'Ator',
+      idade: 32,
+      celular: '(21) 98111-2233',
+      email: 'gustavo.martinez@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Masculino',
+      redeSocial: '@gustavomartinez.ator',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Elenco principal de "Da Janela, o Mar" e intérprete teatral.',
+    },
+    {
+      nome: 'Camila Mendonça',
+      nomeArtistico: 'Camila Mendonça',
+      funcao: 'Atriz',
+      idade: 30,
+      celular: '(21) 98222-3344',
+      email: 'camila.mendonca@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Feminino',
+      redeSocial: '@camilamendonca.arte',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Atriz e pesquisadora cênica, elenco de "Da Janela, o Mar".',
+    },
+    {
+      nome: 'Shirley Guimarães',
+      nomeArtistico: 'Shirley Guimarães',
+      funcao: 'Atriz',
+      idade: 35,
+      celular: '(21) 98333-4455',
+      email: 'shirley.guimaraes@theatrum.com',
+      endereco: 'Niterói, RJ',
+      genero: 'Feminino',
+      redeSocial: '@shirleyguimaraes',
+      cidade: 'Niterói',
+      estado: 'RJ',
+      historico: 'Atriz criadora no Theatrum Mundi em "Da Janela, o Mar".',
+    },
+    {
+      nome: 'Élide Pessoa',
+      nomeArtistico: 'Élide Pessoa',
+      funcao: 'Atriz',
+      idade: 31,
+      celular: '(21) 98444-5566',
+      email: 'elide.pessoa@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Feminino',
+      redeSocial: '@elidepessoa',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Atriz do espetáculo "Da Janela, o Mar".',
+    },
+    {
+      nome: 'Maike Damasceno',
+      nomeArtistico: 'Maike Damasceno',
+      funcao: 'Ator',
+      idade: 29,
+      celular: '(21) 98555-6677',
+      email: 'maike.damasceno@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Masculino',
+      redeSocial: '@maikedamasceno',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Ator de "Da Janela, o Mar" e arte-educador.',
+    },
+    {
+      nome: 'Marco Aureh',
+      nomeArtistico: 'Marco Aureh',
+      funcao: 'Compositor e Diretor Musical',
+      idade: 45,
+      celular: '(21) 98666-7788',
+      email: 'marcoaureh@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Masculino',
+      redeSocial: '@marcoaureh',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Compositor da trilha sonora e canções originais de "Da Janela, o Mar".',
+    },
+    {
+      nome: 'Dante',
+      nomeArtistico: 'Dante',
+      funcao: 'Artista Visual e Bonequeiro',
+      idade: 42,
+      celular: '(21) 98777-8899',
+      email: 'dante.bonecos@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Masculino',
+      redeSocial: '@dante.artecenica',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Concepção e escultura de bonecos e design gráfico de "Da Janela, o Mar".',
+    },
+    {
+      nome: 'Diirr',
+      nomeArtistico: 'Diirr',
+      funcao: 'Cenógrafo e Diretor de Animação',
+      idade: 38,
+      celular: '(21) 98888-9900',
+      email: 'diirr.cenografia@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Masculino',
+      redeSocial: '@diirr.visual',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Cenografia e direção de animação visual de "Da Janela, o Mar".',
+    },
+    {
+      nome: 'Arlete Rua',
+      nomeArtistico: 'Arlete Rua',
+      funcao: 'Figurinista',
+      idade: 52,
+      celular: '(21) 98999-0011',
+      email: 'arlete.rua@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Feminino',
+      redeSocial: '@arleterua.figurinos',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Figurinos e concepção têxtil de "Da Janela, o Mar".',
+    },
+    {
+      nome: 'Raphael Grampola',
+      nomeArtistico: 'Raphael Grampola',
+      funcao: 'Iluminador Cênico',
+      idade: 37,
+      celular: '(21) 98111-0022',
+      email: 'grampola.luz@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Masculino',
+      redeSocial: '@grampolaluz',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Desenho de luz de "Da Janela, o Mar".',
+    },
+    {
+      nome: 'Cléber de Oliveira',
+      nomeArtistico: 'Cléber de Oliveira',
+      funcao: 'Visagista',
+      idade: 41,
+      celular: '(21) 98222-1133',
+      email: 'cleber.visagismo@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Masculino',
+      redeSocial: '@cleberdeoliveira',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Visagismo e caracterização de "Da Janela, o Mar".',
     },
     {
       nome: 'Renato Mangolin',
@@ -108,7 +261,35 @@ async function main() {
       redeSocial: '@renatomangolin',
       cidade: 'Rio de Janeiro',
       estado: 'RJ',
-      historico: 'Fotógrafo oficial de artes cênicas de Da Janela, o Mar e dezenas de montagens cariocas.',
+      historico: 'Fotógrafo oficial de artes cênicas de "Da Janela, o Mar" e grandes montagens cariocas.',
+    },
+    {
+      nome: 'Aymara Luna',
+      nomeArtistico: 'Aymara Luna',
+      funcao: 'Produtora Executiva',
+      idade: 34,
+      celular: '(21) 98333-2244',
+      email: 'aymara.luna@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Feminino',
+      redeSocial: '@aymaraluna.prod',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Produção executiva de "Da Janela, o Mar" e projetos de circulação.',
+    },
+    {
+      nome: 'Stephannie Carvalho',
+      nomeArtistico: 'Stephannie Carvalho',
+      funcao: 'Intérprete de Libras e Acessibilidade',
+      idade: 33,
+      celular: '(21) 98444-3355',
+      email: 'stephannie.libras@theatrum.com',
+      endereco: 'Rio de Janeiro, RJ',
+      genero: 'Feminino',
+      redeSocial: '@stephannie.libras',
+      cidade: 'Rio de Janeiro',
+      estado: 'RJ',
+      historico: 'Tradução simultânea em Libras e consultoria de acessibilidade cultural para "Da Janela, o Mar".',
     },
   ];
 
@@ -314,31 +495,75 @@ async function main() {
   console.log(`✅ Locais de apresentação da temporada cadastrados`);
 
   // =========================================================================
-  // 8. Alocação de Colaboradores à Peça
+  // 8. Alocação de Colaboradores à Peça "Da Janela, o Mar" e Peças de Repertório
   // =========================================================================
   await prisma.pecaColaborador.deleteMany({ where: { pecaId: pecaJanela.id } });
-  await prisma.pecaColaborador.create({
-    data: {
-      pecaId: pecaJanela.id,
-      colaboradorId: colabsCriados[0].id, // Angelo
-      funcaoNaPeca: 'Direção e Dramaturgia',
-    },
-  });
-  await prisma.pecaColaborador.create({
-    data: {
-      pecaId: pecaJanela.id,
-      colaboradorId: colabsCriados[1].id, // Rodrigo
-      funcaoNaPeca: 'Direção de Movimento e Ator',
-    },
-  });
-  await prisma.pecaColaborador.create({
-    data: {
-      pecaId: pecaJanela.id,
-      colaboradorId: colabsCriados[2].id, // Renato Mangolin
-      funcaoNaPeca: 'Fotografia Cênica',
-    },
-  });
-  console.log(`✅ Equipe criativa alocada a "Da Janela, o Mar"`);
+  
+  const alocacoesJanela = [
+    { idx: 0, funcao: 'Dramaturgia e Encenação' }, // Angelo
+    { idx: 1, funcao: 'Criação Corporal e Assistência de Direção' }, // Rodrigo Patriota
+    { idx: 2, funcao: 'Ator (Elenco)' }, // Gustavo Martinez
+    { idx: 3, funcao: 'Atriz (Elenco)' }, // Camila Mendonça
+    { idx: 4, funcao: 'Atriz (Elenco)' }, // Shirley Guimarães
+    { idx: 5, funcao: 'Atriz (Elenco)' }, // Élide Pessoa
+    { idx: 6, funcao: 'Ator (Elenco)' }, // Maike Damasceno
+    { idx: 7, funcao: 'Músicas Originais e Direção Musical' }, // Marco Aureh
+    { idx: 8, funcao: 'Bonecos e Identidade Visual' }, // Dante
+    { idx: 9, funcao: 'Cenografia e Animação' }, // Diirr
+    { idx: 10, funcao: 'Figurinos' }, // Arlete Rua
+    { idx: 11, funcao: 'Iluminação' }, // Raphael Grampola
+    { idx: 12, funcao: 'Visagismo' }, // Cléber de Oliveira
+    { idx: 13, funcao: 'Fotografia Oficial' }, // Renato Mangolin
+    { idx: 14, funcao: 'Produção Executiva' }, // Aymara Luna
+    { idx: 15, funcao: 'Intérprete de Libras e Acessibilidade' }, // Stephannie Carvalho
+  ];
+
+  for (const aloc of alocacoesJanela) {
+    if (colabsCriados[aloc.idx]) {
+      await prisma.pecaColaborador.create({
+        data: {
+          pecaId: pecaJanela.id,
+          colaboradorId: colabsCriados[aloc.idx].id,
+          funcaoNaPeca: aloc.funcao,
+        },
+      });
+    }
+  }
+  console.log(`✅ ${alocacoesJanela.length} profissionais alocados à ficha técnica de "Da Janela, o Mar"`);
+
+  // Alocações para as demais peças históricas do grupo
+  const pecaYara = pecasCriadas.find(p => p.titulo === 'YARA');
+  if (pecaYara) {
+    await prisma.pecaColaborador.deleteMany({ where: { pecaId: pecaYara.id } });
+    await prisma.pecaColaborador.create({
+      data: { pecaId: pecaYara.id, colaboradorId: colabsCriados[0].id, funcaoNaPeca: 'Direção e Concepção' },
+    });
+    await prisma.pecaColaborador.create({
+      data: { pecaId: pecaYara.id, colaboradorId: colabsCriados[1].id, funcaoNaPeca: 'Ator Criador e Direção de Movimento' },
+    });
+  }
+
+  const pecaRomeu = pecasCriadas.find(p => p.titulo === 'Romeu e Julieta');
+  if (pecaRomeu) {
+    await prisma.pecaColaborador.deleteMany({ where: { pecaId: pecaRomeu.id } });
+    await prisma.pecaColaborador.create({
+      data: { pecaId: pecaRomeu.id, colaboradorId: colabsCriados[0].id, funcaoNaPeca: 'Adaptação e Direção Geral' },
+    });
+    await prisma.pecaColaborador.create({
+      data: { pecaId: pecaRomeu.id, colaboradorId: colabsCriados[1].id, funcaoNaPeca: 'Ator e Preparação Física' },
+    });
+  }
+
+  const pecaContadores = pecasCriadas.find(p => p.titulo === 'Os Contadores');
+  if (pecaContadores) {
+    await prisma.pecaColaborador.deleteMany({ where: { pecaId: pecaContadores.id } });
+    await prisma.pecaColaborador.create({
+      data: { pecaId: pecaContadores.id, colaboradorId: colabsCriados[0].id, funcaoNaPeca: 'Autor e Diretor' },
+    });
+    await prisma.pecaColaborador.create({
+      data: { pecaId: pecaContadores.id, colaboradorId: colabsCriados[1].id, funcaoNaPeca: 'Ator Criador (Prêmio de Atuação)' },
+    });
+  }
 
   // =========================================================================
   // 9. Itens da Memória da Companhia (Linha do Tempo)

@@ -33,13 +33,26 @@ let schema = fs.readFileSync(schemaPath, 'utf8');
 const isPostgres = databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://');
 const isSqlite = databaseUrl.startsWith('file:');
 
+const { execSync } = require('child_process');
+
+let changed = false;
 if (isPostgres && schema.includes('provider = "sqlite"')) {
   schema = schema.replace(/provider\s*=\s*"sqlite"/, 'provider = "postgresql"');
   fs.writeFileSync(schemaPath, schema, 'utf8');
   console.log('🔄 [Prisma] Provider ajustado para "postgresql" (Render / Produção)');
+  changed = true;
 } else if (isSqlite && schema.includes('provider = "postgresql"')) {
   schema = schema.replace(/provider\s*=\s*"postgresql"/, 'provider = "sqlite"');
   fs.writeFileSync(schemaPath, schema, 'utf8');
   console.log('🔄 [Prisma] Provider ajustado para "sqlite" (Desenvolvimento Local)');
+  changed = true;
+}
+
+if (changed) {
+  try {
+    execSync('npx prisma generate', { stdio: 'ignore', cwd: serverDir });
+  } catch (e) {
+    // Silencia erro se dependência ainda não foi instalada
+  }
 }
 

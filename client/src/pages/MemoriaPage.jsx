@@ -26,7 +26,80 @@ export default function MemoriaPage() {
     carregar();
   }, []);
 
-  const itens = dadosMemoria?.itens || [];
+  const ITENS_PADRAO = [
+    {
+      id: 1,
+      ano: '2012',
+      titulo: 'Os Contadores',
+      categoria: 'ESPETACULO',
+      descricao: 'Criação voltada ao público infantojuvenil que discute o ciclo da vida e da morte por meio de fábulas universais. Acumulou mais de 20 premiações nacionais, incluindo o Prêmio Zilka Salaberry de Teatro Infantil e premiações em festivais como FENATA, FESTE de Pindamonhangaba, Festival de Chapecó e Festival de Guaçuí.',
+      local: 'Teatros e festivais pelo Brasil (Circulação Nacional)',
+      destaque: true,
+      ordem: 1,
+    },
+    {
+      id: 2,
+      ano: '2014–2017',
+      titulo: 'Francisco, do tempo em que se nascia bufão',
+      categoria: 'ESPETACULO',
+      descricao: 'Investigação do universo medieval e da tradição do teatro mambembe para refletir sobre espiritualidade, humanidade e marginalidade a partir de laboratórios cênicos corporais.',
+      local: 'Temporadas no Rio de Janeiro e Circuito SESC em múltiplos estados',
+      destaque: false,
+      ordem: 2,
+    },
+    {
+      id: 3,
+      ano: '2017–2018',
+      titulo: 'Romeu e Julieta',
+      categoria: 'ESPETACULO',
+      descricao: 'Adaptação popular e pulsante da tragédia de William Shakespeare combinando teatro físico, música ao vivo e teatro de bonecos.',
+      local: 'Centro de Artes da UFF, Circuitos SESC/RJ e SESI/SP',
+      destaque: false,
+      ordem: 3,
+    },
+    {
+      id: 4,
+      ano: '2021–2024',
+      titulo: 'YARA',
+      categoria: 'ESPETACULO',
+      descricao: 'Revisita o mito da Mãe D’Água a partir de uma perspectiva indígena e contemporânea, refletindo sobre o apagamento cultural e a relação entre humanidade e natureza. Contemplado por editais públicos, com mini-documentário sobre o processo criativo.',
+      local: 'Temporadas no Rio de Janeiro e audiovisual',
+      destaque: true,
+      ordem: 4,
+    },
+    {
+      id: 5,
+      ano: '2024–2026',
+      titulo: 'Da Janela, o Mar',
+      categoria: 'ESPETACULO',
+      descricao: 'Dramaturgia poética de Angelo Faria Turci abordando sensibilidade, imaginação e neurodiversidade por meio de teatro de animação e atuação física. Contemplado pelo Edital Fluxos Fluminenses da SECEC/RJ.',
+      local: 'Centro de Artes da UFF, Casa de Cultura Laura Alvim, Circulação 2026',
+      destaque: true,
+      ordem: 5,
+    },
+    {
+      id: 6,
+      ano: 'Trajetória',
+      titulo: 'Ações Formativas e Pesquisa Cênica',
+      categoria: 'FORMACAO',
+      descricao: 'Oficinas "Por uma Teatralidade Física" e a série de debates "Encontros com o Theatrum", articulando treinamento do ator, dramaturgia do corpo, Rasaboxes e princípios do Natyasastra.',
+      local: 'Centro de Artes Calouste Gulbenkian, Escola Paulo Freire e centros culturais',
+      destaque: false,
+      ordem: 6,
+    },
+    {
+      id: 7,
+      ano: 'Reconhecimento',
+      titulo: 'Premiações Nacionais e Editais',
+      categoria: 'PREMIO',
+      descricao: 'Prêmio Zilka Salaberry de Teatro Infantil, Prêmios CBTIJ, Prêmio CENYM Brasil, além de fomento via Lei Aldir Blanc, Lei Paulo Gustavo e PNAB.',
+      local: 'Nacional',
+      destaque: true,
+      ordem: 7,
+    },
+  ];
+
+  const itens = (dadosMemoria?.itens && dadosMemoria.itens.length > 0) ? dadosMemoria.itens : ITENS_PADRAO;
   const companhia = dadosMemoria?.companhia || {
     nome: 'Theatrum Mundi',
     diretor: 'Angelo Faria Turci',

@@ -8,7 +8,7 @@
     "start": "node scripts/sync-db.js && node src/index.js",
     "postinstall": "node scripts/sync-db.js",
     "build": "node scripts/sync-db.js && npx prisma generate && npx prisma db push",
-    "seed": "node prisma/seed.js",
+    "seed": "node scripts/sync-db.js && node prisma/seed.js",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx prisma db seed",
     "db:studio": "npx prisma studio",
