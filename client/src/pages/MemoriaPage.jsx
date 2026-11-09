@@ -152,16 +152,35 @@ export default function MemoriaPage() {
       {/* 5. SEÇÃO INSTITUCIONAL & SEDE */}
       <section className="memoria-sede card">
         <div className="memoria-sede-conteudo">
-          <h3>Sede Artística & Pesquisa</h3>
+          <span className="subtitulo-secao">Núcleo Criativo</span>
+          <h3>🏛️ Sede Artística & Pesquisa</h3>
           <p>
             O núcleo de criação e laboratórios do grupo está sediado em Itaipuaçú, Maricá/RJ,
             onde acontecem os treinamentos corporais do ator, as pesquisas dramatúrgicas
             e a concepção visual dos espetáculos.
           </p>
           <div className="memoria-sede-meta">
-            <span>📍 Silvana da Costa, 437, Itaipuaçú - Maricá/RJ</span>
-            <span>✉️ ciatheatrum@gmail.com</span>
-            <span>📱 +55 (21) 97309-2514</span>
+            <div className="memoria-sede-item">
+              <span className="memoria-sede-icone">📍</span>
+              <div className="memoria-sede-item-texto">
+                <strong>Endereço</strong>
+                <span>Silvana da Costa, 437, Itaipuaçú - Maricá/RJ</span>
+              </div>
+            </div>
+            <a href="mailto:ciatheatrum@gmail.com" className="memoria-sede-item link-item" title="Enviar e-mail">
+              <span className="memoria-sede-icone">✉️</span>
+              <div className="memoria-sede-item-texto">
+                <strong>E-mail Oficial</strong>
+                <span>ciatheatrum@gmail.com</span>
+              </div>
+            </a>
+            <a href="https://wa.me/5521973092514" target="_blank" rel="noopener noreferrer" className="memoria-sede-item link-item" title="Falar no WhatsApp">
+              <span className="memoria-sede-icone">📱</span>
+              <div className="memoria-sede-item-texto">
+                <strong>Telefone / WhatsApp</strong>
+                <span>+55 (21) 97309-2514</span>
+              </div>
+            </a>
           </div>
         </div>
       </section>
