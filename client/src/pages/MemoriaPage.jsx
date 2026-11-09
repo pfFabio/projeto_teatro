@@ -118,13 +118,20 @@ export default function MemoriaPage() {
               key={item.id || idx}
               className={`memoria-timeline-item ${item.destaque ? 'item-destaque' : ''}`}
             >
-              <div className="memoria-timeline-marcador" aria-hidden="true">
-                <div className="memoria-marcador-ponto" />
+              {/* Coluna 1: Ano da Obra / Marco (Desktop) */}
+              <div className="memoria-timeline-data">
+                <span className="memoria-timeline-ano-texto">{item.ano}</span>
               </div>
 
+              {/* Coluna 2: Eixo Vertical & Marcador Central */}
+              <div className="memoria-timeline-eixo" aria-hidden="true">
+                <div className="memoria-timeline-ponto" />
+              </div>
+
+              {/* Coluna 3: Card de Conteúdo Histórico */}
               <div className="memoria-timeline-conteudo card">
                 <div className="memoria-card-cabecalho">
-                  <span className="memoria-badge-ano">{item.ano}</span>
+                  <span className="memoria-badge-ano-mobile">{item.ano}</span>
                   <span className={`tag tag-categoria-${item.categoria.toLowerCase()}`}>
                     {item.categoria === 'ESPETACULO'
                       ? '🎭 Espetáculo'
