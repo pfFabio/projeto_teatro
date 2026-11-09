@@ -17,13 +17,15 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-inner">
-        <Link to="/" className="header-logo">
+        <Link to="/" className="header-logo" title="Theatrum Mundi">
           <img
             src={logoTheatrum}
             alt="Theatrum"
             className="header-logo-img"
             onError={(e) => {
               e.target.style.display = 'none';
+              const txt = e.target.parentElement?.querySelector('.header-logo-texto');
+              if (txt) txt.style.display = 'inline';
             }}
           />
           <span className="header-logo-texto">Theatrum</span>

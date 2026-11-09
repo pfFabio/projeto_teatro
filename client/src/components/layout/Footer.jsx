@@ -17,9 +17,11 @@ export default function Footer() {
               className="footer-logo-img"
               onError={(e) => {
                 e.target.style.display = 'none';
+                const txt = e.target.parentElement?.querySelector('.footer-logo-texto');
+                if (txt) txt.style.display = 'inline';
               }}
             />
-            <span>Theatrum</span>
+            <span className="footer-logo-texto">Theatrum</span>
           </div>
           <p className="footer-desc">
             Plataforma de gestão e divulgação de peças de teatro. 
