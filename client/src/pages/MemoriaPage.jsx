@@ -50,7 +50,7 @@ export default function MemoriaPage() {
     <div className="pagina-conteudo memoria-pagina">
       {/* 1. HERO HEADER */}
       <section className="memoria-hero">
-        <span className="subtitulo-secao">Acervo & Memória</span>
+        <span className="home-secao-kicker">Histórico & Dossiê Cênico</span>
         <h1 className="titulo-secao">Trajetória Theatrum Mundi</h1>
         <p className="memoria-lead">
           Fundada em 2012 no Rio de Janeiro pelo dramaturgo e encenador{' '}
@@ -61,12 +61,13 @@ export default function MemoriaPage() {
         <div className="memoria-hero-acoes">
           <a
             href={companhia.curriculoPdfUrl}
-            download="PORTFOLIO_CURRICULO_THEATRUM_2026.pdf"
-            className="btn btn-primario btn-md"
+            download="PORTFOLIO_DOSSIE_THEATRUM_2026.pdf"
+            className="btn btn-primario btn-dossie"
             target="_blank"
             rel="noopener noreferrer"
           >
-            📥 Baixar Portfólio / Currículo Completo (PDF)
+            <span className="icone-dossie">📄</span>
+            <span>Baixar Dossiê Artístico & Portfólio (PDF)</span>
           </a>
         </div>
       </section>
@@ -74,19 +75,28 @@ export default function MemoriaPage() {
       {/* 2. ESTATÍSTICAS E RECONHECIMENTOS */}
       <section className="memoria-stats-grid">
         <div className="memoria-stat-card">
+          <div className="memoria-stat-icone-wrapper">
+            <span className="memoria-stat-icone">🎭</span>
+          </div>
           <span className="memoria-stat-numero">2012</span>
-          <span className="memoria-stat-label">Ano de Fundação</span>
-          <span className="memoria-stat-desc">Pesquisa continuada de linguagem cênica</span>
+          <span className="memoria-stat-label">Ano de Criação</span>
+          <span className="memoria-stat-desc">Pesquisa continuada de linguagem cênica e tradição</span>
         </div>
         <div className="memoria-stat-card">
+          <div className="memoria-stat-icone-wrapper">
+            <span className="memoria-stat-icone">🏆</span>
+          </div>
           <span className="memoria-stat-numero">+20</span>
-          <span className="memoria-stat-label">Premiações Nacionais</span>
+          <span className="memoria-stat-label">Premiações & Editais</span>
           <span className="memoria-stat-desc">Zilka Salaberry, FENATA, CBTIJ e CENYM</span>
         </div>
         <div className="memoria-stat-card">
-          <span className="memoria-stat-numero">RJ & Brasil</span>
+          <div className="memoria-stat-icone-wrapper">
+            <span className="memoria-stat-icone">🏛️</span>
+          </div>
+          <span className="memoria-stat-numero">Nacional</span>
           <span className="memoria-stat-label">Circulação Cultural</span>
-          <span className="memoria-stat-desc">Temporadas UFF, Laura Alvim, SESC e SESI</span>
+          <span className="memoria-stat-desc">Temporadas UFF, Laura Alvim, SESC e festivais</span>
         </div>
       </section>
 
