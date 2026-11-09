@@ -8,8 +8,8 @@ generator client {
 }
 
 datasource db {
-  // SQLite para desenvolvimento local — PostgreSQL em produção (Render)
-  provider = "sqlite"
+  // PostgreSQL em produção (Render) — SQLite é incompatível com filesystem efêmero
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

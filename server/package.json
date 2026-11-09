@@ -4,9 +4,10 @@
   "description": "API REST do Theatrum",
   "main": "src/index.js",
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js",
-    "build": "node -e \"const fs=require('fs'); const url=process.env.DATABASE_URL||''; if(url.startsWith('postgres')){ let s=fs.readFileSync('prisma/schema.prisma','utf8'); fs.writeFileSync('prisma/schema.prisma', s.replace(/provider = \\\"sqlite\\\"/, 'provider = \\\"postgresql\\\"')); }\" && npx prisma generate && npx prisma db push",
+    "dev": "node scripts/sync-db.js && node --watch src/index.js",
+    "start": "node scripts/sync-db.js && node src/index.js",
+    "postinstall": "node scripts/sync-db.js",
+    "build": "node scripts/sync-db.js && npx prisma generate && npx prisma db push",
     "seed": "node prisma/seed.js",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx prisma db seed",
