@@ -1,0 +1,91 @@
+name: CI/CD Pipeline — Test & Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  test-backend:
+    name: Backend Test Suite (Jest & Supertest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install Backend Dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Generate Prisma Client
+        working-directory: server
+        run: npx prisma generate
+
+      - name: Run Backend Tests
+        working-directory: server
+        run: npm test
+
+  test-and-build-frontend:
+    name: Frontend Test & Build (Vitest & Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Run Frontend Tests
+        working-directory: client
+        run: npm test -- --run
+
+      - name: Build Frontend SPA
+        working-directory: client
+        env:
+          GITHUB_PAGES: 'true'
+          VITE_API_URL: 'https://projeto-teatro.onrender.com'
+        run: |
+          npm run build
+          cp dist/index.html dist/404.html
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: client/dist
+
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    needs: [test-backend, test-and-build-frontend]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

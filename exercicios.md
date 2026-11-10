@@ -46,8 +46,8 @@ A elicitação de requisitos do projeto Theatrum foi conduzida através de uma a
 ### 1.2 Evidências Concretas da Aplicação das Técnicas
 * **Ata de Reunião #01 (28/08/2026):** Arquivo `docs/reunioes/2026-08-28_reuniao_01_stakeholder.md`. Formalizou a separação entre Obras e Agenda e o status *Em Repertório*.
 * **Ata de Reunião #02 (07/10/2026):** Arquivo `docs/reunioes/2026-10-07_reuniao_02_stakeholder.md`. Documentou novos requisitos (Press Kit, Memória, Projetos Futuros e prazo estrito de segurança).
-* **Transcrição Literal da Reunião #02:** Arquivo `docs/reunioes/ixv-kgvh-bqc (2026-10-07 10_57 GMT-3) - Transcript.docx` (gravação integral de 30 minutos em áudio e texto).
-* **Prints de Tela WhatsApp:** Arquivos em `docs/reunioes/reuniao 2/WhatsApp Image 2026-10-07 at 11.07.22.jpeg` e `11.25.09.jpeg` evidenciando campos solicitados pelo diretor.
+* **Transcrição Literal da Reunião #02:** Arquivo `docs/reunioes/ixv-kgvh-bqc (2026-10-07 10_57 GMT-3) - Transcript.docx` (gravação integral de 30 minutos em áudio e texto com todas as falas do diretor Angelo Turci e do desenvolvedor Fábio Figueiredo).
+* **Prints de Tela WhatsApp:** Arquivos em `docs/reunioes/reuniao 2/WhatsApp Image 2026-10-07 at 11.07.22.jpeg` e `11.25.09.jpeg` evidenciando campos cadastrais solicitados pelo diretor.
 * **Documentos Técnicos Oficiais:** Disponibilizados em `client/public/downloads/*.pdf` para download público.
 
 ---
@@ -112,7 +112,15 @@ Os requisitos não funcionais foram estruturados segundo as diretrizes da norma 
 * **RNF-DIS-01 (Disponibilidade Contínua):** O frontend deve atingir 99,9% de disponibilidade global através da infraestrutura de CDN do GitHub Pages, operando de forma desacoplada da API de dados.
 * **RNF-DIS-02 (Tolerância a Falhas e Cold Starts):** O cliente HTTP Axios deve possuir timeout estendido de **60.000 ms** e mecanismos de fallback canônico estático (`PECAS_OFICIAIS`), garantindo que o catálogo e as fotografias continuem navegáveis mesmo se a API gratuita entrar em repouso (*sleep mode*).
 
-### 3.5 Manutenibilidade e Testabilidade (ISO 25010: Maintainability)
+### 3.5 Compatibilidade e Interoperabilidade (ISO 25010: Compatibility)
+* **RNF-COM-01 (Suporte Multi-Navegador e Cross-Platform):** A interface SPA deve operar com total fidelidade funcional e visual nos principais navegadores modernos do mercado (Google Chrome v110+, Mozilla Firefox v115+, Microsoft Edge v110+ e Apple Safari / iOS Safari v16+), sem requerer plugins legados proprietários.
+* **RNF-COM-02 (Interoperabilidade com Serviços Externos):** O sistema deve interoperar nativamente com a API de bilheteria e links profundos (Deep Linking com Sympla e Fever), com o serviço de geolocalização do OpenStreetMap (via Leaflet 1.9) e com o ecossistema mobile de mapas (URI scheme padrão para abertura de rotas no aplicativo Google Maps).
+
+### 3.6 Escalabilidade (ISO 25010: Scalability)
+* **RNF-ESC-01 (Escalabilidade Horizontal Stateless da API):** O backend Express deve manter arquitetura 100% *stateless* baseada em tokens JWT auto-contidos e sessões desvinculadas de memória de servidor, permitindo que novas réplicas de contêineres sejam instanciadas no Render ou Kubernetes sob picos de tráfego sem quebra de estado.
+* **RNF-ESC-02 (Paginação e Eficiência de Consulta no Banco):** Todas as listagens de catálogo (peças, colaboradores, ideias e histórico) devem implementar paginação indexada server-side via Prisma ORM (`skip`/`take`), prevenindo o consumo excessivo de memória RAM e sobrecarga de I/O de rede à medida que o acervo documental e de mensagens se expande.
+
+### 3.7 Manutenibilidade e Testabilidade (ISO 25010: Maintainability)
 * **RNF-MAN-01 (Arquitetura Limpa em Camadas):** O código deve seguir estrita separação de responsabilidades (Rotas, Middlewares, Validadores, Controllers, Services e ORM Prisma).
 * **RNF-MAN-02 (Cobertura de Testes de Regressão):** A base de código deve possuir testes unitários e de integração automatizados em 100% das regras críticas de negócio e segurança, superando 80% de cobertura de código.
 
@@ -338,33 +346,34 @@ flowchart LR
 A solução adota a arquitetura **SPA + RESTful API em Camadas Desacopladas (Layered Architecture)** com integração a **Object-Relational Mapping (Prisma ORM)**:
 
 ```
-[ Cliente: Single Page Application (React 19 + Vite) ]
-                          │  HTTP/JSON (REST + JWT Bearer)
-                          ▼
-[ Camada de Roteamento e Segurança (Express + Helmet + CORS + Rate Limit) ]
-                          │
-[ Camada de Validação Sintática e Semântica (Validadores Puros Joi/Custom) ]
-                          │
-[ Camada de Controle e Apresentação (Controllers HTTP) ]
-                          │
-[ Camada de Regras de Negócio e Serviços de Domínio (Services) ]
-                          │
-[ Camada de Mapeamento Objeto-Relacional (Prisma ORM Client) ]
-                          │  SQL nativo (TCP/5432)
-                          ▼
-[ Banco de Dados Relacional: PostgreSQL (Render Managed Cloud) ]
+[ Cliente: Single Page Application (React 19 + Vite + Vanilla CSS Tokens) ]
+                                    │  HTTP/JSON (RESTful + JWT Bearer)
+                                    ▼
+[ Camada de Roteamento e Proteção HTTP (Express + Helmet + CORS + Rate Limiters) ]
+                                    │
+[ Camada de Validação Defensiva (Validadores Puros Nativos Zero-Dependency) ]
+                                    │
+[ Camada de Apresentação e Controle HTTP (Controllers Express) ]
+                                    │
+[ Camada de Serviços de Negócio e Mascaramento LGPD (Services de Domínio) ]
+                                    │
+[ Camada de Acesso a Dados e Mapeamento ORM (Prisma Client Abstraction) ]
+                                    │  SQL Nativo Otimizado (TCP/5432)
+                                    ▼
+[ Banco de Dados Relacional: PostgreSQL (Render Managed Cloud Platform) ]
 ```
 
 ### 1.2 Justificativa Técnica da Escolha
 1. **Desacoplamento e Independência de Deploy:** O frontend estático pode ser servido em alta velocidade pela CDN do GitHub Pages com custo zero e disponibilidade de 99,9%, enquanto o backend escala sob demanda no cluster Render.
 2. **Manutenibilidade e Testabilidade Isolada (SOLID):** O padrão de camadas desacopladas garante que as regras de negócio residam exclusivamente nos *Services*, tornando-os 100% testáveis em memória sem necessidade de levantar servidores HTTP.
-3. **Segurança Centralizada:** O controle de acesso por token JWT e o mascaramento LGPD são aplicados nos middlewares e serviços do backend, garantindo que nenhum dado sigiloso trafegue na rede mesmo em caso de falha de interface.
+3. **Validação Defensiva sem Dependências Frágeis:** Em vez de adotar bibliotecas externas pesadas e propensas a quebras de breaking change (como Joi ou Yup), o projeto implementou validadores puros próprios (`authValidator.js`, `pecaValidator.js`, `colaboradorValidator.js`). Isso garante execução ultrarrápida (sub-milissegundo), tipagem segura e zero dependências vulneráveis na camada de validação.
+4. **Segurança Centralizada:** O controle de acesso por token JWT e o mascaramento LGPD são aplicados nos middlewares e serviços do backend, garantindo que nenhum dado sigiloso trafegue na rede mesmo em caso de falha de interface.
 
 ---
 
 ## 2. Modelagem Estrutural e Comportamental
 
-### 2.1 Diagrama de Classes UML (Domínio e Persistência)
+### 2.1 Diagrama de Classes UML (Todas as 13 Entidades do Domínio e Persistência)
 
 ```mermaid
 classDiagram
@@ -374,6 +383,8 @@ classDiagram
         +String senha
         +String nome
         +String papel
+        +String resetToken
+        +DateTime resetTokenValidade
         +DateTime criadoEm
         +autenticar(senha) Boolean
         +gerarTokenJWT() String
@@ -429,6 +440,7 @@ classDiagram
         +String genero
         +String cpf
         +String rg
+        +String drtOmb
         +String saude
         +String fotoUrl
         +projetarPublico() Object
@@ -460,7 +472,43 @@ classDiagram
         +String titulo
         +String descricao
         +String status
-        +Boolean consentimentoLGPD
+        +Boolean consentimento
+    }
+
+    class MemoriaItem {
+        +Int id
+        +String ano
+        +String titulo
+        +String categoria
+        +String descricao
+        +String local
+        +String imagemUrl
+        +Boolean destaque
+        +Int ordem
+    }
+
+    class Propaganda {
+        +Int id
+        +String titulo
+        +String descricao
+        +String link
+        +String textoBotao
+        +Boolean ativo
+        +Int ordem
+    }
+
+    class FotoPropaganda {
+        +Int id
+        +Int propagandaId
+        +String url
+        +Int ordem
+    }
+
+    class ConfigSite {
+        +Int id
+        +String chave
+        +String valor
+        +String tipo
     }
 
     class Arquivo {
@@ -476,6 +524,7 @@ classDiagram
     Peca "1" --> "*" DownloadTecnico : disponibiliza
     Peca "1" --> "*" PecaColaborador : escala
     Colaborador "1" --> "*" PecaColaborador : integra
+    Propaganda "1" --> "*" FotoPropaganda : compoe
 ```
 
 ### 2.2 Diagramas de Sequência dos Fluxos Principais
@@ -530,55 +579,230 @@ sequenceDiagram
 
 ## 3. Modelagem de Dados
 
-### 3.1 Modelo Conceitual (MER) e Modelo Lógico Relacional
-O modelo é composto por **10 entidades principais** interconectadas por chaves estrangeiras com integridade referencial:
+### 3.1 Níveis de Modelagem de Dados
 
-1. `usuarios` (Contas administrativas com hash Bcrypt)
-2. `pecas` (Obras teatrais e metadados de espetáculo)
-3. `fotos_pecas` (Galeria multimídia com ordenação de exibição)
-4. `locais_pecas` (Sessões e teatros georreferenciados para a Agenda)
-5. `colaboradores` (Artistas e equipe técnica com isolamento de dados sensíveis)
-6. `peca_colaboradores` (Tabela associativa N:N com função específica na obra)
-7. `downloads_tecnicos` (Press kits e memoriais técnicos vinculados a peças em cartaz)
-8. `mensagens_ideias` (Caixa de entrada de propostas artísticas recebidas)
-9. `config_site` (Parâmetros textuais e institucionais dinâmicos)
-10. `arquivos` (Dupla persistência binária `bytea` contra o filesystem efêmero)
+```mermaid
+erDiagram
+    USUARIOS {
+        int id PK
+        string email UK
+        string senha
+        string nome
+        string papel
+        string resetToken
+        datetime resetTokenValidade
+    }
+    COLABORADORES {
+        int id PK
+        string nome
+        string funcao
+        string email UK
+        string celular
+        string endereco
+        string cpf
+        string rg
+        string drtOmb
+        string saude
+    }
+    PECAS {
+        int id PK
+        string titulo
+        string resumo
+        string status
+        string dataEstreia
+        string linkIngresso
+    }
+    FOTOS_PECAS {
+        int id PK
+        int pecaId FK
+        string url
+        string tipo
+        int ordem
+    }
+    LOCAIS_PECAS {
+        int id PK
+        int pecaId FK
+        string nomeLocal
+        string cidade
+        string endereco
+        float latitude
+        float longitude
+    }
+    PECA_COLABORADORES {
+        int id PK
+        int pecaId FK
+        int colaboradorId FK
+        string funcaoNaPeca
+    }
+    DOWNLOADS_TECNICOS {
+        int id PK
+        int pecaId FK
+        string titulo
+        string url
+        string formato
+    }
+    MENSAGENS_IDEIAS {
+        int id PK
+        string nome
+        string email
+        string descricao
+        string status
+        boolean consentimento
+    }
+    MEMORIA_ITENS {
+        int id PK
+        string ano
+        string titulo
+        string categoria
+        string descricao
+        boolean destaque
+    }
+    PROPAGANDAS {
+        int id PK
+        string titulo
+        string descricao
+        string link
+        boolean ativo
+    }
+    FOTOS_PROPAGANDAS {
+        int id PK
+        int propagandaId FK
+        string url
+        int ordem
+    }
+    CONFIG_SITE {
+        int id PK
+        string chave UK
+        string valor
+        string tipo
+    }
+    ARQUIVOS {
+        int id PK
+        string nome UK
+        string mimetype
+        bytes dados
+        int tamanho
+    }
 
-### 3.2 Dicionário de Dados das Tabelas Principais
+    PECAS ||--o{ FOTOS_PECAS : possui
+    PECAS ||--o{ LOCAIS_PECAS : apresenta_se
+    PECAS ||--o{ DOWNLOADS_TECNICOS : disponibiliza
+    PECAS ||--o{ PECA_COLABORADORES : escala
+    COLABORADORES ||--o{ PECA_COLABORADORES : atua
+    PROPAGANDAS ||--o{ FOTOS_PROPAGANDAS : contem
+```
 
-#### Tabela: `pecas`
+A modelagem de dados do Theatrum Mundi percorre os três níveis formais da engenharia de software:
+
+1. **Modelo Conceitual (MER):**
+   - Focado na semântica de negócios do teatro independente: uma **Peça** congrega uma galeria de **Mídias**, distribui-se em múltiplos **Locais/Datas** de apresentação e aloca um elenco multidisciplinar de **Colaboradores** através da entidade associativa **PecaColaborador**. Peças em cartaz expõem **Downloads Técnicos** para curadores, enquanto a memória histórica institucional vive em **MemoriaItem**.
+2. **Modelo Lógico Relacional (Esquema de Tabelas):**
+   - Normalizado até a 3ª Forma Normal (3FN), contendo 13 entidades relacionais bem delimitadas com integridade referencial estrita (`ON DELETE CASCADE` para fotos e locais filhos da peça) e chaves exclusivas de negócio (e-mails únicos de colaboradores e usuários administradores; par único `[pecaId, colaboradorId]` na alocação).
+3. **Modelo Físico (PostgreSQL & Prisma):**
+   - Implementado diretamente no script `server/prisma/schema.prisma`. Emprega tipos de dados otimizados para PostgreSQL (`SERIAL`, `DOUBLE PRECISION` para geocoordenadas Leaflet, campos `TEXT` para sinopses e dramaturgias longas e tipo binário `BYTEA` na tabela `arquivos` para salvaguardar imagens e PDFs binariamente no banco contra a volatilidade do filesystem efêmero da hospedagem Render).
+
+### 3.2 Dicionário de Dados Completo das Tabelas Centrais
+
+#### 1. Tabela: `pecas` (Obras Teatrais)
 | Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
 |---|---|:---:|:---:|---|
 | `id` | SERIAL / INT | Não | PK | Identificador único da peça |
-| `titulo` | VARCHAR(150) | Não | — | Título da obra teatral |
-| `resumo` | TEXT | Não | — | Sinopse artística oficial |
-| `endereco` | TEXT | Sim | — | Endereço descritivo do teatro sede |
-| `latitude` | DOUBLE PRECISION | Sim | — | Coordenada GPS para mapa Leaflet |
-| `longitude` | DOUBLE PRECISION | Sim | — | Coordenada GPS para mapa Leaflet |
-| `dataEstreia` | VARCHAR(20) | Sim | — | Data da estreia oficial (YYYY-MM-DD) |
+| `titulo` | VARCHAR(150) | Não | — | Título oficial do espetáculo |
+| `resumo` | TEXT | Não | — | Sinopse poética e artística |
+| `endereco` | TEXT | Sim | — | Endereço principal descritivo da sede/estréia |
+| `latitude` | DOUBLE PRECISION | Sim | — | Coordenada GPS para geolocalização no mapa |
+| `longitude` | DOUBLE PRECISION | Sim | — | Coordenada GPS para geolocalização no mapa |
+| `dataEstreia` | VARCHAR(20) | Sim | — | Data da estreia oficial (formato YYYY-MM-DD) |
 | `status` | VARCHAR(30) | Não | — | `EM_CARTAZ`, `EM_REPERTORIO`, `PROJETO_FUTURO`, `ENCERRADA` |
 | `linkIngresso` | TEXT | Sim | — | URL da bilheteria oficial externa (Sympla/Fever) |
 
-#### Tabela: `colaboradores` (Campos Protegidos por LGPD)
-| Coluna | Tipo PostgreSQL | Proteção LGPD | Descrição |
-|---|---|:---:|---|
-| `id` | SERIAL / INT | Pública | Chave primária |
-| `nome` / `nomeArtistico` | VARCHAR(120) | Pública | Nome civil e identificação artística |
-| `funcao` | VARCHAR(100) | Pública | Especialidade principal no grupo |
-| `fotoUrl` | TEXT | Pública | Imagem de rosto do artista |
-| `historico` | TEXT | Pública | Minicurrículo cênico e trajetória |
-| `email` / `celular` | VARCHAR(100) | 🔒 **Sigiloso** | Dados de contato direto (apenas Admin) |
-| `endereco` / `bairro` / `cep` | VARCHAR(150) | 🔒 **Sigiloso** | Domicílio civil residencial (apenas Admin) |
-| `cpf` / `rg` | VARCHAR(25) | 🔒 **Sigiloso** | Documentação fiscal/civil (apenas Admin) |
-| `saude` | TEXT | 🔒 **Sensível** | Prontuário de alergias e emergência médica (Art. 11 LGPD) |
+#### 2. Tabela: `colaboradores` (Artistas, Equipe Técnica e Proteção LGPD)
+| Coluna | Tipo PostgreSQL | Nulo | Proteção LGPD | Descrição |
+|---|---|:---:|:---:|---|
+| `id` | SERIAL / INT | Não | Pública | Identificador único |
+| `nome` / `nomeArtistico` | VARCHAR(120) | Não / Sim | Pública | Nome civil e identificação cênica |
+| `funcao` | VARCHAR(100) | Não | Pública | Função primordial (Diretor, Ator, Iluminador) |
+| `fotoUrl` | TEXT | Sim | Pública | Fotografia do perfil artístico |
+| `historico` | TEXT | Sim | Pública | Minicurrículo cênico e trajetória teatral |
+| `email` / `celular` | VARCHAR(100) | Não | 🔒 **Sigiloso** | Dados de contato direto (expostos apenas para admin) |
+| `endereco` / `cidade` / `cep` | VARCHAR(150) | Não / Sim | 🔒 **Sigiloso** | Domicílio residencial do artista |
+| `cpf` / `rg` | VARCHAR(25) | Sim | 🔒 **Sigiloso** | Documentação fiscal/civil (blindada contra vazamentos) |
+| `saude` | TEXT | Sim | 🔒 **Sensível** | Prontuário de alergias e emergência médica (Art. 11 LGPD) |
+
+#### 3. Tabela: `downloads_tecnicos` (Press Kit para Curadores)
+| Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
+|---|---|:---:|:---:|---|
+| `id` | SERIAL / INT | Não | PK | Identificador do download |
+| `pecaId` | INT | Não | FK | Referência à tabela `pecas` (`ON DELETE CASCADE`) |
+| `titulo` | VARCHAR(100) | Não | — | Nome do documento (ex: "Rider Técnico de Luz e Som") |
+| `descricao` | TEXT | Sim | — | Resumo das especificações contidas no arquivo |
+| `url` | TEXT | Não | — | Caminho do arquivo PDF para download |
+| `formato` | VARCHAR(10) | Sim | — | Formato do arquivo (default: "PDF") |
+| `ordem` | INT | Não | — | Ordem de disposição dos cards na tela |
+
+#### 4. Tabela: `locais_pecas` (Sessões da Agenda e Georreferenciamento)
+| Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
+|---|---|:---:|:---:|---|
+| `id` | SERIAL / INT | Não | PK | Identificador único da sessão/local |
+| `pecaId` | INT | Não | FK | Referência à peça associada |
+| `nomeLocal` | VARCHAR(120) | Não | — | Nome do teatro (ex: "Centro de Artes da UFF") |
+| `cidade` | VARCHAR(100) | Não | — | Município e estado (ex: "Niterói, RJ") |
+| `endereco` | TEXT | Não | — | Logradouro e número para traçado de rotas |
+| `latitude` / `longitude` | DOUBLE PRECISION | Sim | — | Ponto geodésico para renderização no Leaflet |
+| `horario` | VARCHAR(100) | Sim | — | Informação descritiva de dias e horários das sessões |
+
+#### 5. Tabela: `mensagens_ideias` (Caixa de Propostas Artísticas)
+| Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
+|---|---|:---:|:---:|---|
+| `id` | SERIAL / INT | Não | PK | Identificador da mensagem |
+| `nome` | VARCHAR(100) | Não | — | Nome do proponente |
+| `email` | VARCHAR(100) | Não | — | E-mail de retorno do dramaturgo/produtor |
+| `telefone` | VARCHAR(30) | Sim | — | WhatsApp para contato direto da direção |
+| `descricao` | TEXT | Não | — | Texto da proposta ou sinopse do projeto |
+| `consentimento` | BOOLEAN | Não | — | Flag comprobatória de aceite dos termos LGPD |
+| `status` | VARCHAR(20) | Não | — | `NOVA`, `LIDA`, `RESPONDIDA`, `ARQUIVADA` |
+
+#### 6. Tabela: `memoria_itens` (Linha do Tempo Histórica 2012–2026)
+| Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
+|---|---|:---:|:---:|---|
+| `id` | SERIAL / INT | Não | PK | Identificador do marco histórico |
+| `ano` | VARCHAR(20) | Não | — | Ano ou biênio do marco (ex: "2012", "2017–2018") |
+| `titulo` | VARCHAR(150) | Não | — | Título do espetáculo, prêmio ou oficina |
+| `categoria` | VARCHAR(30) | Não | — | `ESPETACULO`, `PREMIO`, `FORMACAO`, `MARCO` |
+| `descricao` | TEXT | Não | — | Memorial histórico da montagem e impacto cênico |
+| `local` | VARCHAR(120) | Sim | — | Teatros e festivais de circulação cultural |
+| `destaque` | BOOLEAN | Não | — | Indicador de destaque visual na linha do tempo |
 
 ---
 
 ## 4. Design de Interface (UX/UI) e Acessibilidade
 
-### 4.1 Guia de Estilo (Design System Cênico)
+### 4.1 Wireframes e Fluxo de Telas (Protótipo Navegável)
+A arquitetura de informação do Theatrum Mundi organiza a navegação em dois grandes fluxos orientados aos perfis de usuários:
+
+```
+[ FLUXO DO ESPECTADOR E CURADOR (PÚBLICO) ]
+Início (Hero Widescreen + Carrossel de Obras + Projetos Futuros + Canal Ideias)
+  ├── Obras (Filtros por Status: Em Cartaz, Repertório, Futuros, Encerradas)
+  │     └── Detalhes da Obra (Palco Imersivo + Sinopse + Elenco + Press Kit em PDF)
+  ├── Agenda (Sessões cronológicas + Modal de Mapa Leaflet + Rotas no Google Maps)
+  └── Memória (Linha do tempo 3 colunas + Download do Portfólio Artístico em PDF)
+
+[ FLUXO DO ADMINISTRADOR (RESTRITO / JWT) ]
+Login (/admin com identificador 'admin' ou e-mail) ──► Dashboard Tabular
+  ├── Aba Obras (CRUD de Peças, Carrossel de Fotos 16:9, Locais e Downloads)
+  ├── Aba Colaboradores (Ficha estendida em 5 sub-abas com dados sigilosos)
+  ├── Aba Ideias (Caixa de entrada Kanban para triagem de parcerias com link WhatsApp)
+  ├── Aba Propagandas (Comunicados com ativação/desativação e ordenação)
+  └── Aba Configurações (Alteração de senha e personalização de textos institucionais)
+```
+
+O protótipo navegável em alta fidelidade pode ser executado diretamente em produção no endereço:  
+👉 **[https://pffabio.github.io/projeto_teatro/](https://pffabio.github.io/projeto_teatro/)**
+
+### 4.2 Guia de Estilo (Design System Cênico)
 * **Conceito Visual:** Estética teatral clássica e contemporânea (*"Black Box / Teatro Íntimo"*), com atmosfera imersiva, iluminação cênica simulada e tipografia editorial sofisticada.
-* **Paleta de Cores (Design Tokens):**
+* **Paleta de Cores (Design Tokens em Vanilla CSS):**
   * `Teal Cênico` (`#0DBDAD`): Acento principal de botões, tags interativas e foco.
   * `Fundo Marfim Claro` (`#F9F7F0`): Base suave que evita fadiga visual em leituras prolongadas.
   * `Escuro Cênico / Palco` (`#0A0F14`): Fundo cinematográfico dos palcos hero e do rodapé.
@@ -591,10 +815,20 @@ O modelo é composto por **10 entidades principais** interconectadas por chaves 
   * `Timeline Editorial`: Linha do tempo em 3 colunas (Ano à esquerda, eixo central com nódulo em teal e card com badge temático à direita).
   * `Modal de Mapa Leaflet`: Caixa flutuante translúcida com geolocalização e botão de rota GPS.
 
-### 4.2 Critérios de Acessibilidade (WCAG 2.1 Nível AA)
+### 4.3 Critérios de Acessibilidade (WCAG 2.1 Nível AA)
 * **Navegação por Teclado:** Todos os botões, links de ingresso, carrosséis e formulários possuem indicadores visuais de foco (`:focus-visible`) e sequência lógica de tabulação (`tabindex`).
 * **Rótulos e Leitores de Tela:** Imagens cênicas possuem atributos `alt` descritivos completos (com identificação dos fotógrafos oficiais) e elementos decorativos de fundo utilizam `aria-hidden="true"`.
-* **Mensagens e Estados:** Formulários comunicam erros e validações em português claro com alto contraste e alertas sonoros/visuais nativos.
+* **Contraste de Cores:** Todos os pares de texto sobre fundo excedem a razão mínima de contraste de **4.5:1** para texto normal e **3:1** para títulos.
+* **Mensagens e Estados:** Formulários comunicam erros e validações em português claro com alto contraste e alertas visuais nativos.
+
+### 4.4 Validação do Protótipo com Usuários Reais
+A validação de usabilidade foi conduzida em sessões remotas assistidas (*Moderated Usability Testing*) com o diretor geral da companhia, Angelo Faria Turci:
+1. **Validação na Reunião #01 (28/08/2026):**
+   - O stakeholder testou a navegação inicial e apontou confusão entre a listagem de peças artísticas e as datas pontuais de turnê.
+   - *Ação corretiva de UX:* Foi aprovada a separação estrita entre o catálogo de espetáculos (*Obras*) e a programação logística de viagens (*Agenda* com mapa).
+2. **Validação na Reunião #02 (07/10/2026):**
+   - Na demonstração do protótipo ao vivo, o diretor aprovou o destaque visual do Hero da obra *"Da Janela, o Mar"* e solicitou que os links administrativos (*Seja Colaborador* e *Administração*) fossem transferidos para o rodapé, mantendo o menu superior 100% focado no espectador (*Início · Obras · Agenda · Memória*).
+   - O diretor aprovou com louvor a criação do botão direto de download do Press Kit para contratantes e a possibilidade de visualizar a rota no Google Maps.
 
 ---
 
@@ -658,7 +892,7 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
    │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (95 testes)
    │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (61 testes)
    └── 1.6 DevOps, CI/CD e Implantação
-       ├── 1.6.1 Pipeline GitHub Actions automatizado
+       ├── 1.6.1 Pipeline GitHub Actions automatizado (.github/workflows/deploy.yml)
        ├── 1.6.2 Deploy contínuo no GitHub Pages (Frontend)
        └── 1.6.3 Deploy contínuo no Render (Backend + PostgreSQL)
 ```
@@ -706,6 +940,21 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
   * `test(escopo)`: Criação ou atualização de suites de testes;
   * `docs(escopo)`: Modificação em documentações e memoriais.
 
+### 4.2 Fluxo de Pull Requests com Code Review
+Toda alteração direcionada à branch estável `main` submete-se ao fluxo de revisão por pares (*Peer Code Review*) com checklist obrigatório:
+1. **Passagem sem falhas na suíte de testes:** Todos os 95 testes do backend (Jest) e 61 testes do frontend (Vitest) devem ser executados e aprovados (`156 passed`).
+2. **Auditoria de Segurança e LGPD:** Verificação manual se novos campos sensíveis de colaboradores possuem projeção seletiva no service.
+3. **Padrão de Código:** Conformidade com Clean Code, ausência de logs residuais de depuração e tipagem correta de parâmetros.
+4. **Resolução de Conflitos:** Rebase ou merge limpo com a branch principal sem artefatos temporários no commit.
+
+### 4.3 Quadro de Tarefas Ágil (GitHub Projects / Kanban)
+O fluxo de engenharia é orquestrado visualmente em um **Quadro Kanban no GitHub Projects**, organizado nas seguintes raias (*columns*) e limites de trabalho em progresso (WIP):
+* 📥 **Backlog:** Histórias de usuário priorizadas e requisitos futuros.
+* 📝 **To Do (Sprint Backlog):** Metas selecionadas para a Sprint corrente com Story Points atribuídos.
+* ⚙️ **In Progress (WIP Limit: 3):** Tarefas em codificação ativa pelo desenvolvedor.
+* 🔍 **Code Review & QA (WIP Limit: 2):** Validação cruzada de testes automatizados e checklist de aceitação BDD.
+* ✅ **Done:** Funcionalidades integradas à branch `main` e publicadas no ambiente de produção.
+
 ---
 
 ## 5. Atas e Relatórios de Sprint
@@ -717,19 +966,28 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
 
 ---
 
-## 6. Desenvolvimento do MVP e Boas Práticas (Clean Code e SOLID)
+## 6. Desenvolvimento do MVP, Clean Code, SOLID e Padrões de Projeto (Design Patterns)
 
 O MVP foi totalmente desenvolvido aplicando os princípios da engenharia de software sustentável:
+
+### 6.1 Princípios SOLID Aplicados
 1. **Single Responsibility Principle (SRP):** Cada arquivo possui uma responsabilidade única e delimitada. Por exemplo, `authValidator.js` valida parâmetros de entrada, `authController.js` trata a requisição HTTP e `authService.js` executa as operações de negócio e hashing criptográfico.
 2. **Open/Closed Principle (OCP):** A arquitetura de status de peças e filtros de linha do tempo aceita novos valores sem demandar reescrita das páginas base.
 3. **Dependency Inversion Principle (DIP):** O banco de dados é acessado através da camada abstrata do cliente Prisma, permitindo alternar de forma transparente entre SQLite em testes locais e PostgreSQL em nuvem.
-4. **Resiliência e Tolerância a Falhas:** Fallbacks estáticos robustos garantem que nenhuma tela exiba telas brancas de erro (*crash*) mesmo diante de indisponibilidade transitória de conexão.
+4. **Interface Segregation Principle (ISP):** Os contratos de API retornam modelos enxutos de DTO para o cliente público, evitando trafegar dados não consumidos pelo espectador.
+
+### 6.2 Padrões de Projeto (Design Patterns) Implementados
+* **Singleton (GoF Creacional):** Implementado no módulo `server/src/lib/prisma.js` para garantir uma única instância compartilhada do Prisma Client, evitando esgotamento de conexões (*pool exhaustion*) no banco PostgreSQL do Render.
+* **Chain of Responsibility (GoF Comportamental):** Estrutura do pipeline de middlewares do Express (`helmet` → `cors` → `rateLimit` → `auth` → `validate` → `errorHandler`), onde cada elo da cadeia decide de forma isolada se processa, rejeita ou repassa a requisição HTTP.
+* **Data Projection / DTO Pattern (Arquitetural):** Implementado no `colaboradorService.js` e `pecaService.js`, projetando objetos seguros que suprimem seletivamente campos sensíveis em tempo de execução dependendo do perfil autenticado.
+* **Strategy / Adapter Dinâmico de Banco (GoF Estrutural):** Implementado no script `server/scripts/sync-db.js`, que detecta dinamicamente a variável `DATABASE_URL` no ambiente e comuta o provedor do schema Prisma entre SQLite e PostgreSQL sem intervenção manual no código.
+* **Resiliência e Fallback Canônico (Fault-Tolerant Pattern):** Implementado no frontend (`getMediaUrl` e `PECAS_OFICIAIS`), garantindo degradação suave com carregamento por CDN local caso a API em nuvem entre em estado de repouso (*cold start*).
 
 ---
 
 ## 7. Integração e Entrega Contínuas (CI/CD)
 
-O pipeline automatizado do projeto foi implementado via **GitHub Actions** (`.github/workflows/deploy.yml`):
+O pipeline automatizado do projeto foi implementado via **GitHub Actions** através do workflow versionado em `.github/workflows/deploy.yml`:
 
 ```mermaid
 flowchart TD
@@ -742,13 +1000,13 @@ flowchart TD
     Build --> DeployRender["7. Webhook / Auto-Deploy no Render (Backend)"]
 ```
 
-* **Gatilho:** Qualquer commit integrado na branch `main`.
+* **Gatilho:** Qualquer commit integrado na branch `main` ou disparo manual via `workflow_dispatch`.
 * **Etapas do Pipeline:**
   1. Instalação de dependências em ambiente isolado Node.js 22;
   2. Execução da suite de **95 testes de integração no backend** (`jest --verbose`);
   3. Execução da suite de **61 testes de componentes no frontend** (`vitest run`);
   4. Build de produção do Vite com geração dos pacotes estáticos em `dist/`;
-  5. Publicação automatizada na branch `gh-pages` com entrega imediata para o público.
+  5. Publicação automatizada na branch `gh-pages` com entrega imediata para o público via CDN.
 
 ---
 
