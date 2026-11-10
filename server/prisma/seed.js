@@ -378,13 +378,10 @@ async function main() {
   console.log(`✅ ${pecasCriadas.length} peças oficiais salvas com status e links`);
 
   // =========================================================================
-  // 5. Fotos Oficiais do Repertório Theatrum Mundi
+  // 5. Fotos Oficiais de "Da Janela, o Mar" (Única produção com acervo fotográfico oficial)
+  // Demais peças usam o placeholder cênico padrão até nova sessão fotográfica
   // =========================================================================
   const pecaJanela = pecasCriadas.find((p) => p.titulo === 'Da Janela, o Mar') || pecasCriadas[0];
-  const pecaYara = pecasCriadas.find((p) => p.titulo === 'YARA');
-  const pecaRomeu = pecasCriadas.find((p) => p.titulo === 'Romeu e Julieta');
-  const pecaContadores = pecasCriadas.find((p) => p.titulo === 'Os Contadores');
-  const pecaJoca = pecasCriadas.find((p) => p.titulo === 'Quarto do Joca');
 
   const pecasComFotos = [
     {
@@ -398,35 +395,15 @@ async function main() {
         { url: '/uploads/da_janela_06.jpg', descricao: 'Da Janela, o Mar — Cenografia Panorâmica Widescreen', tipo: 'IMAGEM', ordem: 5 },
       ],
     },
-    {
-      peca: pecaYara,
-      fotos: [
-        { url: '/uploads/obra_yara_01.jpg', descricao: 'YARA — Mito da Mãe D’Água e Ancestralidade (Theatrum Mundi)', tipo: 'IMAGEM', ordem: 0 },
-      ],
-    },
-    {
-      peca: pecaRomeu,
-      fotos: [
-        { url: '/uploads/obra_romeu_01.jpg', descricao: 'Romeu e Julieta — Tragédia Popular e Teatro Físico (Theatrum Mundi)', tipo: 'IMAGEM', ordem: 0 },
-      ],
-    },
-    {
-      peca: pecaContadores,
-      fotos: [
-        { url: '/uploads/obra_contadores_01.jpg', descricao: 'Os Contadores — Mais de 20 Premiações Nacionais (Theatrum Mundi)', tipo: 'IMAGEM', ordem: 0 },
-      ],
-    },
-    {
-      peca: pecaJoca,
-      fotos: [
-        { url: '/uploads/obra_quarto_joca_01.jpg', descricao: 'Quarto do Joca — Universo Lúdico de Objetos e Descobertas', tipo: 'IMAGEM', ordem: 0 },
-      ],
-    },
   ];
+
+  // Limpa fotos de todas as peças para garantir integridade
+  for (const p of pecasCriadas) {
+    await prisma.fotoPeca.deleteMany({ where: { pecaId: p.id } });
+  }
 
   for (const item of pecasComFotos) {
     if (!item.peca) continue;
-    await prisma.fotoPeca.deleteMany({ where: { pecaId: item.peca.id } });
     for (const f of item.fotos) {
       await prisma.fotoPeca.create({
         data: {
@@ -439,7 +416,7 @@ async function main() {
       });
     }
   }
-  console.log(`✅ Fotos oficiais de todo o repertório vinculadas com sucesso`);
+  console.log(`✅ Fotos oficiais de "Da Janela, o Mar" vinculadas (demais obras sem fotos, utilizando placeholders cênicos)`);
 
   // =========================================================================
   // 6. Downloads Técnicos (Press Kit) para "Da Janela, o Mar"

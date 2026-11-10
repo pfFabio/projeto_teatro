@@ -54,9 +54,7 @@ export const PECAS_OFICIAIS = [
     latitude: -22.9667,
     longitude: -43.1788,
     linkIngresso: null,
-    fotos: [
-      { id: 7, url: '/uploads/obra_yara_01.jpg', descricao: 'YARA — Mito da Mãe D’Água e Ancestralidade (Theatrum Mundi)', ordem: 0 },
-    ],
+    fotos: [],
     _count: { colaboradores: 8 },
   },
   {
@@ -70,9 +68,7 @@ export const PECAS_OFICIAIS = [
     latitude: -22.9846,
     longitude: -43.2039,
     linkIngresso: null,
-    fotos: [
-      { id: 8, url: '/uploads/obra_romeu_01.jpg', descricao: 'Romeu e Julieta — Tragédia Popular e Teatro Físico (Theatrum Mundi)', ordem: 0 },
-    ],
+    fotos: [],
     _count: { colaboradores: 10 },
   },
   {
@@ -86,9 +82,7 @@ export const PECAS_OFICIAIS = [
     latitude: -22.8953,
     longitude: -43.1235,
     linkIngresso: null,
-    fotos: [
-      { id: 9, url: '/uploads/obra_contadores_01.jpg', descricao: 'Os Contadores — Mais de 20 Premiações Nacionais (Theatrum Mundi)', ordem: 0 },
-    ],
+    fotos: [],
     _count: { colaboradores: 9 },
   },
   {
@@ -102,9 +96,7 @@ export const PECAS_OFICIAIS = [
     latitude: -22.9288,
     longitude: -42.8193,
     linkIngresso: null,
-    fotos: [
-      { id: 10, url: '/uploads/obra_quarto_joca_01.jpg', descricao: 'Quarto do Joca — Universo Lúdico de Objetos e Descobertas', ordem: 0 },
-    ],
+    fotos: [],
     _count: { colaboradores: 6 },
   },
 ];
