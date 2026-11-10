@@ -74,7 +74,7 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
 
 ### 2.3 Estimativas com Planning Poker e Story Points
 A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o esforço relativo das histórias de usuário:
-* `US01` (Palco Imersivo de Obras): **5 pontos** (Complexidade média de CSS e estados).
+* `US01` (Catálogo e Detalhes de Obras): **5 pontos** (Complexidade média de layout e estados).
 * `US02` (Agenda com Leaflet e GPS): **8 pontos** (Integração de biblioteca cartográfica externa e modal responsivo).
 * `US03` (Área de Downloads Técnicos): **3 pontos** (Renderização condicional por status e links estáticos).
 * `US04` (Formulário de Ideias com LGPD): **5 pontos** (Validação no cliente, rate limit e persistência).
@@ -138,7 +138,7 @@ O MVP foi integralmente desenvolvido e validado em produção aplicando os princ
 
 ### 6.1 Funcionalidades Priorizadas e Implementadas no MVP
 Todas as funcionalidades classificadas como **Must Have** e **Should Have** nas Sprints 1 a 4 foram 100% implementadas e entregues no MVP operacional:
-1. **Palco Imersivo e Catálogo de Obras (`HomePage.jsx`, `PecasPage.jsx`, `PecaDetalhesPage.jsx`):** Exibição widescreen em alta resolução, filtros por status cênico, carrossel de cenas, ficha técnica completa e botão direto de ingressos na Sympla.
+1. **Catálogo e Detalhes de Obras (`HomePage.jsx`, `PecasPage.jsx`, `PecaDetalhesPage.jsx`):** Exibição widescreen em alta resolução, filtros por status cênico, carrossel de cenas, ficha técnica completa e botão direto de ingressos na Sympla.
 2. **Agenda de Circulação com Georreferenciamento (`AgendaPage.jsx`, `LocationMapModal.jsx`):** Cronograma de sessões separado do acervo, com mapa interativo Leaflet e traçado de rotas no Google Maps.
 3. **Press Kit e Downloads Técnicos (`pecaDetalhes` + `/downloads/*.pdf`):** Disponibilização pública de PDFs oficiais (Edital SESC, Rider Técnico e Dossiê da Obra) para curadores e produtores de festivais.
 4. **Memória e Trajetória Histórica 2012–2026 (`MemoriaPage.jsx`):** Linha do tempo interativa em 3 colunas com filtros por categoria e download do Portfólio Oficial da companhia.

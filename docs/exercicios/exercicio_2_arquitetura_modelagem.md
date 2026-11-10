@@ -474,7 +474,7 @@ A arquitetura de informação do Theatrum Mundi organiza a navegação em dois g
 [ FLUXO DO ESPECTADOR E CURADOR (PÚBLICO) ]
 Início (Hero Widescreen + Carrossel de Obras + Projetos Futuros + Canal Ideias)
   ├── Obras (Filtros por Status: Em Cartaz, Repertório, Futuros, Encerradas)
-  │     └── Detalhes da Obra (Palco Imersivo + Sinopse + Elenco + Press Kit em PDF)
+  │     └── Detalhes da Obra (Banner Widescreen + Sinopse + Elenco + Press Kit em PDF)
   ├── Agenda (Sessões cronológicas + Modal de Mapa Leaflet + Rotas no Google Maps)
   └── Memória (Linha do tempo 3 colunas + Download do Portfólio Artístico em PDF)
 
@@ -491,17 +491,17 @@ O protótipo navegável em alta fidelidade pode ser executado diretamente em pro
 👉 **[https://pffabio.github.io/projeto_teatro/](https://pffabio.github.io/projeto_teatro/)**
 
 ### 4.2 Guia de Estilo (Design System Cênico)
-* **Conceito Visual:** Estética teatral clássica e contemporânea (*"Black Box / Teatro Íntimo"*), com atmosfera imersiva, iluminação cênica simulada e tipografia editorial sofisticada.
+* **Conceito Visual:** Estética teatral clássica e contemporânea (*"Black Box / Teatro Íntimo"*), com atmosfera acolhedora, iluminação cênica e tipografia editorial sofisticada.
 * **Paleta de Cores (Design Tokens em Vanilla CSS):**
   * `Teal Cênico` (`#0DBDAD`): Acento principal de botões, tags interativas e foco.
   * `Fundo Marfim Claro` (`#F9F7F0`): Base suave que evita fadiga visual em leituras prolongadas.
-  * `Escuro Cênico / Palco` (`#0A0F14`): Fundo cinematográfico dos palcos hero e do rodapé.
+  * `Escuro Cênico / Fundo Escuro` (`#0A0F14`): Fundo cinematográfico dos banners e do rodapé.
   * `Dourado Nobre` (`#D4AF37`): Destaques de premiações históricas e láureas nacionais.
 * **Tipografia:**
   * *Títulos e Cabeçalhos:* **Playfair Display** (Serifada elegante, evocando cartazes clássicos).
   * *Textos de Leitura e Interface:* **Inter** / **Plus Jakarta Sans** (Sem serifa, alta legibilidade em telas pequenas).
 * **Componentes Principais:**
-  * `Hero Palco Cinematográfico`: Banner widescreen de alta escala que preenche o topo da tela com vinheta gradiente de holofote.
+  * `Hero Banner Widescreen`: Banner widescreen de alta escala que preenche o topo da tela com apresentação visual da obra.
   * `Timeline Editorial`: Linha do tempo em 3 colunas (Ano à esquerda, eixo central com nódulo em teal e card com badge temático à direita).
   * `Modal de Mapa Leaflet`: Caixa flutuante translúcida com geolocalização e botão de rota GPS.
 

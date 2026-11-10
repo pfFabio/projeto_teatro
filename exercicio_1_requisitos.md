@@ -58,7 +58,7 @@ A elicitação de requisitos do projeto Theatrum foi conduzida através de uma a
 | Identificador | Título do Requisito Funcional | Descrição Detalhada |
 |:---:|---|---|
 | **RF01** | Catálogo e Classificação de Obras | O sistema deve exibir as peças teatrais classificadas por status (`EM_CARTAZ`, `EM_REPERTORIO`, `PROJETO_FUTURO`, `ENCERRADA`), com cartaz, sinopse e ficha técnica. |
-| **RF02** | Palco Visual Cinematográfico | A página de detalhes da obra deve apresentar pôster/vídeo em formato widescreen imersivo no topo, overlays cênicos e carrossel de fotos oficiais de alta resolução. |
+| **RF02** | Apresentação Visual e Galeria | A página de detalhes da obra deve apresentar cartaz em formato widescreen no topo, ficha técnica e carrossel de fotos oficiais de alta resolução. |
 | **RF03** | Agenda Teatral com Georreferenciamento | O sistema deve listar cronologicamente as apresentações ativas com data, horário, teatro, mapa Leaflet interativo e botão para abrir rotas no Google Maps. |
 | **RF04** | Integração com Bilheteria Externa | O sistema deve permitir cadastro de URLs de venda de ingressos (Sympla, Fever, etc.) e exibir botão de ação (*"Comprar Ingresso"*) na obra e na Agenda. |
 | **RF05** | Downloads Técnicos (Press Kit) | Para obras com status `EM_CARTAZ`, o sistema deve exibir seção de downloads de arquivos oficiais (Rider Técnico, Projeto, Dramaturgia e Ficha Técnica em PDF). |
@@ -74,7 +74,7 @@ A elicitação de requisitos do projeto Theatrum foi conduzida através de uma a
 | **RF15** | Alteração de Senha Autenticada | O administrador deve poder alterar sua senha dentro do painel de controle validando a credencial atual. |
 | **RF16** | Gestão de Comunicados e Propagandas | O administrador deve poder criar, ordenar e ativar comunicados institucionais exibidos em carrossel na página inicial. |
 | **RF17** | Gestão de Comprovantes de Despesa | O sistema deve permitir ao administrador anexar notas e comprovantes de pagamentos (PDF/imagens) associados a peças e produções. |
-| **RF18** | Interações Lúdicas ("Quarto do Joca") | Experiência imersiva com animações infantis e narrativa interativa para a peça futura. |
+| **RF18** | Interações Lúdicas ("Quarto do Joca") | Experiência interativa com animações infantis e narrativa lúdica para a peça futura. |
 
 ### 2.2 Matriz de Priorização MoSCoW
 
@@ -129,15 +129,15 @@ Os requisitos não funcionais foram estruturados segundo as diretrizes da norma 
 
 ### 4.1 Catálogo de User Stories com Especificação Gherkin
 
-#### [US01] — Consulta Imersiva de Obras Teatrais
+#### [US01] — Consulta e Detalhes de Obras Teatrais
 * **Como** espectador ou amante de teatro,  
-* **Quero** visualizar a página da obra com pôster em tela cheia, galeria de fotos e ficha técnica,  
+* **Quero** visualizar a página da obra com cartaz em destaque, galeria de fotos e ficha técnica,  
 * **Para que** eu possa compreender a proposta poética do espetáculo antes de assistir.
 ```gherkin
 Cenário: Visualização bem-sucedida de detalhes de obra teatral
   Dado que o espetáculo "Da Janela, o Mar" está catalogado no sistema
   Quando o espectador acessa a rota "/obras/1"
-  Então o sistema renderiza o palco visual com fotos oficiais de Renato Mangolin
+  Então o sistema renderiza o banner principal e fotos oficiais de Renato Mangolin
   E exibe a sinopse poética do espetáculo e a listagem de integrantes do elenco
   E apresenta botões de ação para compra de ingressos e consulta de datas na Agenda
 ```
@@ -212,7 +212,7 @@ Cenário: Redefinição de senha através de token temporário
 
 | Item do Backlog Inicial (Sprint 0 / Ata #01) | Item do Backlog Atualizado e Entregue (Pós Ata #02) | Situação de Entrega |
 |---|---|:---:|
-| CRUD Básico de Peças e Sinopse | Catálogo com 4 Status (`EM_CARTAZ`, `EM_REPERTORIO`, `PROJETO_FUTURO`, `ENCERRADA`) e Palco Hero Imersivo | 🟢 Entregue |
+| CRUD Básico de Peças e Sinopse | Catálogo com 4 Status (`EM_CARTAZ`, `EM_REPERTORIO`, `PROJETO_FUTURO`, `ENCERRADA`) e Banner Hero Widescreen | 🟢 Entregue |
 | Cadastro Simples de Colaboradores (7 campos) | Ficha Estendida com 23 campos em 5 sub-abas e mascaramento LGPD automático | 🟢 Entregue |
 | Lista de Peças e Datas em tela única | Separação conceitual Obras × Agenda com Leaflet interativo e rotas no Google Maps | 🟢 Entregue |
 | *Não previsto no início* | Seção de Downloads Técnicos (Press Kit) em PDF para obras em cartaz | 🟢 Entregue |

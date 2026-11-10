@@ -59,7 +59,7 @@ A elicitação de requisitos do projeto Theatrum foi conduzida através de uma a
 | Identificador | Título do Requisito Funcional | Descrição Detalhada |
 |:---:|---|---|
 | **RF01** | Catálogo e Classificação de Obras | O sistema deve exibir as peças teatrais classificadas por status (`EM_CARTAZ`, `EM_REPERTORIO`, `PROJETO_FUTURO`, `ENCERRADA`), com cartaz, sinopse e ficha técnica. |
-| **RF02** | Palco Visual Cinematográfico | A página de detalhes da obra deve apresentar pôster/vídeo em formato widescreen imersivo no topo, overlays cênicos e carrossel de fotos oficiais de alta resolução. |
+| **RF02** | Apresentação Visual e Galeria | A página de detalhes da obra deve apresentar cartaz em formato widescreen no topo, ficha técnica e carrossel de fotos oficiais de alta resolução. |
 | **RF03** | Agenda Teatral com Georreferenciamento | O sistema deve listar cronologicamente as apresentações ativas com data, horário, teatro, mapa Leaflet interativo e botão para abrir rotas no Google Maps. |
 | **RF04** | Integração com Bilheteria Externa | O sistema deve permitir cadastro de URLs de venda de ingressos (Sympla, Fever, etc.) e exibir botão de ação (*"Comprar Ingresso"*) na obra e na Agenda. |
 | **RF05** | Downloads Técnicos (Press Kit) | Para obras com status `EM_CARTAZ`, o sistema deve exibir seção de downloads de arquivos oficiais (Rider Técnico, Projeto, Dramaturgia e Ficha Técnica em PDF). |
@@ -75,7 +75,7 @@ A elicitação de requisitos do projeto Theatrum foi conduzida através de uma a
 | **RF15** | Alteração de Senha Autenticada | O administrador deve poder alterar sua senha dentro do painel de controle validando a credencial atual. |
 | **RF16** | Gestão de Comunicados e Propagandas | O administrador deve poder criar, ordenar e ativar comunicados institucionais exibidos em carrossel na página inicial. |
 | **RF17** | Gestão de Comprovantes de Despesa | O sistema deve permitir ao administrador anexar notas e comprovantes de pagamentos (PDF/imagens) associados a peças e produções. |
-| **RF18** | Interações Lúdicas ("Quarto do Joca") | Experiência imersiva com animações infantis e narrativa interativa para a peça futura. |
+| **RF18** | Interações Lúdicas ("Quarto do Joca") | Experiência interativa com animações infantis e narrativa lúdica para a peça futura. |
 
 ### 2.2 Matriz de Priorização MoSCoW
 
@@ -130,15 +130,15 @@ Os requisitos não funcionais foram estruturados segundo as diretrizes da norma 
 
 ### 4.1 Catálogo de User Stories com Especificação Gherkin
 
-#### [US01] — Consulta Imersiva de Obras Teatrais
+#### [US01] — Consulta e Detalhes de Obras Teatrais
 * **Como** espectador ou amante de teatro,  
-* **Quero** visualizar a página da obra com pôster em tela cheia, galeria de fotos e ficha técnica,  
+* **Quero** visualizar a página da obra com cartaz em destaque, galeria de fotos e ficha técnica,  
 * **Para que** eu possa compreender a proposta poética do espetáculo antes de assistir.
 ```gherkin
 Cenário: Visualização bem-sucedida de detalhes de obra teatral
   Dado que o espetáculo "Da Janela, o Mar" está catalogado no sistema
   Quando o espectador acessa a rota "/obras/1"
-  Então o sistema renderiza o palco visual com fotos oficiais de Renato Mangolin
+  Então o sistema renderiza o banner principal e fotos oficiais de Renato Mangolin
   E exibe a sinopse poética do espetáculo e a listagem de integrantes do elenco
   E apresenta botões de ação para compra de ingressos e consulta de datas na Agenda
 ```
@@ -213,7 +213,7 @@ Cenário: Redefinição de senha através de token temporário
 
 | Item do Backlog Inicial (Sprint 0 / Ata #01) | Item do Backlog Atualizado e Entregue (Pós Ata #02) | Situação de Entrega |
 |---|---|:---:|
-| CRUD Básico de Peças e Sinopse | Catálogo com 4 Status (`EM_CARTAZ`, `EM_REPERTORIO`, `PROJETO_FUTURO`, `ENCERRADA`) e Palco Hero Imersivo | 🟢 Entregue |
+| CRUD Básico de Peças e Sinopse | Catálogo com 4 Status (`EM_CARTAZ`, `EM_REPERTORIO`, `PROJETO_FUTURO`, `ENCERRADA`) e Banner Hero Widescreen | 🟢 Entregue |
 | Cadastro Simples de Colaboradores (7 campos) | Ficha Estendida com 23 campos em 5 sub-abas e mascaramento LGPD automático | 🟢 Entregue |
 | Lista de Peças e Datas em tela única | Separação conceitual Obras × Agenda com Leaflet interativo e rotas no Google Maps | 🟢 Entregue |
 | *Não previsto no início* | Seção de Downloads Técnicos (Press Kit) em PDF para obras em cartaz | 🟢 Entregue |
@@ -795,7 +795,7 @@ A arquitetura de informação do Theatrum Mundi organiza a navegação em dois g
 [ FLUXO DO ESPECTADOR E CURADOR (PÚBLICO) ]
 Início (Hero Widescreen + Carrossel de Obras + Projetos Futuros + Canal Ideias)
   ├── Obras (Filtros por Status: Em Cartaz, Repertório, Futuros, Encerradas)
-  │     └── Detalhes da Obra (Palco Imersivo + Sinopse + Elenco + Press Kit em PDF)
+  │     └── Detalhes da Obra (Banner Widescreen + Sinopse + Elenco + Press Kit em PDF)
   ├── Agenda (Sessões cronológicas + Modal de Mapa Leaflet + Rotas no Google Maps)
   └── Memória (Linha do tempo 3 colunas + Download do Portfólio Artístico em PDF)
 
@@ -812,17 +812,17 @@ O protótipo navegável em alta fidelidade pode ser executado diretamente em pro
 👉 **[https://pffabio.github.io/projeto_teatro/](https://pffabio.github.io/projeto_teatro/)**
 
 ### 4.2 Guia de Estilo (Design System Cênico)
-* **Conceito Visual:** Estética teatral clássica e contemporânea (*"Black Box / Teatro Íntimo"*), com atmosfera imersiva, iluminação cênica simulada e tipografia editorial sofisticada.
+* **Conceito Visual:** Estética teatral clássica e contemporânea (*"Black Box / Teatro Íntimo"*), com atmosfera acolhedora, iluminação cênica e tipografia editorial sofisticada.
 * **Paleta de Cores (Design Tokens em Vanilla CSS):**
   * `Teal Cênico` (`#0DBDAD`): Acento principal de botões, tags interativas e foco.
   * `Fundo Marfim Claro` (`#F9F7F0`): Base suave que evita fadiga visual em leituras prolongadas.
-  * `Escuro Cênico / Palco` (`#0A0F14`): Fundo cinematográfico dos palcos hero e do rodapé.
+  * `Escuro Cênico / Fundo Escuro` (`#0A0F14`): Fundo cinematográfico dos banners e do rodapé.
   * `Dourado Nobre` (`#D4AF37`): Destaques de premiações históricas e láureas nacionais.
 * **Tipografia:**
   * *Títulos e Cabeçalhos:* **Playfair Display** (Serifada elegante, evocando cartazes clássicos).
   * *Textos de Leitura e Interface:* **Inter** / **Plus Jakarta Sans** (Sem serifa, alta legibilidade em telas pequenas).
 * **Componentes Principais:**
-  * `Hero Palco Cinematográfico`: Banner widescreen de alta escala que preenche o topo da tela com vinheta gradiente de holofote.
+  * `Hero Banner Widescreen`: Banner widescreen de alta escala que preenche o topo da tela com apresentação visual da obra.
   * `Timeline Editorial`: Linha do tempo em 3 colunas (Ano à esquerda, eixo central com nódulo em teal e card com badge temático à direita).
   * `Modal de Mapa Leaflet`: Caixa flutuante translúcida com geolocalização e botão de rota GPS.
 
@@ -919,7 +919,7 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
 
 ### 2.3 Estimativas com Planning Poker e Story Points
 A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o esforço relativo das histórias de usuário:
-* `US01` (Palco Imersivo de Obras): **5 pontos** (Complexidade média de CSS e estados).
+* `US01` (Catálogo e Detalhes de Obras): **5 pontos** (Complexidade média de layout e estados).
 * `US02` (Agenda com Leaflet e GPS): **8 pontos** (Integração de biblioteca cartográfica externa e modal responsivo).
 * `US03` (Área de Downloads Técnicos): **3 pontos** (Renderização condicional por status e links estáticos).
 * `US04` (Formulário de Ideias com LGPD): **5 pontos** (Validação no cliente, rate limit e persistência).
@@ -983,7 +983,7 @@ O MVP foi integralmente desenvolvido e validado em produção aplicando os princ
 
 ### 6.1 Funcionalidades Priorizadas e Implementadas no MVP
 Todas as funcionalidades classificadas como **Must Have** e **Should Have** nas Sprints 1 a 4 foram 100% implementadas e entregues no MVP operacional:
-1. **Palco Imersivo e Catálogo de Obras (`HomePage.jsx`, `PecasPage.jsx`, `PecaDetalhesPage.jsx`):** Exibição widescreen em alta resolução, filtros por status cênico, carrossel de cenas, ficha técnica completa e botão direto de ingressos na Sympla.
+1. **Catálogo e Detalhes de Obras (`HomePage.jsx`, `PecasPage.jsx`, `PecaDetalhesPage.jsx`):** Exibição widescreen em alta resolução, filtros por status cênico, carrossel de cenas, ficha técnica completa e botão direto de ingressos na Sympla.
 2. **Agenda de Circulação com Georreferenciamento (`AgendaPage.jsx`, `LocationMapModal.jsx`):** Cronograma de sessões separado do acervo, com mapa interativo Leaflet e traçado de rotas no Google Maps.
 3. **Press Kit e Downloads Técnicos (`pecaDetalhes` + `/downloads/*.pdf`):** Disponibilização pública de PDFs oficiais (Edital SESC, Rider Técnico e Dossiê da Obra) para curadores e produtores de festivais.
 4. **Memória e Trajetória Histórica 2012–2026 (`MemoriaPage.jsx`):** Linha do tempo interativa em 3 colunas com filtros por categoria e download do Portfólio Oficial da companhia.
