@@ -701,7 +701,7 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 3. **Modelo Físico (PostgreSQL & Prisma):**
    - Implementado diretamente no script `server/prisma/schema.prisma`. Emprega tipos de dados otimizados para PostgreSQL (`SERIAL`, `DOUBLE PRECISION` para geocoordenadas Leaflet, campos `TEXT` para sinopses e dramaturgias longas e tipo binário `BYTEA` na tabela `arquivos` para salvaguardar imagens e PDFs binariamente no banco contra a volatilidade do filesystem efêmero da hospedagem Render).
 
-### 3.2 Dicionário de Dados Completo das Tabelas Centrais
+### 3.2 Dicionário de Dados Completo das 13 Tabelas do Sistema
 
 #### 1. Tabela: `pecas` (Obras Teatrais)
 | Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
@@ -709,7 +709,7 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | `id` | SERIAL / INT | Não | PK | Identificador único da peça |
 | `titulo` | VARCHAR(150) | Não | — | Título oficial do espetáculo |
 | `resumo` | TEXT | Não | — | Sinopse poética e artística |
-| `endereco` | TEXT | Sim | — | Endereço principal descritivo da sede/estréia |
+| `endereco` | TEXT | Sim | — | Endereço principal descritivo da sede/estreia |
 | `latitude` | DOUBLE PRECISION | Sim | — | Coordenada GPS para geolocalização no mapa |
 | `longitude` | DOUBLE PRECISION | Sim | — | Coordenada GPS para geolocalização no mapa |
 | `dataEstreia` | VARCHAR(20) | Sim | — | Data da estreia oficial (formato YYYY-MM-DD) |
@@ -744,7 +744,7 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
 |---|---|:---:|:---:|---|
 | `id` | SERIAL / INT | Não | PK | Identificador único da sessão/local |
-| `pecaId` | INT | Não | FK | Referência à peça associada |
+| `pecaId` | INT | Não | FK | Referência à peça associada (`ON DELETE CASCADE`) |
 | `nomeLocal` | VARCHAR(120) | Não | — | Nome do teatro (ex: "Centro de Artes da UFF") |
 | `cidade` | VARCHAR(100) | Não | — | Município e estado (ex: "Niterói, RJ") |
 | `endereco` | TEXT | Não | — | Logradouro e número para traçado de rotas |
@@ -772,6 +772,17 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | `descricao` | TEXT | Não | — | Memorial histórico da montagem e impacto cênico |
 | `local` | VARCHAR(120) | Sim | — | Teatros e festivais de circulação cultural |
 | `destaque` | BOOLEAN | Não | — | Indicador de destaque visual na linha do tempo |
+
+#### 7. Tabelas Auxiliares, Administrativas e de Persistência (`usuarios`, `fotos_pecas`, `peca_colaboradores`, `propagandas`, `fotos_propagandas`, `config_site`, `arquivos`)
+| Tabela | Chave Primária / Estrangeiras | Colunas Principais | Finalidade Arquitetural |
+|---|---|---|---|
+| `usuarios` | `id` (PK), `email` (UK) | `nome`, `email`, `senhaHash`, `role`, `resetToken`, `resetTokenExpires` | Credenciais de administradores, hash Bcrypt e tokens temporários de recuperação de senha |
+| `fotos_pecas` | `id` (PK), `pecaId` (FK) | `url`, `legenda`, `ordem` | Carrossel de fotografias de cena por espetáculo (`ON DELETE CASCADE`) |
+| `peca_colaboradores` | `id` (PK), `pecaId` (FK), `colaboradorId` (FK) | `papel`, índice único `[pecaId, colaboradorId]` | Tabela associativa `N:N` de ficha técnica com função específica na montagem |
+| `propagandas` | `id` (PK) | `titulo`, `resumo`, `linkUrl`, `ativo`, `ordem` | Comunicados culturais e banners promocionais gerenciados pela direção |
+| `fotos_propagandas` | `id` (PK), `propagandaId` (FK) | `url`, `legenda`, `ordem` | Galeria de imagens vinculadas aos comunicados (`ON DELETE CASCADE`) |
+| `config_site` | `id` (PK), `chave` (UK) | `chave`, `valor`, `updatedAt` | Parâmetros institucionais dinâmicos em formato chave-valor |
+| `arquivos` | `id` (PK), `nome` (UK) | `nome`, `mimeType`, `dados` (`BYTEA`), `createdAt` | Salvaguarda binária de imagens e PDFs no PostgreSQL contra perda em filesystem efêmero |
 
 ---
 
@@ -968,15 +979,25 @@ O fluxo de engenharia é orquestrado visualmente em um **Quadro Kanban no GitHub
 
 ## 6. Desenvolvimento do MVP, Clean Code, SOLID e Padrões de Projeto (Design Patterns)
 
-O MVP foi totalmente desenvolvido aplicando os princípios da engenharia de software sustentável:
+O MVP foi integralmente desenvolvido e validado em produção aplicando os princípios da engenharia de software sustentável:
 
-### 6.1 Princípios SOLID Aplicados
+### 6.1 Funcionalidades Priorizadas e Implementadas no MVP
+Todas as funcionalidades classificadas como **Must Have** e **Should Have** nas Sprints 1 a 4 foram 100% implementadas e entregues no MVP operacional:
+1. **Palco Imersivo e Catálogo de Obras (`HomePage.jsx`, `PecasPage.jsx`, `PecaDetalhesPage.jsx`):** Exibição widescreen em alta resolução, filtros por status cênico, carrossel de cenas, ficha técnica completa e botão direto de ingressos na Sympla.
+2. **Agenda de Circulação com Georreferenciamento (`AgendaPage.jsx`, `LocationMapModal.jsx`):** Cronograma de sessões separado do acervo, com mapa interativo Leaflet e traçado de rotas no Google Maps.
+3. **Press Kit e Downloads Técnicos (`pecaDetalhes` + `/downloads/*.pdf`):** Disponibilização pública de PDFs oficiais (Edital SESC, Rider Técnico e Dossiê da Obra) para curadores e produtores de festivais.
+4. **Memória e Trajetória Histórica 2012–2026 (`MemoriaPage.jsx`):** Linha do tempo interativa em 3 colunas com filtros por categoria e download do Portfólio Oficial da companhia.
+5. **Canal Público "Tem uma Ideia?" (`ideiaController.js`, `AdminPage.jsx`):** Formulário público com consentimento LGPD, proteção anti-spam (*rate limiting*) e caixa de entrada administrativa com integração direta ao WhatsApp.
+6. **Gestão de Colaboradores Blindada pela LGPD (`colaboradorService.js`):** Cadastro estendido em 23 campos (5 abas) com projeção seletiva em runtime que oculta dados pessoais e de saúde nas rotas públicas.
+7. **Segurança e Governança Administrativa (`authService.js`):** Autenticação JWT com suporte a identificador `admin` ou e-mail, alteração de senha autenticada e recuperação de acesso via token temporário.
+
+### 6.2 Princípios SOLID Aplicados
 1. **Single Responsibility Principle (SRP):** Cada arquivo possui uma responsabilidade única e delimitada. Por exemplo, `authValidator.js` valida parâmetros de entrada, `authController.js` trata a requisição HTTP e `authService.js` executa as operações de negócio e hashing criptográfico.
 2. **Open/Closed Principle (OCP):** A arquitetura de status de peças e filtros de linha do tempo aceita novos valores sem demandar reescrita das páginas base.
 3. **Dependency Inversion Principle (DIP):** O banco de dados é acessado através da camada abstrata do cliente Prisma, permitindo alternar de forma transparente entre SQLite em testes locais e PostgreSQL em nuvem.
 4. **Interface Segregation Principle (ISP):** Os contratos de API retornam modelos enxutos de DTO para o cliente público, evitando trafegar dados não consumidos pelo espectador.
 
-### 6.2 Padrões de Projeto (Design Patterns) Implementados
+### 6.3 Padrões de Projeto (Design Patterns) Implementados
 * **Singleton (GoF Creacional):** Implementado no módulo `server/src/lib/prisma.js` para garantir uma única instância compartilhada do Prisma Client, evitando esgotamento de conexões (*pool exhaustion*) no banco PostgreSQL do Render.
 * **Chain of Responsibility (GoF Comportamental):** Estrutura do pipeline de middlewares do Express (`helmet` → `cors` → `rateLimit` → `auth` → `validate` → `errorHandler`), onde cada elo da cadeia decide de forma isolada se processa, rejeita ou repassa a requisição HTTP.
 * **Data Projection / DTO Pattern (Arquitetural):** Implementado no `colaboradorService.js` e `pecaService.js`, projetando objetos seguros que suprimem seletivamente campos sensíveis em tempo de execução dependendo do perfil autenticado.
@@ -991,7 +1012,7 @@ O pipeline automatizado do projeto foi implementado via **GitHub Actions** atrav
 
 ```mermaid
 flowchart TD
-    Push["1. Git Push para branch 'main'"] --> Lint["2. Linting & Auditoria de Código"]
+    Push["1. Git Push para branch 'main'"] --> Lint["2. Setup Node.js 22 & Prisma Client"]
     Lint --> TestBack["3. Execução dos Testes Backend (Jest - 95 testes)"]
     Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 61 testes)"]
     TestBack --> Build["5. Compilação do Frontend (Vite Build)"]
@@ -1002,11 +1023,11 @@ flowchart TD
 
 * **Gatilho:** Qualquer commit integrado na branch `main` ou disparo manual via `workflow_dispatch`.
 * **Etapas do Pipeline:**
-  1. Instalação de dependências em ambiente isolado Node.js 22;
+  1. Instalação de dependências (`npm ci`) e geração do cliente Prisma em ambiente isolado Node.js 22;
   2. Execução da suite de **95 testes de integração no backend** (`jest --verbose`);
   3. Execução da suite de **61 testes de componentes no frontend** (`vitest run`);
-  4. Build de produção do Vite com geração dos pacotes estáticos em `dist/`;
-  5. Publicação automatizada na branch `gh-pages` com entrega imediata para o público via CDN.
+  4. Build de produção do Vite com geração dos pacotes estáticos otimizados em `client/dist/`;
+  5. Publicação automatizada no GitHub Pages (`actions/deploy-pages@v4` / branch `gh-pages`) com entrega imediata via CDN.
 
 ---
 
