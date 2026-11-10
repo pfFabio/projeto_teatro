@@ -16,12 +16,25 @@
 - [x] Orientações de formato/proporção 16:9 no upload de mídia
 - [x] Base de segurança: Helmet, rate limit, JWT, proteção de dados de contato (LGPD)
 - [x] Persistência de uploads no PostgreSQL (resistente ao disco efêmero do Render)
+- [x] **M1** Link de ingresso nas peças (Sympla)
+- [x] **M2** Novos status de obra (`EM_REPERTORIO`, `PROJETO_FUTURO`, `EM_CARTAZ`, `ENCERRADA`)
+- [x] **M3** Conteúdo real do espetáculo *Da Janela, o Mar* (fotos e dados oficiais)
+- [x] **M4** Identidade visual com logomarca transparente oficial
+- [x] **M5** Refino da Agenda (cards responsivos, modal Leaflet com rotas)
+- [x] **M6** Login próprio do admin (`admin` ou e-mail com Bcrypt)
+- [x] **M7** Troca e recuperação de senha (tokens temporários de 1 hora)
+- [x] **M8** Campos estendidos de colaboradores (23 campos, 5 sub-abas e mascaramento LGPD)
+- [x] **M9** **Módulo de comprovantes de despesa e prestação de contas** (upload PDF/imagem, métricas, blindagem HTTP 403)
+- [x] **M10** Auditoria de segurança e blindagem LGPD / CORS / Helmet
+- [x] **M11** Downloads técnicos da obra (Press Kit em PDF)
+- [x] **M12** Página Memória (linha do tempo histórica 2012–2026 e dossiê em PDF)
+- [x] **M13** Setor Projetos Futuros na Home
+- [x] **M14** Formulário público "Tem uma ideia?" com proteção LGPD e rate limit
 
-### 🔴 Falta fazer
-| Origem | Item |
-|---|---|
-| Ata #01 | Link de ingresso · Status *Em Repertório* · Campos estendidos de colaborador · Comprovantes · Quarto do Joca |
-| Ata #02 | Downloads técnicos · Página Memória · Projetos Futuros · Formulário de ideias · Login/recuperação de senha · Conteúdo real · Refino da Agenda |
+### 🔴 Postergado / Próximos Ciclos
+| Origem | Item | Justificativa |
+|---|---|---|
+| Ata #01 | Interações lúdicas *"Quarto do Joca"* (RF18) | Postergado para 2027 por depender de assets de arte e ilustrações autorais em desenvolvimento |
 
 ---
 
