@@ -198,11 +198,26 @@ classDiagram
         +Int tamanho
     }
 
+    class Comprovante {
+        +Int id
+        +Int pecaId
+        +Int colaboradorId
+        +String descricao
+        +Float valor
+        +String data
+        +String categoria
+        +String arquivoUrl
+        +DateTime createdAt
+        +DateTime updatedAt
+    }
+
     Peca "1" --> "*" FotoPeca : possui
     Peca "1" --> "*" LocalPeca : apresenta-se em
     Peca "1" --> "*" DownloadTecnico : disponibiliza
     Peca "1" --> "*" PecaColaborador : escala
+    Peca "1" --> "*" Comprovante : registra
     Colaborador "1" --> "*" PecaColaborador : integra
+    Colaborador "1" --> "*" Comprovante : recebe
     Propaganda "1" --> "*" FotoPropaganda : compoe
 ```
 
@@ -362,25 +377,37 @@ erDiagram
         bytes dados
         int tamanho
     }
+    COMPROVANTES {
+        int id PK
+        int pecaId FK
+        int colaboradorId FK
+        string descricao
+        float valor
+        string data
+        string categoria
+        string arquivoUrl
+    }
 
     PECAS ||--o{ FOTOS_PECAS : possui
     PECAS ||--o{ LOCAIS_PECAS : apresenta_se
     PECAS ||--o{ DOWNLOADS_TECNICOS : disponibiliza
     PECAS ||--o{ PECA_COLABORADORES : escala
+    PECAS ||--o{ COMPROVANTES : registra
     COLABORADORES ||--o{ PECA_COLABORADORES : atua
+    COLABORADORES ||--o{ COMPROVANTES : recebe_de
     PROPAGANDAS ||--o{ FOTOS_PROPAGANDAS : contem
 ```
 
 A modelagem de dados do Theatrum Mundi percorre os três níveis formais da engenharia de software:
 
 1. **Modelo Conceitual (MER):**
-   - Focado na semântica de negócios do teatro independente: uma **Peça** congrega uma galeria de **Mídias**, distribui-se em múltiplos **Locais/Datas** de apresentação e aloca um elenco multidisciplinar de **Colaboradores** através da entidade associativa **PecaColaborador**. Peças em cartaz expõem **Downloads Técnicos** para curadores, enquanto a memória histórica institucional vive em **MemoriaItem**.
+   - Focado na semântica de negócios do teatro independente: uma **Peça** congrega uma galeria de **Mídias**, distribui-se em múltiplos **Locais/Datas** de apresentação e aloca um elenco multidisciplinar de **Colaboradores** através da entidade associativa **PecaColaborador**. Peças em cartaz expõem **Downloads Técnicos** para curadores, enquanto a memória histórica institucional vive em **MemoriaItem** e a prestação de contas de editais é registrada em **Comprovante**.
 2. **Modelo Lógico Relacional (Esquema de Tabelas):**
-   - Normalizado até a 3ª Forma Normal (3FN), contendo 13 entidades relacionais bem delimitadas com integridade referencial estrita (`ON DELETE CASCADE` para fotos e locais filhos da peça) e chaves exclusivas de negócio (e-mails únicos de colaboradores e usuários administradores; par único `[pecaId, colaboradorId]` na alocação).
+   - Normalizado até a 3ª Forma Normal (3FN), contendo 14 entidades relacionais bem delimitadas com integridade referencial estrita (`ON DELETE CASCADE` para fotos e locais filhos da peça; `ON DELETE SET NULL` para despesas desvinculadas) e chaves exclusivas de negócio (e-mails únicos de colaboradores e usuários administradores; par único `[pecaId, colaboradorId]` na alocação).
 3. **Modelo Físico (PostgreSQL & Prisma):**
-   - Implementado diretamente no script `server/prisma/schema.prisma`. Emprega tipos de dados otimizados para PostgreSQL (`SERIAL`, `DOUBLE PRECISION` para geocoordenadas Leaflet, campos `TEXT` para sinopses e dramaturgias longas e tipo binário `BYTEA` na tabela `arquivos` para salvaguardar imagens e PDFs binariamente no banco contra a volatilidade do filesystem efêmero da hospedagem Render).
+   - Implementado diretamente no script `server/prisma/schema.prisma`. Emprega tipos de dados otimizados para PostgreSQL (`SERIAL`, `DOUBLE PRECISION` para geocoordenadas Leaflet e valores financeiros de despesa, campos `TEXT` para sinopses e dramaturgias longas e tipo binário `BYTEA` na tabela `arquivos` para salvaguardar imagens e PDFs binariamente no banco contra a volatilidade do filesystem efêmero da hospedagem Render).
 
-### 3.2 Dicionário de Dados Completo das 13 Tabelas do Sistema
+### 3.2 Dicionário de Dados Completo das 14 Tabelas do Sistema
 
 #### 1. Tabela: `pecas` (Obras Teatrais)
 | Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
@@ -462,6 +489,20 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | `fotos_propagandas` | `id` (PK), `propagandaId` (FK) | `url`, `legenda`, `ordem` | Galeria de imagens vinculadas aos comunicados (`ON DELETE CASCADE`) |
 | `config_site` | `id` (PK), `chave` (UK) | `chave`, `valor`, `updatedAt` | Parâmetros institucionais dinâmicos em formato chave-valor |
 | `arquivos` | `id` (PK), `nome` (UK) | `nome`, `mimeType`, `dados` (`BYTEA`), `createdAt` | Salvaguarda binária de imagens e PDFs no PostgreSQL contra perda em filesystem efêmero |
+
+#### 8. Tabela: `comprovantes` (Comprovantes de Despesa e Prestação de Contas - RF17)
+| Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
+|---|---|:---:|:---:|---|
+| `id` | SERIAL / INT | Não | PK | Identificador único do comprovante financeiro |
+| `pecaId` | INT | Sim | FK | Vínculo opcional com a obra teatral (`ON DELETE SET NULL`) |
+| `colaboradorId` | INT | Sim | FK | Vínculo opcional com o prestador/artista (`ON DELETE SET NULL`) |
+| `descricao` | VARCHAR(150) | Não | — | Descrição sucinta da despesa/recibo |
+| `valor` | DOUBLE PRECISION | Não | — | Valor monetário em reais (ex: 1250.00) |
+| `data` | VARCHAR(20) | Não | — | Data da despesa ou emissão (formato YYYY-MM-DD) |
+| `categoria` | VARCHAR(50) | Não | — | Categoria contábil (`CACHE`, `TRANSPORTE`, `ALIMENTACAO`, `CENOGRAFIA`, `FIGURINO`, `EQUIPAMENTO`, `MARKETING`, `OUTROS`) |
+| `arquivoUrl` | TEXT | Não | — | Caminho do arquivo seguro (prefixo `comprovante-`, bloqueado contra acesso público via HTTP 403) |
+| `createdAt` | TIMESTAMP | Não | — | Timestamp do registro no sistema |
+| `updatedAt` | TIMESTAMP | Não | — | Timestamp da última modificação |
 
 ---
 

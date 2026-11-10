@@ -55,8 +55,8 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
    │   ├── 1.4.2 CRUDs e endpoints com validação defensiva
    │   └── 1.4.3 Proteção LGPD e persistência binária contra disco efêmero
    ├── 1.5 Qualidade e Testes Automatizados
-   │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (95 testes)
-   │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (61 testes)
+   │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (125 testes)
+   │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (64 testes)
    └── 1.6 DevOps, CI/CD e Implantação
        ├── 1.6.1 Pipeline GitHub Actions automatizado (.github/workflows/deploy.yml)
        ├── 1.6.2 Deploy contínuo no GitHub Pages (Frontend)
@@ -71,6 +71,7 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
 | **Sprint 2** | 15/10 a 24/10/2026 | Segurança Crítica e LGPD | Login com credenciais próprias (`admin`); "Esqueci minha senha" e troca de senha; ficha estendida com 23 campos e mascaramento de dados sensíveis da LGPD. |
 | **Sprint 3** | 25/10 a 31/10/2026 | Novas Experiências Públicas | Downloads Técnicos (Press Kit) em PDF; página Memória com linha do tempo 2012–2026; vitrine de Projetos Futuros; formulário público "Tem uma Ideia?". |
 | **Sprint 4** | 01/11 a 09/11/2026 | Estabilização, Testes e Go-Live | Dupla persistência binária no PostgreSQL; resolução CDN de assets estáticos; aprovação dos 156 testes automatizados e deploy em produção. |
+| **Sprint 5** | 10/11/2026 | Módulo de Comprovantes & TDD | Desenvolvimento orientado por testes (TDD Red-Green-Refactor) do Módulo de Comprovantes de Despesa (RF17); blindagem contra download público não autorizado (HTTP 403); aprovação total dos 189 testes automatizados. |
 
 ### 2.3 Estimativas com Planning Poker e Story Points
 A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o esforço relativo das histórias de usuário:
@@ -80,6 +81,7 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
 * `US04` (Formulário de Ideias com LGPD): **5 pontos** (Validação no cliente, rate limit e persistência).
 * `US05` (Ficha de Colaboradores com Proteção LGPD): **13 pontos** (Maior complexidade: 23 campos, 5 sub-abas e filtros seletivos de privilégio na API).
 * `US06` (Recuperação de Acesso e Troca de Senha): **8 pontos** (Fluxo criptográfico com tokens temporários e expiração).
+* `US07` (Módulo de Comprovantes e Prestação de Contas): **8 pontos** (Upload de documentos fiscais multiformato, totalizadores contábeis por categoria e blindagem de segurança).
 
 ---
 
@@ -108,7 +110,7 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
 
 ### 4.2 Fluxo de Pull Requests com Code Review
 Toda alteração direcionada à branch estável `main` submete-se ao fluxo de revisão por pares (*Peer Code Review*) com checklist obrigatório:
-1. **Passagem sem falhas na suíte de testes:** Todos os 95 testes do backend (Jest) e 61 testes do frontend (Vitest) devem ser executados e aprovados (`156 passed`).
+1. **Passagem sem falhas na suíte de testes:** Todos os 125 testes do backend (Jest) e 64 testes do frontend (Vitest) devem ser executados e aprovados (`189 passed`).
 2. **Auditoria de Segurança e LGPD:** Verificação manual se novos campos sensíveis de colaboradores possuem projeção seletiva no service.
 3. **Padrão de Código:** Conformidade com Clean Code, ausência de logs residuais de depuração e tipagem correta de parâmetros.
 4. **Resolução de Conflitos:** Rebase ou merge limpo com a branch principal sem artefatos temporários no commit.
@@ -128,7 +130,8 @@ O fluxo de engenharia é orquestrado visualmente em um **Quadro Kanban no GitHub
 * **Sprint Planning 1 (08/10):** Definição das metas prioritárias pós-reunião com Angelo Faria Turci. Foco no enriquecimento com conteúdo real do espetáculo *Da Janela, o Mar*.
 * **Sprint Review & Retrospective 2 (24/10):** Verificação da blindagem do painel administrativo. Identificada a necessidade de suportar login pelo username `admin` sem exigir obrigatoriamente um e-mail. Ajuste implementado com sucesso.
 * **Sprint Review 3 (31/10):** Apresentação das novas telas ao stakeholder: Área de Downloads Técnicos e Linha do Tempo da Memória. Aprovado pelo diretor com elogios ao caráter profissional dos materiais para curadores.
-* **Sprint 4 — Estabilização Final (09/11):** Sincronização dos binários de imagem oficiais no seed, aprovação dos 156 testes unitários/integrados e publicação da versão estável.
+* **Sprint 4 — Estabilização Final (09/11):** Sincronização dos binários de imagem oficiais no seed, aprovação dos testes unitários/integrados e publicação da versão estável.
+* **Sprint Review 5 — Módulo de Comprovantes e TDD (10/11):** Implementação do RF17 sob metodologia estrita TDD (Red-Green-Refactor). Adição de 33 novos testes automatizados (11 de validação, 9 de serviço, 10 de rotas/segurança e 3 de interface React). Total expandido para 189 testes 100% aprovados.
 
 ---
 
@@ -137,7 +140,7 @@ O fluxo de engenharia é orquestrado visualmente em um **Quadro Kanban no GitHub
 O MVP foi integralmente desenvolvido e validado em produção aplicando os princípios da engenharia de software sustentável:
 
 ### 6.1 Funcionalidades Priorizadas e Implementadas no MVP
-Todas as funcionalidades classificadas como **Must Have** e **Should Have** nas Sprints 1 a 4 foram 100% implementadas e entregues no MVP operacional:
+Todas as funcionalidades classificadas como **Must Have**, **Should Have** e o **Could Have (RF17)** priorizado foram 100% implementadas e entregues no MVP operacional:
 1. **Catálogo e Detalhes de Obras (`HomePage.jsx`, `PecasPage.jsx`, `PecaDetalhesPage.jsx`):** Exibição widescreen em alta resolução, filtros por status cênico, carrossel de cenas, ficha técnica completa e botão direto de ingressos na Sympla.
 2. **Agenda de Circulação com Georreferenciamento (`AgendaPage.jsx`, `LocationMapModal.jsx`):** Cronograma de sessões separado do acervo, com mapa interativo Leaflet e traçado de rotas no Google Maps.
 3. **Press Kit e Downloads Técnicos (`pecaDetalhes` + `/downloads/*.pdf`):** Disponibilização pública de PDFs oficiais (Edital SESC, Rider Técnico e Dossiê da Obra) para curadores e produtores de festivais.
@@ -145,6 +148,7 @@ Todas as funcionalidades classificadas como **Must Have** e **Should Have** nas 
 5. **Canal Público "Tem uma Ideia?" (`ideiaController.js`, `AdminPage.jsx`):** Formulário público com consentimento LGPD, proteção anti-spam (*rate limiting*) e caixa de entrada administrativa com integração direta ao WhatsApp.
 6. **Gestão de Colaboradores Blindada pela LGPD (`colaboradorService.js`):** Cadastro estendido em 23 campos (5 abas) com projeção seletiva em runtime que oculta dados pessoais e de saúde nas rotas públicas.
 7. **Segurança e Governança Administrativa (`authService.js`):** Autenticação JWT com suporte a identificador `admin` ou e-mail, alteração de senha autenticada e recuperação de acesso via token temporário.
+8. **Gestão de Comprovantes e Prestação de Contas (`comprovanteService.js`, `AbaComprovantes.jsx` - RF17):** Módulo contábil completo desenvolvido com TDD para prestação de contas de editais (ex: Lei Paulo Gustavo). Permite upload de notas/recibos em PDF e imagem com categorização de despesas (`CACHE`, `CENOGRAFIA`, `TRANSPORTE`, etc.), totalizadores financeiros em tempo real e proteção contra vazamento (HTTP 403 em acessos diretos não autorizados).
 
 ### 6.2 Princípios SOLID Aplicados
 1. **Single Responsibility Principle (SRP):** Cada arquivo possui uma responsabilidade única e delimitada. Por exemplo, `authValidator.js` valida parâmetros de entrada, `authController.js` trata a requisição HTTP e `authService.js` executa as operações de negócio e hashing criptográfico.
@@ -168,8 +172,8 @@ O pipeline automatizado do projeto foi implementado via **GitHub Actions** atrav
 ```mermaid
 flowchart TD
     Push["1. Git Push para branch 'main'"] --> Lint["2. Setup Node.js 22 & Prisma Client"]
-    Lint --> TestBack["3. Execução dos Testes Backend (Jest - 95 testes)"]
-    Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 61 testes)"]
+    Lint --> TestBack["3. Execução dos Testes Backend (Jest - 125 testes)"]
+    Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 64 testes)"]
     TestBack --> Build["5. Compilação do Frontend (Vite Build)"]
     TestFront --> Build
     Build --> DeployGH["6. Deploy Automático no GitHub Pages"]
@@ -179,8 +183,8 @@ flowchart TD
 * **Gatilho:** Qualquer commit integrado na branch `main` ou disparo manual via `workflow_dispatch`.
 * **Etapas do Pipeline:**
   1. Instalação de dependências (`npm ci`) e geração do cliente Prisma em ambiente isolado Node.js 22;
-  2. Execução da suite de **95 testes de integração no backend** (`jest --verbose`);
-  3. Execução da suite de **61 testes de componentes no frontend** (`vitest run`);
+  2. Execução da suite de **125 testes de integração no backend** (`jest --verbose`);
+  3. Execução da suite de **64 testes de componentes no frontend** (`vitest run`);
   4. Build de produção do Vite com geração dos pacotes estáticos otimizados em `client/dist/`;
   5. Publicação automatizada no GitHub Pages (`actions/deploy-pages@v4` / branch `gh-pages`) com entrega imediata via CDN.
 

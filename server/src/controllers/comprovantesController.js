@@ -1,0 +1,78 @@
+// =============================================================================
+// Theatrum — Controller de Comprovantes de Despesa
+// Single Responsibility: Tratamento de requisições HTTP e serialização de respostas
+// =============================================================================
+
+const ComprovanteService = require('../services/comprovanteService');
+
+async function listarComprovantes(req, res, next) {
+  try {
+    const { pecaId, colaboradorId, categoria, busca } = req.query;
+    const resultado = await ComprovanteService.listar({
+      pecaId,
+      colaboradorId,
+      categoria,
+      busca,
+    });
+    res.json(resultado);
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+async function buscarComprovante(req, res, next) {
+  try {
+    const comprovante = await ComprovanteService.buscarPorId(req.params.id);
+    res.json(comprovante);
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+async function baixarArquivoComprovante(req, res, next) {
+  try {
+    const { buffer, mimetype, nomeOriginal } = await ComprovanteService.obterArquivo(req.params.id);
+    res.setHeader('Content-Type', mimetype);
+    res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(nomeOriginal)}"`);
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.send(buffer);
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+async function criarComprovante(req, res, next) {
+  try {
+    const novo = await ComprovanteService.criar(req.body, req.file);
+    res.status(201).json(novo);
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+async function atualizarComprovante(req, res, next) {
+  try {
+    const atualizado = await ComprovanteService.atualizar(req.params.id, req.body, req.file);
+    res.json(atualizado);
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+async function deletarComprovante(req, res, next) {
+  try {
+    await ComprovanteService.deletar(req.params.id);
+    res.json({ sucesso: true, mensagem: 'Comprovante excluído com sucesso' });
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+module.exports = {
+  listarComprovantes,
+  buscarComprovante,
+  baixarArquivoComprovante,
+  criarComprovante,
+  atualizarComprovante,
+  deletarComprovante,
+};

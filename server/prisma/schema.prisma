@@ -9,7 +9,7 @@ generator client {
 
 datasource db {
   // PostgreSQL em produção (Render) — SQLite é incompatível com filesystem efêmero
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -73,6 +73,7 @@ model Colaborador {
 
   // Relação N:N com Peças (via tabela intermediária)
   pecas            PecaColaborador[]
+  comprovantes     Comprovante[]
 
   @@map("colaboradores")
 }
@@ -98,6 +99,7 @@ model Peca {
   colaboradores     PecaColaborador[]
   locais            LocalPeca[]
   downloadsTecnicos DownloadTecnico[]
+  comprovantes      Comprovante[]
 
   @@map("pecas")
 }
@@ -287,4 +289,32 @@ model FotoPropaganda {
   propaganda   Propaganda @relation(fields: [propagandaId], references: [id], onDelete: Cascade)
 
   @@map("fotos_propagandas")
+}
+
+// =============================================================================
+// Comprovantes de Despesa e Prestação de Contas (Ata #01 e Ata #02)
+// Recibos, notas fiscais, cachês e transporte com anexos PDF/imagens (admin only)
+// =============================================================================
+model Comprovante {
+  id              Int          @id @default(autoincrement())
+  titulo          String
+  descricao       String?
+  valor           Float
+  dataComprovante String       // "YYYY-MM-DD"
+  categoria       String       @default("OUTROS") // TRANSPORTE | ALIMENTACAO | CACHE | CENOGRAFIA_FIGURINO | DIVULGACAO | INFRAESTRUTURA | OUTROS
+  arquivoUrl      String       // "/uploads/comprovante-..."
+  arquivoNome     String?
+  mimetype        String?
+  tamanho         Int?
+
+  pecaId          Int?
+  peca            Peca?        @relation(fields: [pecaId], references: [id], onDelete: SetNull)
+
+  colaboradorId   Int?
+  colaborador     Colaborador? @relation(fields: [colaboradorId], references: [id], onDelete: SetNull)
+
+  criadoEm        DateTime     @default(now())
+  atualizadoEm    DateTime     @default(now()) @updatedAt
+
+  @@map("comprovantes")
 }

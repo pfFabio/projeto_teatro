@@ -83,7 +83,7 @@ A elicitação de requisitos do projeto Theatrum foi conduzida através de uma a
 |---|:---:|---|
 | **Must Have (Obrigatório)** | **RF01, RF02, RF03, RF04, RF05, RF06, RF08, RF10, RF11, RF12, RF13, RF14, RF15** | Essencial para o funcionamento do sistema contratado: divulgação de espetáculos, orientação de público via mapa, venda de ingressos, downloads para curadores, linha do tempo da companhia e segurança total em compliance com a LGPD. |
 | **Should Have (Importante)** | **RF07, RF09, RF16** | Agrega valor competitivo e institucional direto: vitrine de projetos futuros na Home, triagem de parcerias recebidas e canal de propagandas da companhia. |
-| **Could Have (Desejável)** | **RF17** | Comprovantes de pagamento de produções: agrega conveniência de gestão interna, mas não bloqueia o go-live do portal público. |
+| **Could Have (Desejável) [Entregue no MVP]** | **RF17** | Comprovantes de pagamento de produções: agrega conveniência de gestão interna e prestação de contas de editais. Entregue integralmente via TDD (Red-Green-Refactor) com 30 novos testes automatizados e proteção de sigilo financeiro (HTTP 403). |
 | **Won't Have (Postergado)** | **RF18** | Interatividade do espetáculo *Quarto do Joca*: postergado para 2027 por depender de assets de arte e animações autorais ainda em desenvolvimento. |
 
 ---
@@ -209,6 +209,19 @@ Cenário: Redefinição de senha através de token temporário
   Então a nova senha é gravada com hash Bcrypt e a mensagem de sucesso é retornada
 ```
 
+#### [US07] — Gestão de Comprovantes e Prestação de Contas (RF17)
+* **Como** administrador financeiro / produtor da companhia,  
+* **Quero** cadastrar notas fiscais, recibos e comprovantes anexando arquivos (PDF/imagens) com valor, data e categoria, associando-os opcionalmente a peças e colaboradores,  
+* **Para que** eu mantenha a prestação de contas de editais culturais (ex: Lei Paulo Gustavo, SESC) organizada e protegida sob sigilo financeiro.
+```gherkin
+Cenário: Cadastro e consulta sigilosa de comprovante financeiro
+  Dado que o administrador está autenticado no painel de controle
+  Quando ele envia um comprovante com descrição, valor, data, categoria e anexo válido (PDF, PNG, JPG, WebP)
+  Então o comprovante é persistido e associado à peça e ao colaborador selecionados
+  E a rota pública de arquivos bloqueia qualquer acesso direto não autorizado com status HTTP 403 Forbidden
+  E apenas administradores com token JWT válido conseguem visualizar e baixar o documento
+```
+
 ### 4.2 Comparativo: Product Backlog Inicial vs. Backlog Atual
 
 | Item do Backlog Inicial (Sprint 0 / Ata #01) | Item do Backlog Atualizado e Entregue (Pós Ata #02) | Situação de Entrega |
@@ -222,6 +235,7 @@ Cenário: Redefinição de senha através de token temporário
 | *Não previsto no início* | Botão dinâmico de compra de ingressos integrado com Sympla na Obra e na Agenda | 🟢 Entregue |
 | Login por e-mail hardcoded | Autenticação por login flexível (`admin`), recuperação de senha e troca de credencial | 🟢 Entregue |
 | Upload local em disco | Dupla persistência binária no PostgreSQL para tolerar o filesystem efêmero do Render | 🟢 Entregue |
+| Comprovantes de Despesa (RF17) | Módulo completo de Comprovantes com upload de notas/recibos (PDF/img), métricas por categoria, associação a peças/colaboradores e sigilo financeiro blindado (HTTP 403) | 🟢 Entregue |
 
 ---
 
@@ -251,6 +265,7 @@ flowchart LR
         UC10["UC10: Gerenciar Ficha de Colaboradores (LGPD)"]
         UC11["UC11: Triar Caixa de Ideias"]
         UC12["UC12: Gerenciar Propagandas e Configurações"]
+        UC13["UC13: Gerenciar Comprovantes e Prestação de Contas (RF17)"]
     end
 
     E --> UC01
@@ -269,6 +284,7 @@ flowchart LR
     Admin --> UC10
     Admin --> UC11
     Admin --> UC12
+    Admin --> UC13
 ```
 
 ### 5.2 Especificação Formal dos Casos de Uso Críticos
@@ -519,11 +535,26 @@ classDiagram
         +Int tamanho
     }
 
+    class Comprovante {
+        +Int id
+        +Int pecaId
+        +Int colaboradorId
+        +String descricao
+        +Float valor
+        +String data
+        +String categoria
+        +String arquivoUrl
+        +DateTime createdAt
+        +DateTime updatedAt
+    }
+
     Peca "1" --> "*" FotoPeca : possui
     Peca "1" --> "*" LocalPeca : apresenta-se em
     Peca "1" --> "*" DownloadTecnico : disponibiliza
     Peca "1" --> "*" PecaColaborador : escala
+    Peca "1" --> "*" Comprovante : registra
     Colaborador "1" --> "*" PecaColaborador : integra
+    Colaborador "1" --> "*" Comprovante : recebe
     Propaganda "1" --> "*" FotoPropaganda : compoe
 ```
 
@@ -683,25 +714,37 @@ erDiagram
         bytes dados
         int tamanho
     }
+    COMPROVANTES {
+        int id PK
+        int pecaId FK
+        int colaboradorId FK
+        string descricao
+        float valor
+        string data
+        string categoria
+        string arquivoUrl
+    }
 
     PECAS ||--o{ FOTOS_PECAS : possui
     PECAS ||--o{ LOCAIS_PECAS : apresenta_se
     PECAS ||--o{ DOWNLOADS_TECNICOS : disponibiliza
     PECAS ||--o{ PECA_COLABORADORES : escala
+    PECAS ||--o{ COMPROVANTES : registra
     COLABORADORES ||--o{ PECA_COLABORADORES : atua
+    COLABORADORES ||--o{ COMPROVANTES : recebe_de
     PROPAGANDAS ||--o{ FOTOS_PROPAGANDAS : contem
 ```
 
 A modelagem de dados do Theatrum Mundi percorre os três níveis formais da engenharia de software:
 
 1. **Modelo Conceitual (MER):**
-   - Focado na semântica de negócios do teatro independente: uma **Peça** congrega uma galeria de **Mídias**, distribui-se em múltiplos **Locais/Datas** de apresentação e aloca um elenco multidisciplinar de **Colaboradores** através da entidade associativa **PecaColaborador**. Peças em cartaz expõem **Downloads Técnicos** para curadores, enquanto a memória histórica institucional vive em **MemoriaItem**.
+   - Focado na semântica de negócios do teatro independente: uma **Peça** congrega uma galeria de **Mídias**, distribui-se em múltiplos **Locais/Datas** de apresentação e aloca um elenco multidisciplinar de **Colaboradores** através da entidade associativa **PecaColaborador**. Peças em cartaz expõem **Downloads Técnicos** para curadores, enquanto a memória histórica institucional vive em **MemoriaItem** e a prestação de contas de editais é registrada em **Comprovante**.
 2. **Modelo Lógico Relacional (Esquema de Tabelas):**
-   - Normalizado até a 3ª Forma Normal (3FN), contendo 13 entidades relacionais bem delimitadas com integridade referencial estrita (`ON DELETE CASCADE` para fotos e locais filhos da peça) e chaves exclusivas de negócio (e-mails únicos de colaboradores e usuários administradores; par único `[pecaId, colaboradorId]` na alocação).
+   - Normalizado até a 3ª Forma Normal (3FN), contendo 14 entidades relacionais bem delimitadas com integridade referencial estrita (`ON DELETE CASCADE` para fotos e locais filhos da peça; `ON DELETE SET NULL` para despesas desvinculadas) e chaves exclusivas de negócio (e-mails únicos de colaboradores e usuários administradores; par único `[pecaId, colaboradorId]` na alocação).
 3. **Modelo Físico (PostgreSQL & Prisma):**
-   - Implementado diretamente no script `server/prisma/schema.prisma`. Emprega tipos de dados otimizados para PostgreSQL (`SERIAL`, `DOUBLE PRECISION` para geocoordenadas Leaflet, campos `TEXT` para sinopses e dramaturgias longas e tipo binário `BYTEA` na tabela `arquivos` para salvaguardar imagens e PDFs binariamente no banco contra a volatilidade do filesystem efêmero da hospedagem Render).
+   - Implementado diretamente no script `server/prisma/schema.prisma`. Emprega tipos de dados otimizados para PostgreSQL (`SERIAL`, `DOUBLE PRECISION` para geocoordenadas Leaflet e valores financeiros de despesa, campos `TEXT` para sinopses e dramaturgias longas e tipo binário `BYTEA` na tabela `arquivos` para salvaguardar imagens e PDFs binariamente no banco contra a volatilidade do filesystem efêmero da hospedagem Render).
 
-### 3.2 Dicionário de Dados Completo das 13 Tabelas do Sistema
+### 3.2 Dicionário de Dados Completo das 14 Tabelas do Sistema
 
 #### 1. Tabela: `pecas` (Obras Teatrais)
 | Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
@@ -783,6 +826,20 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | `fotos_propagandas` | `id` (PK), `propagandaId` (FK) | `url`, `legenda`, `ordem` | Galeria de imagens vinculadas aos comunicados (`ON DELETE CASCADE`) |
 | `config_site` | `id` (PK), `chave` (UK) | `chave`, `valor`, `updatedAt` | Parâmetros institucionais dinâmicos em formato chave-valor |
 | `arquivos` | `id` (PK), `nome` (UK) | `nome`, `mimeType`, `dados` (`BYTEA`), `createdAt` | Salvaguarda binária de imagens e PDFs no PostgreSQL contra perda em filesystem efêmero |
+
+#### 8. Tabela: `comprovantes` (Comprovantes de Despesa e Prestação de Contas - RF17)
+| Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
+|---|---|:---:|:---:|---|
+| `id` | SERIAL / INT | Não | PK | Identificador único do comprovante financeiro |
+| `pecaId` | INT | Sim | FK | Vínculo opcional com a obra teatral (`ON DELETE SET NULL`) |
+| `colaboradorId` | INT | Sim | FK | Vínculo opcional com o prestador/artista (`ON DELETE SET NULL`) |
+| `descricao` | VARCHAR(150) | Não | — | Descrição sucinta da despesa/recibo |
+| `valor` | DOUBLE PRECISION | Não | — | Valor monetário em reais (ex: 1250.00) |
+| `data` | VARCHAR(20) | Não | — | Data da despesa ou emissão (formato YYYY-MM-DD) |
+| `categoria` | VARCHAR(50) | Não | — | Categoria contábil (`CACHE`, `TRANSPORTE`, `ALIMENTACAO`, `CENOGRAFIA`, `FIGURINO`, `EQUIPAMENTO`, `MARKETING`, `OUTROS`) |
+| `arquivoUrl` | TEXT | Não | — | Caminho do arquivo seguro (prefixo `comprovante-`, bloqueado contra acesso público via HTTP 403) |
+| `createdAt` | TIMESTAMP | Não | — | Timestamp do registro no sistema |
+| `updatedAt` | TIMESTAMP | Não | — | Timestamp da última modificação |
 
 ---
 
@@ -900,8 +957,8 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
    │   ├── 1.4.2 CRUDs e endpoints com validação defensiva
    │   └── 1.4.3 Proteção LGPD e persistência binária contra disco efêmero
    ├── 1.5 Qualidade e Testes Automatizados
-   │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (95 testes)
-   │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (61 testes)
+   │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (125 testes)
+   │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (64 testes)
    └── 1.6 DevOps, CI/CD e Implantação
        ├── 1.6.1 Pipeline GitHub Actions automatizado (.github/workflows/deploy.yml)
        ├── 1.6.2 Deploy contínuo no GitHub Pages (Frontend)
@@ -916,6 +973,7 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
 | **Sprint 2** | 15/10 a 24/10/2026 | Segurança Crítica e LGPD | Login com credenciais próprias (`admin`); "Esqueci minha senha" e troca de senha; ficha estendida com 23 campos e mascaramento de dados sensíveis da LGPD. |
 | **Sprint 3** | 25/10 a 31/10/2026 | Novas Experiências Públicas | Downloads Técnicos (Press Kit) em PDF; página Memória com linha do tempo 2012–2026; vitrine de Projetos Futuros; formulário público "Tem uma Ideia?". |
 | **Sprint 4** | 01/11 a 09/11/2026 | Estabilização, Testes e Go-Live | Dupla persistência binária no PostgreSQL; resolução CDN de assets estáticos; aprovação dos 156 testes automatizados e deploy em produção. |
+| **Sprint 5** | 10/11/2026 | Módulo de Comprovantes & TDD | Desenvolvimento orientado por testes (TDD Red-Green-Refactor) do Módulo de Comprovantes de Despesa (RF17); blindagem contra download público não autorizado (HTTP 403); aprovação total dos 189 testes automatizados. |
 
 ### 2.3 Estimativas com Planning Poker e Story Points
 A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o esforço relativo das histórias de usuário:
@@ -925,6 +983,7 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
 * `US04` (Formulário de Ideias com LGPD): **5 pontos** (Validação no cliente, rate limit e persistência).
 * `US05` (Ficha de Colaboradores com Proteção LGPD): **13 pontos** (Maior complexidade: 23 campos, 5 sub-abas e filtros seletivos de privilégio na API).
 * `US06` (Recuperação de Acesso e Troca de Senha): **8 pontos** (Fluxo criptográfico com tokens temporários e expiração).
+* `US07` (Módulo de Comprovantes e Prestação de Contas): **8 pontos** (Upload de documentos fiscais multiformato, totalizadores contábeis por categoria e blindagem de segurança).
 
 ---
 
@@ -953,7 +1012,7 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
 
 ### 4.2 Fluxo de Pull Requests com Code Review
 Toda alteração direcionada à branch estável `main` submete-se ao fluxo de revisão por pares (*Peer Code Review*) com checklist obrigatório:
-1. **Passagem sem falhas na suíte de testes:** Todos os 95 testes do backend (Jest) e 61 testes do frontend (Vitest) devem ser executados e aprovados (`156 passed`).
+1. **Passagem sem falhas na suíte de testes:** Todos os 125 testes do backend (Jest) e 64 testes do frontend (Vitest) devem ser executados e aprovados (`189 passed`).
 2. **Auditoria de Segurança e LGPD:** Verificação manual se novos campos sensíveis de colaboradores possuem projeção seletiva no service.
 3. **Padrão de Código:** Conformidade com Clean Code, ausência de logs residuais de depuração e tipagem correta de parâmetros.
 4. **Resolução de Conflitos:** Rebase ou merge limpo com a branch principal sem artefatos temporários no commit.
@@ -973,7 +1032,8 @@ O fluxo de engenharia é orquestrado visualmente em um **Quadro Kanban no GitHub
 * **Sprint Planning 1 (08/10):** Definição das metas prioritárias pós-reunião com Angelo Faria Turci. Foco no enriquecimento com conteúdo real do espetáculo *Da Janela, o Mar*.
 * **Sprint Review & Retrospective 2 (24/10):** Verificação da blindagem do painel administrativo. Identificada a necessidade de suportar login pelo username `admin` sem exigir obrigatoriamente um e-mail. Ajuste implementado com sucesso.
 * **Sprint Review 3 (31/10):** Apresentação das novas telas ao stakeholder: Área de Downloads Técnicos e Linha do Tempo da Memória. Aprovado pelo diretor com elogios ao caráter profissional dos materiais para curadores.
-* **Sprint 4 — Estabilização Final (09/11):** Sincronização dos binários de imagem oficiais no seed, aprovação dos 156 testes unitários/integrados e publicação da versão estável.
+* **Sprint 4 — Estabilização Final (09/11):** Sincronização dos binários de imagem oficiais no seed, aprovação dos testes unitários/integrados e publicação da versão estável.
+* **Sprint Review 5 — Módulo de Comprovantes e TDD (10/11):** Implementação do RF17 sob metodologia estrita TDD (Red-Green-Refactor). Adição de 33 novos testes automatizados (11 de validação, 9 de serviço, 10 de rotas/segurança e 3 de interface React). Total expandido para 189 testes 100% aprovados.
 
 ---
 
@@ -982,7 +1042,7 @@ O fluxo de engenharia é orquestrado visualmente em um **Quadro Kanban no GitHub
 O MVP foi integralmente desenvolvido e validado em produção aplicando os princípios da engenharia de software sustentável:
 
 ### 6.1 Funcionalidades Priorizadas e Implementadas no MVP
-Todas as funcionalidades classificadas como **Must Have** e **Should Have** nas Sprints 1 a 4 foram 100% implementadas e entregues no MVP operacional:
+Todas as funcionalidades classificadas como **Must Have**, **Should Have** e o **Could Have (RF17)** priorizado foram 100% implementadas e entregues no MVP operacional:
 1. **Catálogo e Detalhes de Obras (`HomePage.jsx`, `PecasPage.jsx`, `PecaDetalhesPage.jsx`):** Exibição widescreen em alta resolução, filtros por status cênico, carrossel de cenas, ficha técnica completa e botão direto de ingressos na Sympla.
 2. **Agenda de Circulação com Georreferenciamento (`AgendaPage.jsx`, `LocationMapModal.jsx`):** Cronograma de sessões separado do acervo, com mapa interativo Leaflet e traçado de rotas no Google Maps.
 3. **Press Kit e Downloads Técnicos (`pecaDetalhes` + `/downloads/*.pdf`):** Disponibilização pública de PDFs oficiais (Edital SESC, Rider Técnico e Dossiê da Obra) para curadores e produtores de festivais.
@@ -990,6 +1050,7 @@ Todas as funcionalidades classificadas como **Must Have** e **Should Have** nas 
 5. **Canal Público "Tem uma Ideia?" (`ideiaController.js`, `AdminPage.jsx`):** Formulário público com consentimento LGPD, proteção anti-spam (*rate limiting*) e caixa de entrada administrativa com integração direta ao WhatsApp.
 6. **Gestão de Colaboradores Blindada pela LGPD (`colaboradorService.js`):** Cadastro estendido em 23 campos (5 abas) com projeção seletiva em runtime que oculta dados pessoais e de saúde nas rotas públicas.
 7. **Segurança e Governança Administrativa (`authService.js`):** Autenticação JWT com suporte a identificador `admin` ou e-mail, alteração de senha autenticada e recuperação de acesso via token temporário.
+8. **Gestão de Comprovantes e Prestação de Contas (`comprovanteService.js`, `AbaComprovantes.jsx` - RF17):** Módulo contábil completo desenvolvido com TDD para prestação de contas de editais (ex: Lei Paulo Gustavo). Permite upload de notas/recibos em PDF e imagem com categorização de despesas (`CACHE`, `CENOGRAFIA`, `TRANSPORTE`, etc.), totalizadores financeiros em tempo real e proteção contra vazamento (HTTP 403 em acessos diretos não autorizados).
 
 ### 6.2 Princípios SOLID Aplicados
 1. **Single Responsibility Principle (SRP):** Cada arquivo possui uma responsabilidade única e delimitada. Por exemplo, `authValidator.js` valida parâmetros de entrada, `authController.js` trata a requisição HTTP e `authService.js` executa as operações de negócio e hashing criptográfico.
@@ -1013,8 +1074,8 @@ O pipeline automatizado do projeto foi implementado via **GitHub Actions** atrav
 ```mermaid
 flowchart TD
     Push["1. Git Push para branch 'main'"] --> Lint["2. Setup Node.js 22 & Prisma Client"]
-    Lint --> TestBack["3. Execução dos Testes Backend (Jest - 95 testes)"]
-    Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 61 testes)"]
+    Lint --> TestBack["3. Execução dos Testes Backend (Jest - 125 testes)"]
+    Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 64 testes)"]
     TestBack --> Build["5. Compilação do Frontend (Vite Build)"]
     TestFront --> Build
     Build --> DeployGH["6. Deploy Automático no GitHub Pages"]
@@ -1024,8 +1085,8 @@ flowchart TD
 * **Gatilho:** Qualquer commit integrado na branch `main` ou disparo manual via `workflow_dispatch`.
 * **Etapas do Pipeline:**
   1. Instalação de dependências (`npm ci`) e geração do cliente Prisma em ambiente isolado Node.js 22;
-  2. Execução da suite de **95 testes de integração no backend** (`jest --verbose`);
-  3. Execução da suite de **61 testes de componentes no frontend** (`vitest run`);
+  2. Execução da suite de **125 testes de integração no backend** (`jest --verbose`);
+  3. Execução da suite de **64 testes de componentes no frontend** (`vitest run`);
   4. Build de produção do Vite com geração dos pacotes estáticos otimizados em `client/dist/`;
   5. Publicação automatizada no GitHub Pages (`actions/deploy-pages@v4` / branch `gh-pages`) com entrega imediata via CDN.
 

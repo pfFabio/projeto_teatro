@@ -189,4 +189,20 @@ export const uploadAPI = {
   }),
 };
 
+// =============================================================================
+// Comprovantes de Despesa e Prestação de Contas (Admin Only)
+// =============================================================================
+export const comprovantesAPI = {
+  listar: (params) => api.get('/comprovantes', { params }),
+  buscarPorId: (id) => api.get(`/comprovantes/${id}`),
+  baixarArquivo: (id) => api.get(`/comprovantes/${id}/arquivo`, { responseType: 'blob' }),
+  criar: (formData) => api.post('/comprovantes', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  atualizar: (id, formData) => api.put(`/comprovantes/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  deletar: (id) => api.delete(`/comprovantes/${id}`),
+};
+
 export default api;

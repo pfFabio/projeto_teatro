@@ -82,7 +82,7 @@ A elicitação de requisitos do projeto Theatrum foi conduzida através de uma a
 |---|:---:|---|
 | **Must Have (Obrigatório)** | **RF01, RF02, RF03, RF04, RF05, RF06, RF08, RF10, RF11, RF12, RF13, RF14, RF15** | Essencial para o funcionamento do sistema contratado: divulgação de espetáculos, orientação de público via mapa, venda de ingressos, downloads para curadores, linha do tempo da companhia e segurança total em compliance com a LGPD. |
 | **Should Have (Importante)** | **RF07, RF09, RF16** | Agrega valor competitivo e institucional direto: vitrine de projetos futuros na Home, triagem de parcerias recebidas e canal de propagandas da companhia. |
-| **Could Have (Desejável)** | **RF17** | Comprovantes de pagamento de produções: agrega conveniência de gestão interna, mas não bloqueia o go-live do portal público. |
+| **Could Have (Desejável) [Entregue no MVP]** | **RF17** | Comprovantes de pagamento de produções: agrega conveniência de gestão interna e prestação de contas de editais. Entregue integralmente via TDD (Red-Green-Refactor) com 30 novos testes automatizados e proteção de sigilo financeiro (HTTP 403). |
 | **Won't Have (Postergado)** | **RF18** | Interatividade do espetáculo *Quarto do Joca*: postergado para 2027 por depender de assets de arte e animações autorais ainda em desenvolvimento. |
 
 ---
@@ -208,6 +208,19 @@ Cenário: Redefinição de senha através de token temporário
   Então a nova senha é gravada com hash Bcrypt e a mensagem de sucesso é retornada
 ```
 
+#### [US07] — Gestão de Comprovantes e Prestação de Contas (RF17)
+* **Como** administrador financeiro / produtor da companhia,  
+* **Quero** cadastrar notas fiscais, recibos e comprovantes anexando arquivos (PDF/imagens) com valor, data e categoria, associando-os opcionalmente a peças e colaboradores,  
+* **Para que** eu mantenha a prestação de contas de editais culturais (ex: Lei Paulo Gustavo, SESC) organizada e protegida sob sigilo financeiro.
+```gherkin
+Cenário: Cadastro e consulta sigilosa de comprovante financeiro
+  Dado que o administrador está autenticado no painel de controle
+  Quando ele envia um comprovante com descrição, valor, data, categoria e anexo válido (PDF, PNG, JPG, WebP)
+  Então o comprovante é persistido e associado à peça e ao colaborador selecionados
+  E a rota pública de arquivos bloqueia qualquer acesso direto não autorizado com status HTTP 403 Forbidden
+  E apenas administradores com token JWT válido conseguem visualizar e baixar o documento
+```
+
 ### 4.2 Comparativo: Product Backlog Inicial vs. Backlog Atual
 
 | Item do Backlog Inicial (Sprint 0 / Ata #01) | Item do Backlog Atualizado e Entregue (Pós Ata #02) | Situação de Entrega |
@@ -221,6 +234,7 @@ Cenário: Redefinição de senha através de token temporário
 | *Não previsto no início* | Botão dinâmico de compra de ingressos integrado com Sympla na Obra e na Agenda | 🟢 Entregue |
 | Login por e-mail hardcoded | Autenticação por login flexível (`admin`), recuperação de senha e troca de credencial | 🟢 Entregue |
 | Upload local em disco | Dupla persistência binária no PostgreSQL para tolerar o filesystem efêmero do Render | 🟢 Entregue |
+| Comprovantes de Despesa (RF17) | Módulo completo de Comprovantes com upload de notas/recibos (PDF/img), métricas por categoria, associação a peças/colaboradores e sigilo financeiro blindado (HTTP 403) | 🟢 Entregue |
 
 ---
 
@@ -250,6 +264,7 @@ flowchart LR
         UC10["UC10: Gerenciar Ficha de Colaboradores (LGPD)"]
         UC11["UC11: Triar Caixa de Ideias"]
         UC12["UC12: Gerenciar Propagandas e Configurações"]
+        UC13["UC13: Gerenciar Comprovantes e Prestação de Contas (RF17)"]
     end
 
     E --> UC01
@@ -268,6 +283,7 @@ flowchart LR
     Admin --> UC10
     Admin --> UC11
     Admin --> UC12
+    Admin --> UC13
 ```
 
 ### 5.2 Especificação Formal dos Casos de Uso Críticos

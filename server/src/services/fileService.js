@@ -17,6 +17,7 @@ const TIPOS_EXTENSOES = {
   'image/gif': '.gif',
   'video/mp4': '.mp4',
   'video/webm': '.webm',
+  'application/pdf': '.pdf',
 };
 
 class FileService {
@@ -115,6 +116,41 @@ class FileService {
   static async removerMultiplosArquivos(urls) {
     if (!Array.isArray(urls) || urls.length === 0) return;
     await Promise.allSettled(urls.map(url => FileService.removerArquivo(url)));
+  }
+
+  /**
+   * Obtém o Buffer de um arquivo (do disco ou recuperado do banco PostgreSQL)
+   * @param {string} urlRelativa - Ex: "/uploads/comprovante-123.pdf"
+   * @returns {Promise<Buffer|null>}
+   */
+  static async obterBufferArquivo(urlRelativa) {
+    if (!urlRelativa) return null;
+    const nomeArquivo = path.basename(urlRelativa);
+    const caminhoCompleto = path.join(UPLOADS_DIR, nomeArquivo);
+
+    // 1. Tenta ler do disco
+    try {
+      const buffer = await fs.readFile(caminhoCompleto);
+      return buffer;
+    } catch {
+      // 2. Se não estiver no disco local (Render efêmero), recupera do PostgreSQL
+      try {
+        const registro = await prisma.arquivo.findUnique({
+          where: { nome: nomeArquivo },
+        });
+        if (registro && registro.dados) {
+          // Tenta salvar em disco para futuros acessos
+          try {
+            await fs.mkdir(UPLOADS_DIR, { recursive: true });
+            await fs.writeFile(caminhoCompleto, registro.dados);
+          } catch {}
+          return Buffer.from(registro.dados);
+        }
+      } catch (errDb) {
+        logger.error(`Erro ao buscar arquivo no banco: ${nomeArquivo}`, errDb.message);
+      }
+      return null;
+    }
   }
 }
 

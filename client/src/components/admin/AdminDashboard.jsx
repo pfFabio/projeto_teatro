@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import AbaPecas from './AbaPecas';
 import AbaColaboradores from './AbaColaboradores';
 import AbaAlocacoes from './AbaAlocacoes';
+import AbaComprovantes from './AbaComprovantes';
 import AbaPropagandas from './AbaPropagandas';
 import AbaIdeias from './AbaIdeias';
 import AbaConfig from './AbaConfig';
@@ -16,6 +17,7 @@ const ABAS = [
   { id: 'pecas', label: 'Peças', icone: '🎪' },
   { id: 'colaboradores', label: 'Colaboradores', icone: '👥' },
   { id: 'alocacoes', label: 'Alocações', icone: '🔗' },
+  { id: 'comprovantes', label: 'Comprovantes', icone: '🧾' },
   { id: 'ideias', label: 'Ideias', icone: '💡' },
   { id: 'propagandas', label: 'Propagandas', icone: '📢' },
   { id: 'config', label: 'Configurações', icone: '⚙️' },
@@ -170,6 +172,12 @@ export default function AdminDashboard({ usuario, onLogout }) {
             pecas={pecas}
             colaboradores={colaboradores}
             onRecarregar={carregarDados}
+          />
+        )}
+        {abaAtiva === 'comprovantes' && (
+          <AbaComprovantes
+            pecas={pecas}
+            colaboradores={colaboradores}
           />
         )}
         {abaAtiva === 'ideias' && (

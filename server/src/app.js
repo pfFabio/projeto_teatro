@@ -21,6 +21,7 @@ const rotasUpload = require('./routes/upload');
 const rotasPropagandas = require('./routes/propagandas');
 const rotasIdeias = require('./routes/ideias');
 const rotasMemoria = require('./routes/memoria');
+const rotasComprovantes = require('./routes/comprovantes');
 
 const app = express();
 
@@ -113,6 +114,15 @@ const fs = require('fs');
 app.get('/uploads/:nome', async (req, res, next) => {
   try {
     const nomeArquivo = path.basename(req.params.nome);
+
+    // Bloqueio de segurança: comprovantes são confidenciais e exigem autenticação admin via /api/comprovantes/:id/arquivo
+    if (nomeArquivo.startsWith('comprovante-')) {
+      return res.status(403).json({
+        erro: true,
+        mensagem: 'Acesso restrito: Comprovantes financeiros são confidenciais e exigem autenticação administrativa.',
+      });
+    }
+
     const caminhoDisco = path.join(__dirname, '..', 'uploads', nomeArquivo);
 
     // 1. Se o arquivo estiver em disco, serve diretamente
@@ -158,6 +168,7 @@ app.use('/api/upload', rotasUpload);
 app.use('/api/propagandas', rotasPropagandas);
 app.use('/api/ideias', rotasIdeias);
 app.use('/api/memoria', rotasMemoria);
+app.use('/api/comprovantes', rotasComprovantes);
 
 // Rota de health check
 app.get('/api/saude', (req, res) => {
@@ -178,6 +189,16 @@ app.use('/api/*', (req, res, next) => {
 // Tratamento de Erros Global (ISO 25010 - Confiabilidade e Robustez)
 // =============================================================================
 app.use((erro, req, res, next) => {
+  // Trata erros de upload do Multer com 400 Bad Request
+  if (erro.name === 'MulterError') {
+    return res.status(400).json({
+      erro: true,
+      mensagem: erro.code === 'LIMIT_FILE_SIZE'
+        ? 'O arquivo enviado excede o limite máximo permitido.'
+        : `Erro no upload do arquivo: ${erro.message}`,
+    });
+  }
+
   const statusCode = erro.statusCode || (erro.status ? erro.status : 500);
   const mensagem = erro.message || 'Erro interno do servidor';
 
