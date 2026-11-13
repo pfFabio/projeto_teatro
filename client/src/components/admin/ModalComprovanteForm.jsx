@@ -97,9 +97,8 @@ export default function ModalComprovanteForm({
       formData.append('valor', String(valorNum));
       formData.append('dataComprovante', form.dataComprovante);
       formData.append('categoria', form.categoria);
-
-      if (form.pecaId) formData.append('pecaId', form.pecaId);
-      if (form.colaboradorId) formData.append('colaboradorId', form.colaboradorId);
+      formData.append('pecaId', form.pecaId || '');
+      formData.append('colaboradorId', form.colaboradorId || '');
       if (arquivo) formData.append('arquivo', arquivo);
 
       await onSalvar(formData, comprovanteParaEditar?.id);
@@ -263,3 +262,4 @@ export default function ModalComprovanteForm({
     </Modal>
   );
 }
+

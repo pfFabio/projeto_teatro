@@ -116,7 +116,7 @@ app.get('/uploads/:nome', async (req, res, next) => {
     const nomeArquivo = path.basename(req.params.nome);
 
     // Bloqueio de segurança: comprovantes são confidenciais e exigem autenticação admin via /api/comprovantes/:id/arquivo
-    if (nomeArquivo.startsWith('comprovante-')) {
+    if (nomeArquivo.toLowerCase().startsWith('comprovante-')) {
       return res.status(403).json({
         erro: true,
         mensagem: 'Acesso restrito: Comprovantes financeiros são confidenciais e exigem autenticação administrativa.',

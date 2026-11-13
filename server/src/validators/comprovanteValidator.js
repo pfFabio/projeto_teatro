@@ -25,13 +25,24 @@ function isValorInvalido(valor) {
 
 function isDataInvalida(data) {
   if (isTextoVazio(data)) return true;
-  // Aceita formatos YYYY-MM-DD ou DD/MM/AAAA
-  const isoPattern = /^\d{4}-\d{2}-\d{2}$/;
-  const brPattern = /^\d{2}\/\d{2}\/\d{4}$/;
-  if (!isoPattern.test(data) && !brPattern.test(data)) return true;
+  const str = String(data).trim();
+  const isoPattern = /^(\d{4})-(\d{2})-(\d{2})$/;
+  const match = str.match(isoPattern);
+  if (!match) return true;
 
-  const d = new Date(isoPattern.test(data) ? data : data.split('/').reverse().join('-'));
-  return Number.isNaN(d.getTime());
+  const ano = Number(match[1]);
+  const mes = Number(match[2]);
+  const dia = Number(match[3]);
+
+  if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return true;
+
+  const d = new Date(Date.UTC(ano, mes - 1, dia));
+  return (
+    Number.isNaN(d.getTime()) ||
+    d.getUTCFullYear() !== ano ||
+    d.getUTCMonth() + 1 !== mes ||
+    d.getUTCDate() !== dia
+  );
 }
 
 /**
@@ -108,3 +119,4 @@ module.exports = {
   validarCriacaoComprovante,
   validarAtualizacaoComprovante,
 };
+

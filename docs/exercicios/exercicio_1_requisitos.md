@@ -82,7 +82,7 @@ A elicitação de requisitos do projeto Theatrum foi conduzida através de uma a
 |---|:---:|---|
 | **Must Have (Obrigatório)** | **RF01, RF02, RF03, RF04, RF05, RF06, RF08, RF10, RF11, RF12, RF13, RF14, RF15** | Essencial para o funcionamento do sistema contratado: divulgação de espetáculos, orientação de público via mapa, venda de ingressos, downloads para curadores, linha do tempo da companhia e segurança total em compliance com a LGPD. |
 | **Should Have (Importante)** | **RF07, RF09, RF16** | Agrega valor competitivo e institucional direto: vitrine de projetos futuros na Home, triagem de parcerias recebidas e canal de propagandas da companhia. |
-| **Could Have (Desejável) [Entregue no MVP]** | **RF17** | Comprovantes de pagamento de produções: agrega conveniência de gestão interna e prestação de contas de editais. Entregue integralmente via TDD (Red-Green-Refactor) com 30 novos testes automatizados e proteção de sigilo financeiro (HTTP 403). |
+| **Could Have (Desejável) [Entregue no MVP]** | **RF17** | Comprovantes de pagamento de produções: agrega conveniência de gestão interna e prestação de contas de editais. Entregue integralmente via TDD (Red-Green-Refactor) com 41 novos testes automatizados e proteção de sigilo financeiro (HTTP 403). |
 | **Won't Have (Postergado)** | **RF18** | Interatividade do espetáculo *Quarto do Joca*: postergado para 2027 por depender de assets de arte e animações autorais ainda em desenvolvimento. |
 
 ---
@@ -210,12 +210,12 @@ Cenário: Redefinição de senha através de token temporário
 
 #### [US07] — Gestão de Comprovantes e Prestação de Contas (RF17)
 * **Como** administrador financeiro / produtor da companhia,  
-* **Quero** cadastrar notas fiscais, recibos e comprovantes anexando arquivos (PDF/imagens) com valor, data e categoria, associando-os opcionalmente a peças e colaboradores,  
+* **Quero** cadastrar notas fiscais, recibos e comprovantes anexando arquivos (PDF/imagens) com título, descrição opcional, valor, data (`dataComprovante`) e categoria, associando-os opcionalmente a peças e colaboradores,  
 * **Para que** eu mantenha a prestação de contas de editais culturais (ex: Lei Paulo Gustavo, SESC) organizada e protegida sob sigilo financeiro.
 ```gherkin
 Cenário: Cadastro e consulta sigilosa de comprovante financeiro
   Dado que o administrador está autenticado no painel de controle
-  Quando ele envia um comprovante com descrição, valor, data, categoria e anexo válido (PDF, PNG, JPG, WebP)
+  Quando ele envia um comprovante com título, valor, data (YYYY-MM-DD), categoria e anexo válido (PDF, PNG, JPG, WebP)
   Então o comprovante é persistido e associado à peça e ao colaborador selecionados
   E a rota pública de arquivos bloqueia qualquer acesso direto não autorizado com status HTTP 403 Forbidden
   E apenas administradores com token JWT válido conseguem visualizar e baixar o documento

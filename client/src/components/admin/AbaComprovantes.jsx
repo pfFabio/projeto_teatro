@@ -98,6 +98,7 @@ export default function AbaComprovantes({ pecas = [], colaboradores = [] }) {
       const blob = new Blob([res.data], { type: comp.mimetype || 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       window.open(url, '_blank', 'noopener,noreferrer');
+      setTimeout(() => window.URL.revokeObjectURL?.(url), 60000);
     } catch (err) {
       alert('Erro ao abrir o arquivo do comprovante.');
     } finally {
@@ -141,7 +142,7 @@ export default function AbaComprovantes({ pecas = [], colaboradores = [] }) {
         <input
           type="text"
           className="campo-input"
-          placeholder="🔍 Buscar por título, descrição ou fornecedor..."
+          placeholder="🔍 Buscar por título ou descrição..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           style={{ minWidth: '240px', flex: '1' }}
@@ -311,3 +312,4 @@ export default function AbaComprovantes({ pecas = [], colaboradores = [] }) {
     </div>
   );
 }
+

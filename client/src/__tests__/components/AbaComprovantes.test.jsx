@@ -124,4 +124,55 @@ describe('AbaComprovantes Component', () => {
       expect(comprovantesAPI.baixarArquivo).toHaveBeenCalledWith(1);
     });
   });
+
+  test('deve filtrar a listagem ao selecionar uma Peça ou uma Categoria', async () => {
+    // Arrange
+    const user = userEvent.setup();
+    render(
+      <AbaComprovantes pecas={mockPecas} colaboradores={mockColabs} />
+    );
+    await screen.findByText('Combustível Van Turnê');
+
+    // Act — Seleciona Peça 1 e Categoria TRANSPORTE
+    const selects = screen.getAllByRole('combobox');
+    await user.selectOptions(selects[0], '1');
+    await user.selectOptions(selects[1], 'TRANSPORTE');
+
+    // Assert
+    await waitFor(() => {
+      expect(comprovantesAPI.listar).toHaveBeenCalledWith(
+        expect.objectContaining({ pecaId: '1', categoria: 'TRANSPORTE' })
+      );
+    });
+  });
+
+  test('deve enviar pecaId e colaboradorId vazios no FormData ao desvincular na edição', async () => {
+    // Arrange
+    const user = userEvent.setup();
+    comprovantesAPI.atualizar.mockResolvedValue({ data: {} });
+    render(
+      <AbaComprovantes pecas={mockPecas} colaboradores={mockColabs} />
+    );
+
+    const botoesEditar = await screen.findAllByTitle('Editar Comprovante');
+    await user.click(botoesEditar[0]);
+
+    // Act — Desvincula peça (seleciona "Despesa Geral da Companhia" = "") e salva
+    const selectPecaModal = screen.getByLabelText(/espetáculo relacionado/i);
+    await user.selectOptions(selectPecaModal, '');
+
+    const btnSalvar = screen.getByRole('button', { name: /salvar alterações/i });
+    await user.click(btnSalvar);
+
+    // Assert
+    await waitFor(() => {
+      expect(comprovantesAPI.atualizar).toHaveBeenCalledTimes(1);
+    });
+    const [idChamado, formDataEnviado] = comprovantesAPI.atualizar.mock.calls[0];
+    expect(idChamado).toBe(1);
+    expect(formDataEnviado.has('pecaId')).toBe(true);
+    expect(formDataEnviado.get('pecaId')).toBe('');
+    expect(formDataEnviado.has('colaboradorId')).toBe(true);
+    expect(formDataEnviado.get('colaboradorId')).toBe('');
+  });
 });

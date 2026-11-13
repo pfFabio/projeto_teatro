@@ -200,15 +200,19 @@ classDiagram
 
     class Comprovante {
         +Int id
-        +Int pecaId
-        +Int colaboradorId
+        +String titulo
         +String descricao
         +Float valor
-        +String data
+        +String dataComprovante
         +String categoria
         +String arquivoUrl
-        +DateTime createdAt
-        +DateTime updatedAt
+        +String arquivoNome
+        +String mimetype
+        +Int tamanho
+        +Int pecaId
+        +Int colaboradorId
+        +DateTime criadoEm
+        +DateTime atualizadoEm
     }
 
     Peca "1" --> "*" FotoPeca : possui
@@ -381,11 +385,15 @@ erDiagram
         int id PK
         int pecaId FK
         int colaboradorId FK
+        string titulo
         string descricao
         float valor
-        string data
+        string dataComprovante
         string categoria
         string arquivoUrl
+        string arquivoNome
+        string mimetype
+        int tamanho
     }
 
     PECAS ||--o{ FOTOS_PECAS : possui
@@ -494,15 +502,19 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |
 |---|---|:---:|:---:|---|
 | `id` | SERIAL / INT | Não | PK | Identificador único do comprovante financeiro |
+| `titulo` | VARCHAR(150) | Não | — | Título identificador do recibo ou nota fiscal |
+| `descricao` | TEXT | Sim | — | Observações adicionais, fornecedor ou número da nota |
+| `valor` | DOUBLE PRECISION | Não | — | Valor monetário em reais (ex: 1250.00) |
+| `dataComprovante` | VARCHAR(20) | Não | — | Data da despesa ou emissão (formato ISO YYYY-MM-DD) |
+| `categoria` | VARCHAR(50) | Não | — | Categoria contábil (`TRANSPORTE`, `ALIMENTACAO`, `CACHE`, `CENOGRAFIA_FIGURINO`, `DIVULGACAO`, `INFRAESTRUTURA`, `OUTROS`) |
+| `arquivoUrl` | TEXT | Não | — | Caminho do arquivo seguro (prefixo `comprovante-`, bloqueado contra acesso público via HTTP 403) |
+| `arquivoNome` | VARCHAR(150) | Sim | — | Nome original do arquivo enviado no upload |
+| `mimetype` | VARCHAR(80) | Sim | — | Tipo MIME do anexo (`application/pdf`, `image/jpeg`, `image/png`, `image/webp`) |
+| `tamanho` | INT | Sim | — | Tamanho do arquivo em bytes (limite de 10 MB) |
 | `pecaId` | INT | Sim | FK | Vínculo opcional com a obra teatral (`ON DELETE SET NULL`) |
 | `colaboradorId` | INT | Sim | FK | Vínculo opcional com o prestador/artista (`ON DELETE SET NULL`) |
-| `descricao` | VARCHAR(150) | Não | — | Descrição sucinta da despesa/recibo |
-| `valor` | DOUBLE PRECISION | Não | — | Valor monetário em reais (ex: 1250.00) |
-| `data` | VARCHAR(20) | Não | — | Data da despesa ou emissão (formato YYYY-MM-DD) |
-| `categoria` | VARCHAR(50) | Não | — | Categoria contábil (`CACHE`, `TRANSPORTE`, `ALIMENTACAO`, `CENOGRAFIA`, `FIGURINO`, `EQUIPAMENTO`, `MARKETING`, `OUTROS`) |
-| `arquivoUrl` | TEXT | Não | — | Caminho do arquivo seguro (prefixo `comprovante-`, bloqueado contra acesso público via HTTP 403) |
-| `createdAt` | TIMESTAMP | Não | — | Timestamp do registro no sistema |
-| `updatedAt` | TIMESTAMP | Não | — | Timestamp da última modificação |
+| `criadoEm` | TIMESTAMP | Não | — | Timestamp do registro no sistema |
+| `atualizadoEm` | TIMESTAMP | Não | — | Timestamp da última modificação |
 
 ---
 

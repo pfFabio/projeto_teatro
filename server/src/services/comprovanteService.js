@@ -114,27 +114,34 @@ class ComprovanteService {
     arquivo.fieldname = 'comprovante';
     const arquivoSalvo = await FileService.salvarArquivo(arquivo);
 
-    const novo = await prisma.comprovante.create({
-      data: {
-        titulo: dados.titulo.trim(),
-        descricao: dados.descricao ? dados.descricao.trim() : null,
-        valor: Number(dados.valor),
-        dataComprovante: dados.dataComprovante.trim(),
-        categoria: dados.categoria || 'OUTROS',
-        arquivoUrl: arquivoSalvo.url,
-        arquivoNome: arquivo.originalname || arquivoSalvo.nomeArquivo,
-        mimetype: arquivoSalvo.mimetype,
-        tamanho: arquivoSalvo.tamanho,
-        pecaId: dados.pecaId ? Number(dados.pecaId) : null,
-        colaboradorId: dados.colaboradorId ? Number(dados.colaboradorId) : null,
-      },
-      include: {
-        peca: { select: { id: true, titulo: true } },
-        colaborador: { select: { id: true, nome: true, nomeArtistico: true, funcao: true } },
-      },
-    });
+    try {
+      const novo = await prisma.comprovante.create({
+        data: {
+          titulo: dados.titulo.trim(),
+          descricao: dados.descricao ? dados.descricao.trim() : null,
+          valor: Number(dados.valor),
+          dataComprovante: dados.dataComprovante.trim(),
+          categoria: dados.categoria || 'OUTROS',
+          arquivoUrl: arquivoSalvo.url,
+          arquivoNome: arquivo.originalname || arquivoSalvo.nomeArquivo,
+          mimetype: arquivoSalvo.mimetype,
+          tamanho: arquivoSalvo.tamanho,
+          pecaId: dados.pecaId ? Number(dados.pecaId) : null,
+          colaboradorId: dados.colaboradorId ? Number(dados.colaboradorId) : null,
+        },
+        include: {
+          peca: { select: { id: true, titulo: true } },
+          colaborador: { select: { id: true, nome: true, nomeArtistico: true, funcao: true } },
+        },
+      });
 
-    return novo;
+      return novo;
+    } catch (erro) {
+      if (arquivoSalvo?.url) {
+        await FileService.removerArquivo(arquivoSalvo.url);
+      }
+      throw erro;
+    }
   }
 
   /**
@@ -158,30 +165,37 @@ class ComprovanteService {
     if (dados.pecaId !== undefined) dataUpdate.pecaId = dados.pecaId ? Number(dados.pecaId) : null;
     if (dados.colaboradorId !== undefined) dataUpdate.colaboradorId = dados.colaboradorId ? Number(dados.colaboradorId) : null;
 
+    let arquivoSalvo = null;
     if (novoArquivo) {
       novoArquivo.fieldname = 'comprovante';
-      const arquivoSalvo = await FileService.salvarArquivo(novoArquivo);
+      arquivoSalvo = await FileService.salvarArquivo(novoArquivo);
       dataUpdate.arquivoUrl = arquivoSalvo.url;
       dataUpdate.arquivoNome = novoArquivo.originalname || arquivoSalvo.nomeArquivo;
       dataUpdate.mimetype = arquivoSalvo.mimetype;
       dataUpdate.tamanho = arquivoSalvo.tamanho;
-
-      // Remove arquivo anterior
-      if (comprovanteExistente.arquivoUrl) {
-        await FileService.removerArquivo(comprovanteExistente.arquivoUrl);
-      }
     }
 
-    const atualizado = await prisma.comprovante.update({
-      where: { id: Number(id) },
-      data: dataUpdate,
-      include: {
-        peca: { select: { id: true, titulo: true } },
-        colaborador: { select: { id: true, nome: true, nomeArtistico: true, funcao: true } },
-      },
-    });
+    try {
+      const atualizado = await prisma.comprovante.update({
+        where: { id: Number(id) },
+        data: dataUpdate,
+        include: {
+          peca: { select: { id: true, titulo: true } },
+          colaborador: { select: { id: true, nome: true, nomeArtistico: true, funcao: true } },
+        },
+      });
 
-    return atualizado;
+      if (arquivoSalvo && comprovanteExistente.arquivoUrl) {
+        await FileService.removerArquivo(comprovanteExistente.arquivoUrl);
+      }
+
+      return atualizado;
+    } catch (erro) {
+      if (arquivoSalvo?.url) {
+        await FileService.removerArquivo(arquivoSalvo.url);
+      }
+      throw erro;
+    }
   }
 
   /**

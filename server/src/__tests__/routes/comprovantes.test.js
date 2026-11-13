@@ -62,6 +62,15 @@ describe('Rotas de Comprovantes (/api/comprovantes)', () => {
       expect(res.status).toBe(403);
       expect(res.body.mensagem).toMatch(/sigiloso|restrito|comprovante/i);
     });
+
+    test('deve bloquear acesso direto em /uploads mesmo com variação de caixa alta (Comprovante-*) (403)', async () => {
+      // Act
+      const res = await request(app).get('/uploads/Comprovante-Maiusculo-123456.pdf');
+
+      // Assert
+      expect(res.status).toBe(403);
+      expect(res.body.erro).toBe(true);
+    });
   });
 
   describe('GET /api/comprovantes', () => {
@@ -180,6 +189,26 @@ describe('Rotas de Comprovantes (/api/comprovantes)', () => {
       expect(res.body.id).toBe(10);
       expect(ComprovanteService.criar).toHaveBeenCalled();
     });
+
+    test('deve rejeitar upload de arquivo com formato não permitido (.txt / .mp4) retornando 400', async () => {
+      // Act
+      const res = await request(app)
+        .post('/api/comprovantes')
+        .set('Authorization', `Bearer ${tokenAdmin}`)
+        .field('titulo', 'Tentativa de Arquivo Inválido')
+        .field('valor', '100.00')
+        .field('dataComprovante', '2026-10-18')
+        .field('categoria', 'OUTROS')
+        .attach('arquivo', Buffer.from('conteudo texto'), {
+          filename: 'malicioso.txt',
+          contentType: 'text/plain',
+        });
+
+      // Assert
+      expect(res.status).toBe(400);
+      expect(res.body.erro).toBe(true);
+      expect(ComprovanteService.criar).not.toHaveBeenCalled();
+    });
   });
 
   describe('PUT /api/comprovantes/:id', () => {
@@ -221,3 +250,4 @@ describe('Rotas de Comprovantes (/api/comprovantes)', () => {
     });
   });
 });
+

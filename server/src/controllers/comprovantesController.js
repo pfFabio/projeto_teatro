@@ -32,8 +32,9 @@ async function buscarComprovante(req, res, next) {
 async function baixarArquivoComprovante(req, res, next) {
   try {
     const { buffer, mimetype, nomeOriginal } = await ComprovanteService.obterArquivo(req.params.id);
+    const nomeCodificado = encodeURIComponent(nomeOriginal);
     res.setHeader('Content-Type', mimetype);
-    res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(nomeOriginal)}"`);
+    res.setHeader('Content-Disposition', `inline; filename="${nomeCodificado}"; filename*=UTF-8''${nomeCodificado}`);
     res.setHeader('Cache-Control', 'private, no-store');
     res.send(buffer);
   } catch (erro) {
@@ -76,3 +77,4 @@ module.exports = {
   atualizarComprovante,
   deletarComprovante,
 };
+

@@ -84,6 +84,14 @@ describe('Validador de Comprovantes (comprovanteValidator)', () => {
       expect(validarCriacaoComprovante({ ...dadosValidos, dataComprovante: 'data-errada' }, arquivoValido).valido).toBe(false);
     });
 
+    test('deve rejeitar datas inexistentes no calendário (rollover) e formatos fora do padrão ISO YYYY-MM-DD', () => {
+      // Arrange & Act & Assert
+      expect(validarCriacaoComprovante({ ...dadosValidos, dataComprovante: '2026-02-31' }, arquivoValido).valido).toBe(false);
+      expect(validarCriacaoComprovante({ ...dadosValidos, dataComprovante: '2026-04-31' }, arquivoValido).valido).toBe(false);
+      expect(validarCriacaoComprovante({ ...dadosValidos, dataComprovante: '2026-13-01' }, arquivoValido).valido).toBe(false);
+      expect(validarCriacaoComprovante({ ...dadosValidos, dataComprovante: '10/11/2026' }, arquivoValido).valido).toBe(false);
+    });
+
     test('deve rejeitar categoria não cadastrada', () => {
       // Arrange
       const dados = { ...dadosValidos, categoria: 'CATEGORIA_INEXISTENTE' };
@@ -155,3 +163,4 @@ describe('Validador de Comprovantes (comprovanteValidator)', () => {
     });
   });
 });
+

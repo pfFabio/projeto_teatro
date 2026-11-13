@@ -28,3 +28,4 @@ router.put('/:id', validateId('id'), uploadComprovante.single('arquivo'), atuali
 router.delete('/:id', validateId('id'), deletarComprovante);
 
 module.exports = router;
+

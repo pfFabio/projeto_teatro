@@ -175,6 +175,108 @@ describe('ComprovanteService', () => {
       await expect(ComprovanteService.criar(dadosInvalidos, arquivoMock)).rejects.toThrow();
       expect(FileService.salvarArquivo).not.toHaveBeenCalled();
     });
+
+    test('deve remover o arquivo recém-salvo caso prisma.comprovante.create falhe (prevenção de órfãos)', async () => {
+      // Arrange
+      FileService.salvarArquivo.mockResolvedValue({
+        nomeArquivo: 'comprovante-orfao.pdf',
+        url: '/uploads/comprovante-orfao.pdf',
+        mimetype: 'application/pdf',
+        tamanho: 50000,
+      });
+      prisma.comprovante.create.mockRejectedValue(new Error('Falha no banco'));
+
+      // Act & Assert
+      await expect(
+        ComprovanteService.criar(
+          {
+            titulo: 'Recibo Teste',
+            valor: '100.00',
+            dataComprovante: '2026-10-12',
+            categoria: 'ALIMENTACAO',
+          },
+          arquivoMock
+        )
+      ).rejects.toThrow('Falha no banco');
+
+      expect(FileService.removerArquivo).toHaveBeenCalledWith('/uploads/comprovante-orfao.pdf');
+    });
+  });
+
+  describe('atualizar', () => {
+    test('deve permitir desvincular pecaId e colaboradorId quando enviados como string vazia e só remover anexo antigo após update', async () => {
+      // Arrange
+      prisma.comprovante.findUnique.mockResolvedValue({
+        ...mockComprovante,
+        pecaId: 1,
+        colaboradorId: 2,
+        arquivoUrl: '/uploads/comprovante-antigo.pdf',
+      });
+      FileService.salvarArquivo.mockResolvedValue({
+        nomeArquivo: 'comprovante-novo.pdf',
+        url: '/uploads/comprovante-novo.pdf',
+        mimetype: 'application/pdf',
+        tamanho: 60000,
+      });
+      prisma.comprovante.update.mockResolvedValue({
+        ...mockComprovante,
+        pecaId: null,
+        colaboradorId: null,
+        arquivoUrl: '/uploads/comprovante-novo.pdf',
+      });
+
+      const novoArq = {
+        originalname: 'novo.pdf',
+        mimetype: 'application/pdf',
+        size: 60000,
+        buffer: Buffer.from('novo'),
+      };
+
+      // Act
+      await ComprovanteService.atualizar(1, { pecaId: '', colaboradorId: '' }, novoArq);
+
+      // Assert
+      expect(prisma.comprovante.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            pecaId: null,
+            colaboradorId: null,
+            arquivoUrl: '/uploads/comprovante-novo.pdf',
+          }),
+        })
+      );
+      expect(FileService.removerArquivo).toHaveBeenCalledWith('/uploads/comprovante-antigo.pdf');
+    });
+
+    test('não deve apagar o arquivo antigo e deve reverter o novo caso prisma.comprovante.update falhe', async () => {
+      // Arrange
+      prisma.comprovante.findUnique.mockResolvedValue({
+        ...mockComprovante,
+        arquivoUrl: '/uploads/comprovante-antigo.pdf',
+      });
+      FileService.salvarArquivo.mockResolvedValue({
+        nomeArquivo: 'comprovante-novo-falha.pdf',
+        url: '/uploads/comprovante-novo-falha.pdf',
+        mimetype: 'application/pdf',
+        tamanho: 60000,
+      });
+      prisma.comprovante.update.mockRejectedValue(new Error('Erro de update no banco'));
+
+      const novoArq = {
+        originalname: 'novo.pdf',
+        mimetype: 'application/pdf',
+        size: 60000,
+        buffer: Buffer.from('novo'),
+      };
+
+      // Act & Assert
+      await expect(
+        ComprovanteService.atualizar(1, { titulo: 'Atualizado' }, novoArq)
+      ).rejects.toThrow('Erro de update no banco');
+
+      expect(FileService.removerArquivo).toHaveBeenCalledWith('/uploads/comprovante-novo-falha.pdf');
+      expect(FileService.removerArquivo).not.toHaveBeenCalledWith('/uploads/comprovante-antigo.pdf');
+    });
   });
 
   describe('obterArquivo', () => {
@@ -218,3 +320,4 @@ describe('ComprovanteService', () => {
     });
   });
 });
+

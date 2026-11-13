@@ -613,42 +613,17 @@ async function main() {
   await memoriaService.listar(); // Auto-popula itens padrão da história da Cia se não existirem
   console.log(`✅ Memória da Companhia inicializada com marco histórico 2012-2026`);
 
-  // =========================================================================
-  // 10. Comprovantes de Despesa Iniciais (Prestação de Contas — Ata #01 e #02)
-  // =========================================================================
-  const totalComprovantes = await prisma.comprovante.count();
-  if (totalComprovantes === 0 && pecaJanela) {
-    await prisma.comprovante.create({
-      data: {
-        titulo: 'Locação de Equipamentos e Rider de Luz',
-        descricao: 'Rider técnico de iluminação e som para temporada no Centro de Artes da UFF',
-        valor: 3450.0,
-        dataComprovante: '2026-09-02',
-        categoria: 'INFRAESTRUTURA',
-        arquivoUrl: '/uploads/RIDER_TECNICO_Da_Janela_o_Mar.pdf',
-        arquivoNome: 'RIDER_TECNICO_Da_Janela_o_Mar.pdf',
-        mimetype: 'application/pdf',
-        tamanho: 3375347,
-        pecaId: pecaJanela.id,
+  // Limpa eventuais comprovantes de demonstração que apontavam para PDFs públicos do press kit
+  await prisma.comprovante.deleteMany({
+    where: {
+      arquivoUrl: {
+        in: [
+          '/uploads/RIDER_TECNICO_Da_Janela_o_Mar.pdf',
+          '/uploads/PROJETO_Da_Janela_o_Mar.pdf',
+        ],
       },
-    });
-
-    await prisma.comprovante.create({
-      data: {
-        titulo: 'Dossiê e Registro de Encenação Cênica',
-        descricao: 'Comprovação de execução cultural junto ao Edital Fluxos Fluminenses da SECEC/RJ',
-        valor: 1800.0,
-        dataComprovante: '2026-09-15',
-        categoria: 'DIVULGACAO',
-        arquivoUrl: '/uploads/PROJETO_Da_Janela_o_Mar.pdf',
-        arquivoNome: 'PROJETO_Da_Janela_o_Mar.pdf',
-        mimetype: 'application/pdf',
-        tamanho: 6505921,
-        pecaId: pecaJanela.id,
-      },
-    });
-    console.log('✅ Comprovantes de despesa e prestação de contas iniciais cadastrados');
-  }
+    },
+  });
 
   console.log('\n🎭 Seed concluído com total sucesso!');
   console.log('   Admin: admin / admin123 ou admin@theatrum.com\n');
