@@ -211,6 +211,42 @@ describe('Rotas de Comprovantes (/api/comprovantes)', () => {
     });
   });
 
+  describe('POST /api/comprovantes/extrair (Extração Assistida por IA)', () => {
+    test('deve rejeitar extração sem token de autenticação (401)', async () => {
+      const res = await request(app).post('/api/comprovantes/extrair');
+      expect(res.status).toBe(401);
+    });
+
+    test('deve rejeitar extração para usuário não admin (403)', async () => {
+      const res = await request(app)
+        .post('/api/comprovantes/extrair')
+        .set('Authorization', `Bearer ${tokenComum}`);
+      expect(res.status).toBe(403);
+    });
+
+    test('deve rejeitar extração quando nenhum arquivo é enviado (400)', async () => {
+      const res = await request(app)
+        .post('/api/comprovantes/extrair')
+        .set('Authorization', `Bearer ${tokenAdmin}`);
+      expect(res.status).toBe(400);
+      expect(res.body.mensagem).toMatch(/arquivo/i);
+    });
+
+    test('deve extrair dados com scores de confiança quando admin envia PDF válido (200)', async () => {
+      const res = await request(app)
+        .post('/api/comprovantes/extrair')
+        .set('Authorization', `Bearer ${tokenAdmin}`)
+        .attach('arquivo', Buffer.from('%PDF-1.4 recibo de van'), 'recibo_van.pdf');
+
+      expect(res.status).toBe(200);
+      expect(res.body.sucesso).toBe(true);
+      expect(res.body.dados).toHaveProperty('titulo');
+      expect(res.body.dados).toHaveProperty('valor');
+      expect(res.body.dados).toHaveProperty('categoria');
+      expect(res.body.confianca).toHaveProperty('valor');
+    });
+  });
+
   describe('PUT /api/comprovantes/:id', () => {
     test('deve atualizar comprovante com sucesso (200)', async () => {
       // Arrange

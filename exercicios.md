@@ -548,6 +548,8 @@ classDiagram
         +Int tamanho
         +Int pecaId
         +Int colaboradorId
+        +Boolean extraidoPorIA
+        +String revisadoPor
         +DateTime criadoEm
         +DateTime atualizadoEm
     }
@@ -731,6 +733,8 @@ erDiagram
         string arquivoNome
         string mimetype
         int tamanho
+        boolean extraidoPorIA
+        string revisadoPor
     }
 
     PECAS ||--o{ FOTOS_PECAS : possui
@@ -850,6 +854,8 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | `tamanho` | INT | Sim | — | Tamanho do arquivo em bytes (limite de 10 MB) |
 | `pecaId` | INT | Sim | FK | Vínculo opcional com a obra teatral (`ON DELETE SET NULL`) |
 | `colaboradorId` | INT | Sim | FK | Vínculo opcional com o prestador/artista (`ON DELETE SET NULL`) |
+| `extraidoPorIA` | BOOLEAN | Não | — | Flag indicativa de sugestão prévia por modelo de IA |
+| `revisadoPor` | VARCHAR(120) | Sim | — | Identificador do administrador que validou a despesa |
 | `criadoEm` | TIMESTAMP | Não | — | Timestamp do registro no sistema |
 | `atualizadoEm` | TIMESTAMP | Não | — | Timestamp da última modificação |
 
@@ -969,8 +975,8 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
    │   ├── 1.4.2 CRUDs e endpoints com validação defensiva
    │   └── 1.4.3 Proteção LGPD e persistência binária contra disco efêmero
    ├── 1.5 Qualidade e Testes Automatizados
-   │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (131 testes)
-   │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (66 testes)
+   │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (139 testes)
+   │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (69 testes)
    └── 1.6 DevOps, CI/CD e Implantação
        ├── 1.6.1 Pipeline GitHub Actions automatizado (.github/workflows/deploy.yml)
        ├── 1.6.2 Deploy contínuo no GitHub Pages (Frontend)
@@ -986,6 +992,7 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
 | **Sprint 3** | 25/10 a 31/10/2026 | Novas Experiências Públicas | Downloads Técnicos (Press Kit) em PDF; página Memória com linha do tempo 2012–2026; vitrine de Projetos Futuros; formulário público "Tem uma Ideia?". |
 | **Sprint 4** | 01/11 a 09/11/2026 | Estabilização, Testes e Go-Live | Dupla persistência binária no PostgreSQL; resolução CDN de assets estáticos; aprovação dos 156 testes automatizados e deploy em produção. |
 | **Sprint 5** | 10/11/2026 | Módulo de Comprovantes & TDD | Desenvolvimento orientado por testes (TDD Red-Green-Refactor) do Módulo de Comprovantes de Despesa (RF17); blindagem contra download público não autorizado (HTTP 403); aprovação total dos 197 testes automatizados. |
+| **Sprint 6** | 13/11/2026 | IA Assistida & Human-in-the-Loop | Extração inteligente de comprovantes no 1º passo do formulário com IA multimodal (Gemini / Mock); cálculo de confiança por campo (<85% alerta para revisão); auditoria (`extraidoPorIA`, `revisadoPor`); expansão da suíte para 208 testes 100% aprovados. |
 
 ### 2.3 Estimativas com Planning Poker e Story Points
 A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o esforço relativo das histórias de usuário:
@@ -1024,7 +1031,7 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
 
 ### 4.2 Fluxo de Pull Requests com Code Review
 Toda alteração direcionada à branch estável `main` submete-se ao fluxo de revisão por pares (*Peer Code Review*) com checklist obrigatório:
-1. **Passagem sem falhas na suíte de testes:** Todos os 131 testes do backend (Jest) e 66 testes do frontend (Vitest) devem ser executados e aprovados (`197 passed`).
+1. **Passagem sem falhas na suíte de testes:** Todos os 139 testes do backend (Jest) e 69 testes do frontend (Vitest) devem ser executados e aprovados (`208 passed`).
 2. **Auditoria de Segurança e LGPD:** Verificação manual se novos campos sensíveis de colaboradores possuem projeção seletiva no service.
 3. **Padrão de Código:** Conformidade com Clean Code, ausência de logs residuais de depuração e tipagem correta de parâmetros.
 4. **Resolução de Conflitos:** Rebase ou merge limpo com a branch principal sem artefatos temporários no commit.
@@ -1046,6 +1053,7 @@ O fluxo de engenharia é orquestrado visualmente em um **Quadro Kanban no GitHub
 * **Sprint Review 3 (31/10):** Apresentação das novas telas ao stakeholder: Área de Downloads Técnicos e Linha do Tempo da Memória. Aprovado pelo diretor com elogios ao caráter profissional dos materiais para curadores.
 * **Sprint 4 — Estabilização Final (09/11):** Sincronização dos binários de imagem oficiais no seed, aprovação dos testes unitários/integrados e publicação da versão estável.
 * **Sprint Review 5 — Módulo de Comprovantes e TDD (10/11):** Implementação do RF17 sob metodologia estrita TDD (Red-Green-Refactor). Adição de 41 novos testes automatizados (12 de validação, 12 de serviço, 12 de rotas/segurança e 5 de interface React). Total expandido para 197 testes 100% aprovados.
+* **Sprint Review 6 — Extração Assistida por IA & Human-in-the-Loop (13/11):** Redesenho da UX do formulário com upload de comprovantes no 1º passo; extração automática via IA multimodal com pontuação de confiança individual por campo; destaques visuais para valores com confiança < 85%; fallback resiliente e campos de auditoria no banco (`extraidoPorIA`, `revisadoPor`). Criação de 11 novos testes automatizados (4 de serviço IA, 4 de rota/segurança e 3 de componente React). Total final consolidado em 208 testes 100% aprovados.
 
 ---
 
@@ -1062,12 +1070,12 @@ Todas as funcionalidades classificadas como **Must Have**, **Should Have** e o *
 5. **Canal Público "Tem uma Ideia?" (`ideiaController.js`, `AdminPage.jsx`):** Formulário público com consentimento LGPD, proteção anti-spam (*rate limiting*) e caixa de entrada administrativa com integração direta ao WhatsApp.
 6. **Gestão de Colaboradores Blindada pela LGPD (`colaboradorService.js`):** Cadastro estendido em 23 campos (5 abas) com projeção seletiva em runtime que oculta dados pessoais e de saúde nas rotas públicas.
 7. **Segurança e Governança Administrativa (`authService.js`):** Autenticação JWT com suporte a identificador `admin` ou e-mail, alteração de senha autenticada e recuperação de acesso via token temporário.
-8. **Gestão de Comprovantes e Prestação de Contas (`comprovanteService.js`, `AbaComprovantes.jsx` - RF17):** Módulo contábil completo desenvolvido com TDD para prestação de contas de editais (ex: Lei Paulo Gustavo). Permite upload de notas/recibos em PDF e imagem com categorização de despesas (`TRANSPORTE`, `ALIMENTACAO`, `CACHE`, `CENOGRAFIA_FIGURINO`, `DIVULGACAO`, `INFRAESTRUTURA`, `OUTROS`), totalizadores financeiros em tempo real e proteção contra vazamento (HTTP 403 em acessos diretos não autorizados).
+8. **Gestão de Comprovantes e Prestação de Contas (`comprovanteService.js`, `AbaComprovantes.jsx`, `ModalComprovanteForm.jsx` - RF17):** Módulo contábil completo desenvolvido com TDD para prestação de contas de editais (ex: Lei Paulo Gustavo). Permite upload de notas/recibos em PDF e imagem com categorização de despesas (`TRANSPORTE`, `ALIMENTACAO`, `CACHE`, `CENOGRAFIA_FIGURINO`, `DIVULGACAO`, `INFRAESTRUTURA`, `OUTROS`), totalizadores financeiros em tempo real e proteção contra vazamento (HTTP 403 em acessos diretos não autorizados). Conta com **leitura inteligente assistida por IA (Human-in-the-Loop)** posicionada no 1º passo do formulário, que sugere campos e níveis de confiança por atributo, preservando a autonomia do gestor para revisão obrigatória e gravando rastreabilidade de auditoria.
 
 ### 6.2 Princípios SOLID Aplicados
 1. **Single Responsibility Principle (SRP):** Cada arquivo possui uma responsabilidade única e delimitada. Por exemplo, `authValidator.js` valida parâmetros de entrada, `authController.js` trata a requisição HTTP e `authService.js` executa as operações de negócio e hashing criptográfico.
 2. **Open/Closed Principle (OCP):** A arquitetura de status de peças e filtros de linha do tempo aceita novos valores sem demandar reescrita das páginas base.
-3. **Dependency Inversion Principle (DIP):** O banco de dados é acessado através da camada abstrata do cliente Prisma, permitindo alternar de forma transparente entre SQLite em testes locais e PostgreSQL em nuvem.
+3. **Dependency Inversion Principle (DIP):** O banco de dados é acessado através da camada abstrata do cliente Prisma, permitindo alternar de forma transparente entre SQLite em testes locais e PostgreSQL em nuvem. Adicionalmente, o motor de extração inteligente de comprovantes depende da interface abstrata `IComprovanteExtractor`, permitindo plugar `GeminiExtractorProvider`, `MockExtractorProvider` (para suítes de testes sem chave externa) ou qualquer outro provedor futuro sem modificar os controllers.
 4. **Interface Segregation Principle (ISP):** Os contratos de API retornam modelos enxutos de DTO para o cliente público, evitando trafegar dados não consumidos pelo espectador.
 
 ### 6.3 Padrões de Projeto (Design Patterns) Implementados
@@ -1075,7 +1083,8 @@ Todas as funcionalidades classificadas como **Must Have**, **Should Have** e o *
 * **Chain of Responsibility (GoF Comportamental):** Estrutura do pipeline de middlewares do Express (`helmet` → `cors` → `rateLimit` → `auth` → `validate` → `errorHandler`), onde cada elo da cadeia decide de forma isolada se processa, rejeita ou repassa a requisição HTTP.
 * **Data Projection / DTO Pattern (Arquitetural):** Implementado no `colaboradorService.js` e `pecaService.js`, projetando objetos seguros que suprimem seletivamente campos sensíveis em tempo de execução dependendo do perfil autenticado.
 * **Strategy / Adapter Dinâmico de Banco (GoF Estrutural):** Implementado no script `server/scripts/sync-db.js`, que detecta dinamicamente a variável `DATABASE_URL` no ambiente e comuta o provedor do schema Prisma entre SQLite e PostgreSQL sem intervenção manual no código.
-* **Resiliência e Fallback Canônico (Fault-Tolerant Pattern):** Implementado no frontend (`getMediaUrl` e `PECAS_OFICIAIS`), garantindo degradação suave com carregamento por CDN local caso a API em nuvem entre em estado de repouso (*cold start*).
+* **Resiliência e Fallback Canônico (Fault-Tolerant Pattern):** Implementado no frontend (`getMediaUrl` e `PECAS_OFICIAIS`), garantindo degradação suave com carregamento por CDN local caso a API em nuvem entre em estado de repouso (*cold start*). Também aplicado no upload com IA assistida: se a API externa ou timeout de 15s falhar, o arquivo é mantido e o formulário preserva o modo de preenchimento manual transparente.
+* **Factory / Strategy Pattern de Provedores de IA:** Implementado em `server/src/services/ai/index.js`, instanciando dinamicamente a implementação correta de extração conforme variáveis de ambiente (`AI_PROVIDER`) e desacoplando a regra de negócio da infraestrutura externa de LLM.
 
 ---
 
@@ -1086,8 +1095,8 @@ O pipeline automatizado do projeto foi implementado via **GitHub Actions** atrav
 ```mermaid
 flowchart TD
     Push["1. Git Push para branch 'main'"] --> Lint["2. Setup Node.js 22 & Prisma Client"]
-    Lint --> TestBack["3. Execução dos Testes Backend (Jest - 131 testes)"]
-    Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 66 testes)"]
+    Lint --> TestBack["3. Execução dos Testes Backend (Jest - 139 testes)"]
+    Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 69 testes)"]
     TestBack --> Build["5. Compilação do Frontend (Vite Build)"]
     TestFront --> Build
     Build --> DeployGH["6. Deploy Automático no GitHub Pages"]
@@ -1097,8 +1106,8 @@ flowchart TD
 * **Gatilho:** Qualquer commit integrado na branch `main` ou disparo manual via `workflow_dispatch`.
 * **Etapas do Pipeline:**
   1. Instalação de dependências (`npm ci`) e geração do cliente Prisma em ambiente isolado Node.js 22;
-  2. Execução da suite de **131 testes de integração no backend** (`jest --verbose`);
-  3. Execução da suite de **66 testes de componentes no frontend** (`vitest run`);
+  2. Execução da suite de **139 testes de integração no backend** (`jest --verbose`);
+  3. Execução da suite de **69 testes de componentes no frontend** (`vitest run`);
   4. Build de produção do Vite com geração dos pacotes estáticos otimizados em `client/dist/`;
   5. Publicação automatizada no GitHub Pages (`actions/deploy-pages@v4` / branch `gh-pages`) com entrega imediata via CDN.
 

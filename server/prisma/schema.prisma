@@ -313,6 +313,9 @@ model Comprovante {
   colaboradorId   Int?
   colaborador     Colaborador? @relation(fields: [colaboradorId], references: [id], onDelete: SetNull)
 
+  extraidoPorIA   Boolean      @default(false)
+  revisadoPor     String?
+
   criadoEm        DateTime     @default(now())
   atualizadoEm    DateTime     @default(now()) @updatedAt
 

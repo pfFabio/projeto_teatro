@@ -196,6 +196,9 @@ export const comprovantesAPI = {
   listar: (params) => api.get('/comprovantes', { params }),
   buscarPorId: (id) => api.get(`/comprovantes/${id}`),
   baixarArquivo: (id) => api.get(`/comprovantes/${id}/arquivo`, { responseType: 'blob' }),
+  extrairDados: (formData) => api.post('/comprovantes/extrair', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   criar: (formData) => api.post('/comprovantes', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),

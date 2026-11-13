@@ -15,11 +15,13 @@ const {
   criarComprovante,
   atualizarComprovante,
   deletarComprovante,
+  extrairDadosComprovante,
 } = require('../controllers/comprovantesController');
 
 // Todas as rotas de comprovantes exigem autenticação de Administrador
 router.use(autenticar, apenasAdmin);
 
+router.post('/extrair', uploadComprovante.single('arquivo'), extrairDadosComprovante);
 router.get('/', listarComprovantes);
 router.get('/:id', validateId('id'), buscarComprovante);
 router.get('/:id/arquivo', validateId('id'), baixarArquivoComprovante);

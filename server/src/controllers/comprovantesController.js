@@ -4,6 +4,36 @@
 // =============================================================================
 
 const ComprovanteService = require('../services/comprovanteService');
+const { obterExtratorIA } = require('../services/ai');
+const AppError = require('../errors/AppError');
+const logger = require('../lib/logger');
+
+async function extrairDadosComprovante(req, res, next) {
+  try {
+    if (!req.file) {
+      throw AppError.badRequest('Arquivo do comprovante é obrigatório para extração assistida.');
+    }
+
+    const extrator = obterExtratorIA();
+    try {
+      const resultado = await extrator.extrair(req.file);
+      return res.json({
+        sucesso: true,
+        ...resultado,
+      });
+    } catch (errIA) {
+      logger.warn('Falha na extração por IA, acionando fallback manual:', errIA.message);
+      return res.json({
+        sucesso: false,
+        mensagem: 'Não foi possível extrair os dados automaticamente. Prossiga com o preenchimento manual.',
+        fallbackManual: true,
+        dados: null,
+      });
+    }
+  } catch (erro) {
+    next(erro);
+  }
+}
 
 async function listarComprovantes(req, res, next) {
   try {
@@ -76,5 +106,6 @@ module.exports = {
   criarComprovante,
   atualizarComprovante,
   deletarComprovante,
+  extrairDadosComprovante,
 };
 

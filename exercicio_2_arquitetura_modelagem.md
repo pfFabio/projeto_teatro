@@ -211,6 +211,8 @@ classDiagram
         +Int tamanho
         +Int pecaId
         +Int colaboradorId
+        +Boolean extraidoPorIA
+        +String revisadoPor
         +DateTime criadoEm
         +DateTime atualizadoEm
     }
@@ -394,6 +396,8 @@ erDiagram
         string arquivoNome
         string mimetype
         int tamanho
+        boolean extraidoPorIA
+        string revisadoPor
     }
 
     PECAS ||--o{ FOTOS_PECAS : possui
@@ -513,6 +517,8 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | `tamanho` | INT | Sim | — | Tamanho do arquivo em bytes (limite de 10 MB) |
 | `pecaId` | INT | Sim | FK | Vínculo opcional com a obra teatral (`ON DELETE SET NULL`) |
 | `colaboradorId` | INT | Sim | FK | Vínculo opcional com o prestador/artista (`ON DELETE SET NULL`) |
+| `extraidoPorIA` | BOOLEAN | Não | — | Flag indicativa de sugestão prévia por modelo de IA |
+| `revisadoPor` | VARCHAR(120) | Sim | — | Identificador do administrador que validou a despesa |
 | `criadoEm` | TIMESTAMP | Não | — | Timestamp do registro no sistema |
 | `atualizadoEm` | TIMESTAMP | Não | — | Timestamp da última modificação |
 

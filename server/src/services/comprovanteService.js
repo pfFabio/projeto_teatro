@@ -128,6 +128,8 @@ class ComprovanteService {
           tamanho: arquivoSalvo.tamanho,
           pecaId: dados.pecaId ? Number(dados.pecaId) : null,
           colaboradorId: dados.colaboradorId ? Number(dados.colaboradorId) : null,
+          extraidoPorIA: Boolean(dados.extraidoPorIA),
+          revisadoPor: dados.revisadoPor ? String(dados.revisadoPor).trim() : null,
         },
         include: {
           peca: { select: { id: true, titulo: true } },
@@ -164,6 +166,8 @@ class ComprovanteService {
     if (dados.categoria !== undefined) dataUpdate.categoria = dados.categoria;
     if (dados.pecaId !== undefined) dataUpdate.pecaId = dados.pecaId ? Number(dados.pecaId) : null;
     if (dados.colaboradorId !== undefined) dataUpdate.colaboradorId = dados.colaboradorId ? Number(dados.colaboradorId) : null;
+    if (dados.extraidoPorIA !== undefined) dataUpdate.extraidoPorIA = Boolean(dados.extraidoPorIA);
+    if (dados.revisadoPor !== undefined) dataUpdate.revisadoPor = dados.revisadoPor ? String(dados.revisadoPor).trim() : null;
 
     let arquivoSalvo = null;
     if (novoArquivo) {

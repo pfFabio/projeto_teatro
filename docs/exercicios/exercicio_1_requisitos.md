@@ -219,6 +219,13 @@ Cenário: Cadastro e consulta sigilosa de comprovante financeiro
   Então o comprovante é persistido e associado à peça e ao colaborador selecionados
   E a rota pública de arquivos bloqueia qualquer acesso direto não autorizado com status HTTP 403 Forbidden
   E apenas administradores com token JWT válido conseguem visualizar e baixar o documento
+
+Cenário: Extração inteligente assistida por IA com revisão humana (Human-in-the-Loop)
+  Dado que o administrador anexa um documento fiscal no 1º passo do formulário de comprovante
+  Quando o sistema processa o anexo na API de visão computacional/LLM
+  Então os campos título, valor, data e categoria são pré-preenchidos automaticamente com scores de confiança
+  E campos com confiança inferior a 85% são destacados visualmente para revisão obrigatória
+  E o administrador pode livremente ajustar os dados antes de confirmar a persistência auditada
 ```
 
 ### 4.2 Comparativo: Product Backlog Inicial vs. Backlog Atual
@@ -234,7 +241,7 @@ Cenário: Cadastro e consulta sigilosa de comprovante financeiro
 | *Não previsto no início* | Botão dinâmico de compra de ingressos integrado com Sympla na Obra e na Agenda | 🟢 Entregue |
 | Login por e-mail hardcoded | Autenticação por login flexível (`admin`), recuperação de senha e troca de credencial | 🟢 Entregue |
 | Upload local em disco | Dupla persistência binária no PostgreSQL para tolerar o filesystem efêmero do Render | 🟢 Entregue |
-| Comprovantes de Despesa (RF17) | Módulo completo de Comprovantes com upload de notas/recibos (PDF/img), métricas por categoria, associação a peças/colaboradores e sigilo financeiro blindado (HTTP 403) | 🟢 Entregue |
+| Comprovantes de Despesa (RF17) | Módulo completo de Comprovantes com upload inicial, extração inteligente assistida por IA (Human-in-the-Loop), métricas por categoria, associação a peças/colaboradores e sigilo financeiro blindado (HTTP 403) | 🟢 Entregue |
 
 ---
 
