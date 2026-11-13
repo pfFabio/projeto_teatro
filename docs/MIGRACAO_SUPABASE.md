@@ -145,3 +145,4 @@ Após o deploy no Render:
    - Fotos e mídias das peças carregando normalmente;
    - Downloads técnicos em PDF abrindo;
    - Aba Comprovantes listando e baixando anexos.
+

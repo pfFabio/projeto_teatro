@@ -35,3 +35,7 @@ docs/referencias/process_audiobooks.py
 drive_page.html
 TEATRO.jpg
 t-rj-teatrogenerico_r.jpg
+backups/
+server/backups/
+*.dump
+*.sql
