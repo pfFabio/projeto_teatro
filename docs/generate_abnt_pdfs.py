@@ -49,15 +49,7 @@ def create_abnt_document():
     return doc
 
 def add_capa_abnt(doc, titulo_principal, subtitulo, exercicio_num=""):
-    # Brasão Univassouras
-    if os.path.exists(BRASAO_PATH):
-        p_logo = doc.add_paragraph()
-        p_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_logo.paragraph_format.space_after = Pt(16)
-        r_logo = p_logo.add_run()
-        r_logo.add_picture(BRASAO_PATH, width=Inches(3.2))
-
-    # Instituição
+    # Instituição (Sem imagem no topo, padrão ABNT textual limpo)
     p_inst = doc.add_paragraph()
     p_inst.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r_inst = p_inst.add_run(
@@ -68,7 +60,8 @@ def add_capa_abnt(doc, titulo_principal, subtitulo, exercicio_num=""):
     )
     r_inst.font.bold = True
     r_inst.font.size = Pt(12)
-    p_inst.paragraph_format.space_after = Pt(70)
+    p_inst.paragraph_format.space_before = Pt(20)
+    p_inst.paragraph_format.space_after = Pt(110)
 
     # Autor
     p_autor = doc.add_paragraph()
