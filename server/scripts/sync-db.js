@@ -36,12 +36,12 @@ const isSqlite = databaseUrl.startsWith('file:');
 const { execSync } = require('child_process');
 
 let changed = false;
-if (isPostgres && schema.includes('provider = "sqlite"')) {
+if (isPostgres && /provider\s*=\s*"sqlite"/.test(schema)) {
   schema = schema.replace(/provider\s*=\s*"sqlite"/, 'provider = "postgresql"');
   fs.writeFileSync(schemaPath, schema, 'utf8');
-  console.log('🔄 [Prisma] Provider ajustado para "postgresql" (Render / Produção)');
+  console.log('🔄 [Prisma] Provider ajustado para "postgresql" (Supabase / Render)');
   changed = true;
-} else if (isSqlite && schema.includes('provider = "postgresql"')) {
+} else if (isSqlite && /provider\s*=\s*"postgresql"/.test(schema)) {
   schema = schema.replace(/provider\s*=\s*"postgresql"/, 'provider = "sqlite"');
   fs.writeFileSync(schemaPath, schema, 'utf8');
   console.log('🔄 [Prisma] Provider ajustado para "sqlite" (Desenvolvimento Local)');
