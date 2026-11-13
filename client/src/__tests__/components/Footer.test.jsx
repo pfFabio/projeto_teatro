@@ -67,4 +67,32 @@ describe('Componente Footer', () => {
     expect(screen.getByText(new RegExp(`© ${anoAtual}`))).toBeInTheDocument();
     expect(screen.getByText(/Todos os direitos reservados/i)).toBeInTheDocument();
   });
+
+  it('deve renderizar dados customizados quando o objeto config for fornecido', () => {
+    const configMock = {
+      contato_email: { valor: 'contato.novo@theatrum.com' },
+      contato_telefone: { valor: '+55 21 99999-8888' },
+      instagram_oficial: { valor: '@novo_theatrum' },
+      contato_endereco: { valor: 'Av. Rio Branco, 100 — Centro, Rio de Janeiro/RJ' },
+      rodape_texto: { valor: '© 2026 Companhia Theatrum — Gestão Cultural' },
+    };
+
+    render(
+      <BrowserRouter>
+        <Footer config={configMock} />
+      </BrowserRouter>
+    );
+
+    const emailCustom = screen.getByRole('link', { name: 'contato.novo@theatrum.com' });
+    expect(emailCustom).toHaveAttribute('href', 'mailto:contato.novo@theatrum.com');
+
+    const telCustom = screen.getByRole('link', { name: '+55 21 99999-8888' });
+    expect(telCustom).toHaveAttribute('href', 'tel:+5521999998888');
+
+    const instaCustom = screen.getByRole('link', { name: '@novo_theatrum' });
+    expect(instaCustom).toHaveAttribute('href', 'https://instagram.com/novo_theatrum');
+
+    expect(screen.getByText('Av. Rio Branco, 100 — Centro, Rio de Janeiro/RJ')).toBeInTheDocument();
+    expect(screen.getByText('© 2026 Companhia Theatrum — Gestão Cultural')).toBeInTheDocument();
+  });
 });

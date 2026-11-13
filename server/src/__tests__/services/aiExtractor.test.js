@@ -76,3 +76,4 @@ describe('Camada de Abstração de IA (AI Extractor)', () => {
     expect(extrator).toBeInstanceOf(IComprovanteExtractor);
   });
 });
+

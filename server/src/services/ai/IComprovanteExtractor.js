@@ -19,3 +19,4 @@ class IComprovanteExtractor {
 }
 
 module.exports = IComprovanteExtractor;
+

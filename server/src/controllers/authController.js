@@ -55,9 +55,20 @@ async function redefinirSenha(req, res, next) {
   }
 }
 
+// PUT /api/auth/perfil — Atualiza informações do administrador logado
+async function atualizarPerfil(req, res, next) {
+  try {
+    const usuario = await AuthService.atualizarPerfil(req.usuario.id, req.body);
+    res.json(usuario);
+  } catch (erro) {
+    next(erro);
+  }
+}
+
 module.exports = {
   login,
   buscarPerfil,
+  atualizarPerfil,
   alterarSenha,
   esqueciSenha,
   redefinirSenha,

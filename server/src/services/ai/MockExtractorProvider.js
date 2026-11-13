@@ -66,3 +66,4 @@ class MockExtractorProvider extends IComprovanteExtractor {
 }
 
 module.exports = MockExtractorProvider;
+

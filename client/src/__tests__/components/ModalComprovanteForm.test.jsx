@@ -133,3 +133,4 @@ describe('ModalComprovanteForm — Extração Assistida por IA', () => {
     expect(screen.getByText(/recibo_falha\.pdf/i)).toBeInTheDocument();
   });
 });
+

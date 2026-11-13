@@ -99,9 +99,39 @@ function validarRedefinicaoSenha(dados) {
   return { valido: true };
 }
 
+/**
+ * Valida atualização de perfil de administrador (nome e/ou email)
+ */
+function validarAtualizacaoPerfil(dados) {
+  if (!dados || typeof dados !== 'object' || Array.isArray(dados)) {
+    return { valido: false, mensagem: 'Dados para atualização não fornecidos' };
+  }
+
+  const { nome, email } = dados;
+
+  if (nome === undefined && email === undefined) {
+    return { valido: false, mensagem: 'Informe ao menos nome ou email para atualização' };
+  }
+
+  if (nome !== undefined) {
+    if (typeof nome !== 'string' || nome.trim().length === 0) {
+      return { valido: false, mensagem: 'Nome não pode ser vazio' };
+    }
+  }
+
+  if (email !== undefined) {
+    if (typeof email !== 'string' || !EMAIL_REGEX.test(email.trim())) {
+      return { valido: false, mensagem: 'Formato de email inválido' };
+    }
+  }
+
+  return { valido: true };
+}
+
 module.exports = {
   validarLogin,
   validarAlteracaoSenha,
   validarSolicitacaoRecuperacao,
   validarRedefinicaoSenha,
+  validarAtualizacaoPerfil,
 };

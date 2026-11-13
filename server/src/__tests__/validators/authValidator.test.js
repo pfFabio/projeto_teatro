@@ -2,7 +2,7 @@
 // Testes Unitários — Validador de Autenticação
 // =============================================================================
 
-const { validarLogin } = require('../../validators/authValidator');
+const { validarLogin, validarAtualizacaoPerfil } = require('../../validators/authValidator');
 
 describe('validarLogin', () => {
   test('deve aceitar email e senha válidos', () => {
@@ -84,5 +84,32 @@ describe('validarLogin', () => {
       senha: 'senha123',
     });
     expect(resultado.valido).toBe(false);
+  });
+});
+
+describe('validarAtualizacaoPerfil', () => {
+  test('deve aceitar atualização de nome e email válidos', () => {
+    const resultado = validarAtualizacaoPerfil({
+      nome: 'Diretor Angelo Turci',
+      email: 'angelofariaturci@theatrum.com',
+    });
+    expect(resultado.valido).toBe(true);
+  });
+
+  test('deve rejeitar payload vazio ou não objeto', () => {
+    expect(validarAtualizacaoPerfil(null).valido).toBe(false);
+    expect(validarAtualizacaoPerfil({}).valido).toBe(false);
+  });
+
+  test('deve rejeitar nome em branco', () => {
+    const resultado = validarAtualizacaoPerfil({ nome: '   ' });
+    expect(resultado.valido).toBe(false);
+    expect(resultado.mensagem).toContain('Nome');
+  });
+
+  test('deve rejeitar email com formato inválido', () => {
+    const resultado = validarAtualizacaoPerfil({ email: 'invalido-sem-arroba' });
+    expect(resultado.valido).toBe(false);
+    expect(resultado.mensagem).toContain('email');
   });
 });

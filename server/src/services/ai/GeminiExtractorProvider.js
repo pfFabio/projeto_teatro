@@ -118,3 +118,4 @@ Responda EXCLUSIVAMENTE em formato JSON puro, sem markdown e sem explicações e
 }
 
 module.exports = GeminiExtractorProvider;
+

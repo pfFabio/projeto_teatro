@@ -5,7 +5,15 @@
 import { Link } from 'react-router-dom';
 import logoTheatrum from '../../assets/logo-theatrum.png';
 
-export default function Footer() {
+export default function Footer({ config = {} }) {
+  const email = config?.contato_email?.valor || 'ciatheatrum@gmail.com';
+  const telefone = config?.contato_telefone?.valor || '+55 (21) 97309-2514';
+  const telDigits = telefone.replace(/[^\d+]/g, '');
+  const instagram = config?.instagram_oficial?.valor || '@theatrum.m';
+  const instagramHandle = instagram.replace(/^@/, '');
+  const endereco = config?.contato_endereco?.valor || config?.endereco?.valor || 'Silvana da Costa, 437, Itaipuaçú — Maricá/RJ';
+  const rodapeTexto = config?.rodape_texto?.valor || `© ${new Date().getFullYear()} Theatrum — Todos os direitos reservados. Projeto acadêmico.`;
+
   return (
     <footer className="footer">
       <div className="footer-inner">
@@ -44,16 +52,24 @@ export default function Footer() {
         <div>
           <h4 className="footer-titulo">Contato & Sede</h4>
           <ul className="footer-links">
-            <li><a href="mailto:ciatheatrum@gmail.com">ciatheatrum@gmail.com</a></li>
-            <li><a href="tel:+5521973092514">+55 (21) 97309-2514</a></li>
-            <li><a href="https://instagram.com/theatrum.m" target="_blank" rel="noopener noreferrer">@theatrum.m</a></li>
-            <li><span className="footer-endereco">Silvana da Costa, 437, Itaipuaçú — Maricá/RJ</span></li>
+            <li><a href={`mailto:${email}`}>{email}</a></li>
+            <li><a href={`tel:${telDigits}`}>{telefone}</a></li>
+            <li>
+              <a
+                href={`https://instagram.com/${instagramHandle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {instagram.startsWith('@') ? instagram : `@${instagram}`}
+              </a>
+            </li>
+            <li><span className="footer-endereco">{endereco}</span></li>
           </ul>
         </div>
       </div>
 
       <div className="footer-rodape">
-        © {new Date().getFullYear()} Theatrum — Todos os direitos reservados. Projeto acadêmico.
+        {rodapeTexto}
       </div>
     </footer>
   );

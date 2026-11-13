@@ -194,6 +194,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
         {abaAtiva === 'config' && (
           <AbaConfig
             configs={configs}
+            usuario={usuario}
             onRecarregar={carregarDados}
           />
         )}

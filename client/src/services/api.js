@@ -75,6 +75,7 @@ export const authAPI = {
       ? api.post('/auth/login', dadosOuEmail)
       : api.post('/auth/login', { email: dadosOuEmail, senha }),
   perfil: () => api.get('/auth/me'),
+  atualizarPerfil: (dados) => api.put('/auth/perfil', dados),
   alterarSenha: (dados) => api.post('/auth/alterar-senha', dados),
   esqueciSenha: (dados) => api.post('/auth/esqueci-senha', dados),
   redefinirSenha: (dados) => api.post('/auth/redefinir-senha', dados),

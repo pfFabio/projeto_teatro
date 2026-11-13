@@ -55,8 +55,8 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
    │   ├── 1.4.2 CRUDs e endpoints com validação defensiva
    │   └── 1.4.3 Proteção LGPD e persistência binária contra disco efêmero
    ├── 1.5 Qualidade e Testes Automatizados
-   │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (139 testes)
-   │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (69 testes)
+   │   ├── 1.5.1 Testes de integração backend com Jest + Supertest (149 testes)
+   │   └── 1.5.2 Testes de componentes frontend com Vitest + RTL (72 testes)
    └── 1.6 DevOps, CI/CD e Implantação
        ├── 1.6.1 Pipeline GitHub Actions automatizado (.github/workflows/deploy.yml)
        ├── 1.6.2 Deploy contínuo no GitHub Pages (Frontend)
@@ -73,6 +73,7 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
 | **Sprint 4** | 01/11 a 09/11/2026 | Estabilização, Testes e Go-Live | Dupla persistência binária no PostgreSQL; resolução CDN de assets estáticos; aprovação dos 156 testes automatizados e deploy em produção. |
 | **Sprint 5** | 10/11/2026 | Módulo de Comprovantes & TDD | Desenvolvimento orientado por testes (TDD Red-Green-Refactor) do Módulo de Comprovantes de Despesa (RF17); blindagem contra download público não autorizado (HTTP 403); aprovação total dos 197 testes automatizados. |
 | **Sprint 6** | 13/11/2026 | IA Assistida & Human-in-the-Loop | Extração inteligente de comprovantes no 1º passo do formulário com IA multimodal (Gemini / Mock); cálculo de confiança por campo (<85% alerta para revisão); auditoria (`extraidoPorIA`, `revisadoPor`); expansão da suíte para 208 testes 100% aprovados. |
+| **Sprint 7** | 13/11/2026 | Centralização Dinâmica & UX de Configurações | Fim do rodapé estático (conexão real dinâmica com fallback resiliente); reorganização da Aba Configurações em 4 blocos coesos (Identidade, Contato, Fallback e Perfil/Segurança); gestão de perfil do administrador (`PUT /api/auth/perfil`); validação e feedback por campo; expansão para 221 testes 100% aprovados. |
 
 ### 2.3 Estimativas com Planning Poker e Story Points
 A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o esforço relativo das histórias de usuário:
@@ -111,7 +112,7 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
 
 ### 4.2 Fluxo de Pull Requests com Code Review
 Toda alteração direcionada à branch estável `main` submete-se ao fluxo de revisão por pares (*Peer Code Review*) com checklist obrigatório:
-1. **Passagem sem falhas na suíte de testes:** Todos os 139 testes do backend (Jest) e 69 testes do frontend (Vitest) devem ser executados e aprovados (`208 passed`).
+1. **Passagem sem falhas na suíte de testes:** Todos os 149 testes do backend (Jest) e 72 testes do frontend (Vitest) devem ser executados e aprovados (`221 passed`).
 2. **Auditoria de Segurança e LGPD:** Verificação manual se novos campos sensíveis de colaboradores possuem projeção seletiva no service.
 3. **Padrão de Código:** Conformidade com Clean Code, ausência de logs residuais de depuração e tipagem correta de parâmetros.
 4. **Resolução de Conflitos:** Rebase ou merge limpo com a branch principal sem artefatos temporários no commit.
@@ -134,6 +135,7 @@ O fluxo de engenharia é orquestrado visualmente em um **Quadro Kanban no GitHub
 * **Sprint 4 — Estabilização Final (09/11):** Sincronização dos binários de imagem oficiais no seed, aprovação dos testes unitários/integrados e publicação da versão estável.
 * **Sprint Review 5 — Módulo de Comprovantes e TDD (10/11):** Implementação do RF17 sob metodologia estrita TDD (Red-Green-Refactor). Adição de 41 novos testes automatizados (12 de validação, 12 de serviço, 12 de rotas/segurança e 5 de interface React). Total expandido para 197 testes 100% aprovados.
 * **Sprint Review 6 — Extração Assistida por IA & Human-in-the-Loop (13/11):** Redesenho da UX do formulário com upload de comprovantes no 1º passo; extração automática via IA multimodal com pontuação de confiança individual por campo; destaques visuais para valores com confiança < 85%; fallback resiliente e campos de auditoria no banco (`extraidoPorIA`, `revisadoPor`). Criação de 11 novos testes automatizados (4 de serviço IA, 4 de rota/segurança e 3 de componente React). Total final consolidado em 208 testes 100% aprovados.
+* **Sprint Review 7 — Centralização Dinâmica & UX de Configurações (13/11):** Eliminação de hardcoded no rodapé do portal (conexão real dinâmica com fallback resiliente canônico em `Footer.jsx` e `Layout.jsx`); reestruturação completa da `AbaConfig.jsx` em 4 blocos temáticos especializados (Identidade, Contato, Fallback e Perfil/Segurança); implementação do endpoint autenticado de edição de perfil do administrador (`PUT /api/auth/perfil`); validação defensiva de formatos (email, telefone, links) e feedback inline por campo (`✓ Salvo!`). Adição de 13 novos testes automatizados (4 de validador auth, 2 de serviço auth, 4 de rotas auth, 1 de Footer dinâmico e 2 de AbaConfig). Total final consolidado em 221 testes 100% aprovados.
 
 ---
 
@@ -175,8 +177,8 @@ O pipeline automatizado do projeto foi implementado via **GitHub Actions** atrav
 ```mermaid
 flowchart TD
     Push["1. Git Push para branch 'main'"] --> Lint["2. Setup Node.js 22 & Prisma Client"]
-    Lint --> TestBack["3. Execução dos Testes Backend (Jest - 139 testes)"]
-    Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 69 testes)"]
+    Lint --> TestBack["3. Execução dos Testes Backend (Jest - 149 testes)"]
+    Lint --> TestFront["4. Execução dos Testes Frontend (Vitest - 72 testes)"]
     TestBack --> Build["5. Compilação do Frontend (Vite Build)"]
     TestFront --> Build
     Build --> DeployGH["6. Deploy Automático no GitHub Pages"]
@@ -186,8 +188,8 @@ flowchart TD
 * **Gatilho:** Qualquer commit integrado na branch `main` ou disparo manual via `workflow_dispatch`.
 * **Etapas do Pipeline:**
   1. Instalação de dependências (`npm ci`) e geração do cliente Prisma em ambiente isolado Node.js 22;
-  2. Execução da suite de **139 testes de integração no backend** (`jest --verbose`);
-  3. Execução da suite de **69 testes de componentes no frontend** (`vitest run`);
+  2. Execução da suite de **149 testes de integração no backend** (`jest --verbose`);
+  3. Execução da suite de **72 testes de componentes no frontend** (`vitest run`);
   4. Build de produção do Vite com geração dos pacotes estáticos otimizados em `client/dist/`;
   5. Publicação automatizada no GitHub Pages (`actions/deploy-pages@v4` / branch `gh-pages`) com entrega imediata via CDN.
 

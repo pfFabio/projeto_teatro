@@ -7,6 +7,7 @@ const router = express.Router();
 const {
   login,
   buscarPerfil,
+  atualizarPerfil,
   alterarSenha,
   esqueciSenha,
   redefinirSenha,
@@ -18,6 +19,9 @@ router.post('/login', login);
 
 // GET /api/auth/me — Perfil do usuário autenticado
 router.get('/me', autenticar, buscarPerfil);
+
+// PUT /api/auth/perfil — Atualização do perfil do administrador
+router.put('/perfil', autenticar, atualizarPerfil);
 
 // POST /api/auth/alterar-senha — Altera a senha do admin logado
 router.post('/alterar-senha', autenticar, alterarSenha);

@@ -14,6 +14,7 @@ const {
   validarAlteracaoSenha,
   validarSolicitacaoRecuperacao,
   validarRedefinicaoSenha,
+  validarAtualizacaoPerfil,
 } = require('../validators/authValidator');
 
 class AuthService {
@@ -217,6 +218,54 @@ class AuthService {
     });
 
     return { mensagem: 'Senha redefinida com sucesso! Você já pode entrar com a nova senha.' };
+  }
+
+  /**
+   * Atualiza informações do perfil do usuário (nome e/ou email)
+   * @param {number} usuarioId
+   * @param {Object} dados - { nome, email }
+   */
+  static async atualizarPerfil(usuarioId, dados) {
+    const validacao = validarAtualizacaoPerfil(dados);
+    if (!validacao.valido) {
+      throw AppError.badRequest(validacao.mensagem);
+    }
+
+    const usuarioAtual = await prisma.usuario.findUnique({
+      where: { id: usuarioId },
+    });
+    if (!usuarioAtual) {
+      throw AppError.notFound('Usuário não encontrado');
+    }
+
+    const updateData = {};
+    if (dados.nome !== undefined) {
+      updateData.nome = dados.nome.trim();
+    }
+
+    if (dados.email !== undefined) {
+      const emailNormalizado = dados.email.trim().toLowerCase();
+      if (emailNormalizado !== usuarioAtual.email.toLowerCase()) {
+        const existeOutro = await prisma.usuario.findFirst({
+          where: {
+            email: emailNormalizado,
+            NOT: { id: usuarioId },
+          },
+        });
+        if (existeOutro) {
+          throw AppError.conflict('Este email já está sendo utilizado por outro administrador');
+        }
+        updateData.email = emailNormalizado;
+      }
+    }
+
+    const atualizado = await prisma.usuario.update({
+      where: { id: usuarioId },
+      data: updateData,
+      select: { id: true, email: true, nome: true, papel: true },
+    });
+
+    return atualizado;
   }
 }
 
