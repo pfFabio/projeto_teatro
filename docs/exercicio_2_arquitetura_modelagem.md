@@ -37,16 +37,17 @@ A solução adota a arquitetura **SPA + RESTful API em Camadas Desacopladas (Lay
 [ Camada de Serviços de Negócio e Mascaramento LGPD (Services de Domínio) ]
                                     │
 [ Camada de Acesso a Dados e Mapeamento ORM (Prisma Client Abstraction) ]
-                                    │  SQL Nativo Otimizado (TCP/5432)
+                                    │  SQL Nativo Otimizado (TCP/5432 - Supavisor Pooler IPv4)
                                     ▼
-[ Banco de Dados Relacional: PostgreSQL (Render Managed Cloud Platform) ]
+[ Banco de Dados Relacional: PostgreSQL (Supabase Managed Cloud Platform) ]
 ```
 
 ### 1.2 Justificativa Técnica da Escolha
-1. **Desacoplamento e Independência de Deploy:** O frontend estático pode ser servido em alta velocidade pela CDN do GitHub Pages com custo zero e disponibilidade de 99,9%, enquanto o backend escala sob demanda no cluster Render.
-2. **Manutenibilidade e Testabilidade Isolada (SOLID):** O padrão de camadas desacopladas garante que as regras de negócio residam exclusivamente nos *Services*, tornando-os 100% testáveis em memória sem necessidade de levantar servidores HTTP.
-3. **Validação Defensiva sem Dependências Frágeis:** Em vez de adotar bibliotecas externas pesadas e propensas a quebras de breaking change (como Joi ou Yup), o projeto implementou validadores puros próprios (`authValidator.js`, `pecaValidator.js`, `colaboradorValidator.js`). Isso garante execução ultrarrápida (sub-milissegundo), tipagem segura e zero dependências vulneráveis na camada de validação.
-4. **Segurança Centralizada:** O controle de acesso por token JWT e o mascaramento LGPD são aplicados nos middlewares e serviços do backend, garantindo que nenhum dado sigiloso trafegue na rede mesmo em caso de falha de interface.
+1. **Desacoplamento e Independência de Deploy:** O frontend estático pode ser servido em alta velocidade pela CDN do GitHub Pages com custo zero e disponibilidade de 99,9%, enquanto o backend Express escala sob demanda no Render e os dados residem com alta disponibilidade e backups contínuos no Supabase PostgreSQL.
+2. **Resiliência e Escalabilidade de Conexões:** A integração entre o backend no Render e o banco no Supabase utiliza o Connection Pooler (Supavisor na porta 5432 em modo Session), garantindo conectividade estável sobre IPv4 e prevenindo a exaustão de conexões durante acessos concorrentes.
+3. **Manutenibilidade e Testabilidade Isolada (SOLID):** O padrão de camadas desacopladas garante que as regras de negócio residam exclusivamente nos *Services*, tornando-os 100% testáveis em memória sem necessidade de levantar servidores HTTP.
+4. **Validação Defensiva sem Dependências Frágeis:** Em vez de adotar bibliotecas externas pesadas e propensas a quebras de breaking change (como Joi ou Yup), o projeto implementou validadores puros próprios (`authValidator.js`, `pecaValidator.js`, `colaboradorValidator.js`). Isso garante execução ultrarrápida (sub-milissegundo), tipagem segura e zero dependências vulneráveis na camada de validação.
+5. **Segurança Centralizada:** O controle de acesso por token JWT e o mascaramento LGPD são aplicados nos middlewares e serviços do backend, garantindo que nenhum dado sigiloso trafegue na rede mesmo em caso de falha de interface.
 
 ---
 
@@ -500,7 +501,7 @@ A modelagem de dados do Theatrum Mundi percorre os três níveis formais da enge
 | `propagandas` | `id` (PK) | `titulo`, `resumo`, `linkUrl`, `ativo`, `ordem` | Comunicados culturais e banners promocionais gerenciados pela direção |
 | `fotos_propagandas` | `id` (PK), `propagandaId` (FK) | `url`, `legenda`, `ordem` | Galeria de imagens vinculadas aos comunicados (`ON DELETE CASCADE`) |
 | `config_site` | `id` (PK), `chave` (UK) | `chave`, `valor`, `updatedAt` | Parâmetros institucionais dinâmicos em formato chave-valor |
-| `arquivos` | `id` (PK), `nome` (UK) | `nome`, `mimeType`, `dados` (`BYTEA`), `createdAt` | Salvaguarda binária de imagens e PDFs no PostgreSQL contra perda em filesystem efêmero |
+| `arquivos` | `id` (PK), `nome` (UK) | `nome`, `mimeType`, `dados` (`BYTEA`), `createdAt` | Salvaguarda binária de imagens e PDFs no Supabase PostgreSQL contra perda em filesystem efêmero |
 
 #### 8. Tabela: `comprovantes` (Comprovantes de Despesa e Prestação de Contas - RF17)
 | Coluna | Tipo PostgreSQL | Nulo | Chave | Descrição |

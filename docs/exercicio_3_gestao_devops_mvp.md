@@ -60,7 +60,8 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
    └── 1.6 DevOps, CI/CD e Implantação
        ├── 1.6.1 Pipeline GitHub Actions automatizado (.github/workflows/deploy.yml)
        ├── 1.6.2 Deploy contínuo no GitHub Pages (Frontend)
-       └── 1.6.3 Deploy contínuo no Render (Backend + PostgreSQL)
+       ├── 1.6.3 Deploy contínuo no Render (Backend Express)
+       └── 1.6.4 Banco de Dados Relacional em Nuvem (Supabase PostgreSQL via Connection Pooler)
 ```
 
 ### 2.2 Roadmap e Cronograma de Sprints
@@ -74,6 +75,7 @@ O desenvolvimento adotou o modelo **Scrumban**, combinando a cadência iterativa
 | **Sprint 5** | 10/11/2026 | Módulo de Comprovantes & TDD | Desenvolvimento orientado por testes (TDD Red-Green-Refactor) do Módulo de Comprovantes de Despesa (RF17); blindagem contra download público não autorizado (HTTP 403); aprovação total dos 197 testes automatizados. |
 | **Sprint 6** | 13/11/2026 | IA Assistida & Human-in-the-Loop | Extração inteligente de comprovantes no 1º passo do formulário com IA multimodal (Gemini / Mock); cálculo de confiança por campo (<85% alerta para revisão); auditoria (`extraidoPorIA`, `revisadoPor`); expansão da suíte para 208 testes 100% aprovados. |
 | **Sprint 7** | 13/11/2026 | Centralização Dinâmica & UX de Configurações | Fim do rodapé estático (conexão real dinâmica com fallback resiliente); reorganização da Aba Configurações em 4 blocos coesos (Identidade, Contato, Fallback e Perfil/Segurança); gestão de perfil do administrador (`PUT /api/auth/perfil`); validação e feedback por campo; expansão para 221 testes 100% aprovados. |
+| **Sprint 8** | 13/11/2026 | Migração de Banco para Nuvem Gerenciada (Supabase) | Migração estruturada e com integridade total (100% de paridade) do banco PostgreSQL para o Supabase; resolução do desafio de conectividade IPv4 no Render via Connection Pooler (Supavisor na porta 5432 em modo Session); integridade comprovada de 16 colaboradores, 5 peças e 10 arquivos binários (`bytea`). |
 
 ### 2.3 Estimativas com Planning Poker e Story Points
 A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o esforço relativo das histórias de usuário:
@@ -92,7 +94,7 @@ A equipe utilizou a sequência de Fibonacci (1, 2, 3, 5, 8, 13) para estimar o e
 | ID | Descrição do Risco | Prob. | Imp. | Grau | Estratégia de Mitigação Implementada |
 |:---:|---|:---:|:---:|:---:|---|
 | **R01** | Vazamento involuntário de dados sensíveis de artistas (LGPD) | Média | Alto | **Crítico** | Mascaramento estrito no nível de serviço do backend. Testes automatizados verificam que endpoints públicos nunca expõem CPF, RG ou saúde. |
-| **R02** | Perda de fotos de upload devido ao filesystem efêmero do Render | Alta | Alto | **Crítico** | Arquitetura de dupla persistência: arquivos salvos no disco de cache e replicados como binários (`bytea`) na tabela `arquivos` do PostgreSQL. |
+| **R02** | Perda de fotos de upload devido ao filesystem efêmero do Render | Alta | Alto | **Crítico** | Arquitetura de dupla persistência: arquivos salvos no disco de cache e replicados como binários (`bytea`) na tabela `arquivos` do PostgreSQL hospedado no Supabase. |
 | **R03** | Erro 404 em assets de imagens devido ao subcaminho do GitHub Pages | Alta | Médio | **Alto** | Função `getMediaUrl` atualizada para resolver o `import.meta.env.BASE_URL` da CDN estática com recuperação inteligente no manipulador `onError`. |
 | **R04** | Latência excessiva ou timeout por cold start da nuvem Render | Alta | Médio | **Médio** | Timeout estendido para 60 segundos no Axios, acompanhado de dados canônicos de fallback (`PECAS_OFICIAIS`) para navegação ininterrupta. |
 | **R05** | Spam ou negação de serviço no formulário público de propostas | Média | Médio | **Médio** | Middleware `express-rate-limit` restringindo o envio a no máximo 10 requisições por hora por IP e validação rigorosa de campos. |
@@ -161,7 +163,7 @@ Todas as funcionalidades classificadas como **Must Have**, **Should Have** e o *
 4. **Interface Segregation Principle (ISP):** Os contratos de API retornam modelos enxutos de DTO para o cliente público, evitando trafegar dados não consumidos pelo espectador.
 
 ### 6.3 Padrões de Projeto (Design Patterns) Implementados
-* **Singleton (GoF Creacional):** Implementado no módulo `server/src/lib/prisma.js` para garantir uma única instância compartilhada do Prisma Client, evitando esgotamento de conexões (*pool exhaustion*) no banco PostgreSQL do Render.
+* **Singleton (GoF Creacional):** Implementado no módulo `server/src/lib/prisma.js` para garantir uma única instância compartilhada do Prisma Client, prevenindo esgotamento de conexões (*pool exhaustion*) no banco gerenciado Supabase PostgreSQL. A infraestrutura conecta-se via Connection Pooler (Supavisor) na porta 5432, garantindo reutilização eficiente de sockets e compatibilidade com redes IPv4.
 * **Chain of Responsibility (GoF Comportamental):** Estrutura do pipeline de middlewares do Express (`helmet` → `cors` → `rateLimit` → `auth` → `validate` → `errorHandler`), onde cada elo da cadeia decide de forma isolada se processa, rejeita ou repassa a requisição HTTP.
 * **Data Projection / DTO Pattern (Arquitetural):** Implementado no `colaboradorService.js` e `pecaService.js`, projetando objetos seguros que suprimem seletivamente campos sensíveis em tempo de execução dependendo do perfil autenticado.
 * **Strategy / Adapter Dinâmico de Banco (GoF Estrutural):** Implementado no script `server/scripts/sync-db.js`, que detecta dinamicamente a variável `DATABASE_URL` no ambiente e comuta o provedor do schema Prisma entre SQLite e PostgreSQL sem intervenção manual no código.
@@ -205,6 +207,8 @@ O sistema Theatrum Mundi encontra-se em regime de produção contínua, com cód
   [https://github.com/pfFabio/projeto_teatro](https://github.com/pfFabio/projeto_teatro)
 * ☁️ **API Backend REST (Render Managed Cloud):**  
   [https://projeto-teatro.onrender.com](https://projeto-teatro.onrender.com)
+* 🗄️ **Banco de Dados Relacional em Nuvem:**  
+  PostgreSQL gerenciado no **Supabase** (região US West, conectado via Connection Pooler IPv4)
 * 🔑 **Acesso Administrativo para Avaliação:**
   * **Usuário:** `admin` (ou `admin@theatrum.com`)
   * **Senha:** `admin123`
