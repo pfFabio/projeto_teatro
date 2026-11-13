@@ -170,11 +170,26 @@ app.use('/api/ideias', rotasIdeias);
 app.use('/api/memoria', rotasMemoria);
 app.use('/api/comprovantes', rotasComprovantes);
 
-// Rota de health check
-app.get('/api/saude', (req, res) => {
-  res.json({
-    status: 'ok',
+// Rota de health check com verificação de conectividade com o banco (Supabase / PostgreSQL)
+app.get('/api/saude', async (req, res) => {
+  let bancoStatus = 'desconectado';
+  let bancoErro = null;
+
+  try {
+    const prisma = require('./lib/prisma');
+    await prisma.$queryRaw`SELECT 1`;
+    bancoStatus = 'conectado';
+  } catch (err) {
+    bancoErro = err.message;
+  }
+
+  const statusCode = bancoStatus === 'conectado' ? 200 : 503;
+
+  res.status(statusCode).json({
+    status: bancoStatus === 'conectado' ? 'ok' : 'degradado',
     mensagem: '🎭 Theatrum API está funcionando!',
+    banco: bancoStatus,
+    ...(bancoErro ? { detalhe: bancoErro } : {}),
     ambiente: ENV.NODE_ENV,
     timestamp: new Date().toISOString(),
   });

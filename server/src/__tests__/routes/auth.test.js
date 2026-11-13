@@ -84,3 +84,4 @@ describe('Rotas de Autenticação (/api/auth)', () => {
     });
   });
 });
+

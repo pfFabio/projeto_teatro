@@ -7,11 +7,12 @@ const request = require('supertest');
 const app = require('../../app');
 
 describe('GET /api/saude', () => {
-  test('deve retornar status 200 e mensagem ok', async () => {
+  test('deve retornar status 200, mensagem ok e banco conectado', async () => {
     const resposta = await request(app).get('/api/saude');
 
     expect(resposta.status).toBe(200);
     expect(resposta.body).toHaveProperty('status', 'ok');
+    expect(resposta.body).toHaveProperty('banco', 'conectado');
     expect(resposta.body).toHaveProperty('mensagem');
     expect(resposta.body.mensagem).toContain('Theatrum');
   });

@@ -9,6 +9,8 @@
     "postinstall": "node scripts/sync-db.js",
     "build": "node scripts/sync-db.js && npx prisma generate && npx prisma db push",
     "seed": "node scripts/sync-db.js && node prisma/seed.js",
+    "db:inventario": "node scripts/inventario-banco.js",
+    "db:deploy": "npx prisma migrate deploy",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx prisma db seed",
     "db:studio": "npx prisma studio",

@@ -12,20 +12,40 @@ async function main() {
   console.log('🎭 Iniciando seed oficial do Theatrum Mundi...\n');
 
   // =========================================================================
-  // 1. Criar admin padrão da companhia
+  // 1. Criar admin padrão da companhia (Blindagem contra sobrescrita de senhas reais)
   // =========================================================================
-  const senhaHash = await bcrypt.hash('admin123', 10);
-  const admin = await prisma.usuario.upsert({
-    where: { email: 'admin@theatrum.com' },
-    update: { senha: senhaHash },
-    create: {
-      email: 'admin@theatrum.com',
-      senha: senhaHash,
-      nome: 'Administrador Theatrum',
-      papel: 'ADMIN',
+  const adminExistente = await prisma.usuario.findFirst({
+    where: {
+      OR: [
+        { email: 'admin@theatrum.com' },
+        { papel: 'ADMIN' },
+      ],
     },
   });
-  console.log(`✅ Admin pronto: ${admin.email} (login: admin ou admin@theatrum.com / senha: admin123)`);
+
+  let admin;
+  if (!adminExistente) {
+    const senhaHash = await bcrypt.hash('admin123', 10);
+    admin = await prisma.usuario.create({
+      data: {
+        email: 'admin@theatrum.com',
+        senha: senhaHash,
+        nome: 'Administrador Theatrum',
+        papel: 'ADMIN',
+      },
+    });
+    console.log(`✅ Admin inicial criado: ${admin.email} (login: admin ou admin@theatrum.com / senha: admin123)`);
+  } else if (process.env.FORCE_SEED === 'true') {
+    const senhaHash = await bcrypt.hash('admin123', 10);
+    admin = await prisma.usuario.update({
+      where: { id: adminExistente.id },
+      data: { senha: senhaHash },
+    });
+    console.log(`⚠️ [FORCE_SEED] Senha do admin redefinida para 'admin123'`);
+  } else {
+    admin = adminExistente;
+    console.log(`🛡️ Admin existente preservado com segurança: ${admin.email} (senha mantida)`);
+  }
 
   // =========================================================================
   // 2. Configurações oficiais do site (Theatrum Mundi)
